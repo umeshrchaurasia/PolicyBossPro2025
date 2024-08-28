@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- res/drawable/selected_spinner_background.xml -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/blue" /> <!-- Background color (dark blue) when pressed -->
+            <corners android:radius="0dp" /> <!-- Rounded corners for the selected item -->
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="#FFFFFF" /> <!-- Default background color (white) when not pressed -->
+            <corners android:radius="0dp" /> <!-- Rounded corners for the unselected item -->
+        </shape>
+    </item>
+</selector>

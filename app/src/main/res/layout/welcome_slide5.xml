@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+        style="@style/TextStyle.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:gravity="center"
+        android:lines="2"
+        android:text="open the dooR to a world of opportunities"
+        android:textAllCaps="true" />
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="300dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/slide_5" />
+
+
+    <TextView
+        style="@style/TextStyle.TextMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="10dp"
+        android:text="Become Your Customer's first choice for"
+        android:textAlignment="center" />
+
+    <TextView
+        style="@style/TextStyle.TextMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="4dp"
+        android:text="ALL INSURANCE NEEDS"
+        android:textAlignment="center"
+        android:textAllCaps="true"
+        android:textStyle="bold" />
+
+    <TextView
+        style="@style/TextStyle.TextMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginTop="4dp"
+        android:text="and Stay Ahead of Competition"
+        android:textAlignment="center"
+         />
+
+</LinearLayout>

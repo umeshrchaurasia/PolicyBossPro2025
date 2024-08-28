@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--<color name="colorPrimary">#009EE3</color>-->
+    <!--<color name="colorPrimaryDark">#01579B</color>-->
+    <color name="colorPrimary">#009ee3</color>
+    <color name="colorPrimaryDark">#00476e</color>
+    <color name="colorAccentPressed">#006b8e</color>
+
+    <color name="colorAccent">#009ee3</color>
+    <color name="bg_transparent">#4Dffffff</color>
+    <color name="transparent_color">#A6000000</color>
+    <color name="colorText">#212121</color>
+    <color name="darkGray">#757575</color>
+    <color name="divider">#F1F1F1</color>
+    <color name="bg">#c9c5c5</color>
+    <color name="dashboard_bg">#e3e3e3</color>
+    <color name="dashboard_header">#696969</color>
+    <color name="dashboard_title">#3a4147</color>
+    <color name="bg1">#ededed</color>
+    <color name="bg2">#c9c9c9</color>
+    <color name="header_text_color">#696969</color>
+    <color name="header_text_color1">#3c4651</color>
+    <color name="secondary_text_color">#9ba0a6</color>
+    <color name="color_close">#757575</color>
+
+    <color name="tab_color">#00476e</color>
+
+
+    <color name="button_color">@color/colorPrimary</color>
+
+    <color name="blue">#005faf</color>
+    <color name="holo_red_dark">#ffcc0000</color>
+    <color name="red_text">#fe5e63</color>
+    <color name="red_descent">#de6d75</color>
+    <color name="red_dark_one">#c00000</color>
+    <color name="hdr_white">#f0f0f0</color>
+    <color name="bg_white">#f1f1f1</color>
+    <color name="seperator_white">#dadada</color>
+    <color name="bg_popup">#f7f7f7</color>
+    <color name="progress_blue">#009fe3</color>
+    <color name="progress_grey">#cecece</color>
+    <color name="term_background">#deedf4</color>
+
+    <!--mintpro-->
+    <color name="background">#FFEFF3F6</color>
+    <color name="header_dark_text">#5D5C5D</color>
+    <color name="header_light_text">#6A6F71</color>
+    <color name="description_text">#929292</color>
+    <color name="seperator">#E1DEDE</color>
+    <color name="bg_dashboard">#f5f5f5</color>
+    <color name="search_gray">#bcbcbc</color>
+    <color name="gray_light">#eaeaea</color>
+    <color name="gray_button">#a8a8a8</color>
+
+    <color name="black_dark">#000000</color>
+    <color name="black">#212121</color>
+    <color name="primary_text_color">#000000</color>
+    <!--RBA-->
+    <color name="white">#ffffff</color>
+    <color name="lightGrey">#E0E0E0</color>
+    <color name="disable">#B6B6B6</color>
+    <color name="text_edit_color">#868686</color>
+    <color name="green_descent">#42ceb2</color>
+    <!--vector colors-->
+    <!--<color name="vector_blue">#11408b</color>-->
+
+    <!--region inspect-->
+    <!--<color name="background">#e6e6e6</color>-->
+    <color name="lightBlue">#3ab2d4</color>
+    <!--<color name="white">#FFFFFF</color>-->
+    <color name="blue_descent">#4b76c2</color>
+    <color name="uvv_green">#ff50b100</color>
+    <color name="green_light">#7db142</color>
+    <color name="green_dark">#009900</color>
+
+    <color name="uvv_black">#ff000000</color>
+
+    <color name="red_button">#E62B21</color>
+    <color name="button_background">#FA774D</color>
+    <color name="gray_divider_color">#D1D1D1</color>
+
+    <color name="grey_form_header">#828282</color>
+    <color name="blue_button">#005b9a</color>
+    <color name="bg_light">#eaeff7</color>
+    <color name="red">#FF0000</color>
+    <color name="hint_color">#64ffffff</color>
+    <color name="nav_blue">#287FAA</color>
+    <color name="darkBlue">#1565c0</color>
+
+    <color name="light_blue">#0a77bf</color>
+    <color name="dark_blue">#0c375f</color>
+    <color name="selcted_blue">#234567</color>
+    <color name="dark_blue_one">#10395f</color>
+    <color name="yellow">#f79f00</color>
+    <color name="yellowlight">#f69f1e</color>
+    <color name="off_white">#fafafa</color>
+    <!--region posp-->
+    <!--<color name="application_primary_text_color">#212121</color>-->
+    <!--<color name="icons">#FFFFFF</color>
+    <color name="divider">#BDBDBD</color>-->
+
+    <!--<color name="bg_screen1">#f64c73</color>-->
+
+
+
+    <color name="bg_screen1">#de6d75</color>
+    <color name="bg_screen2">#20d2bb</color>
+    <color name="bg_screen3">#3395ff</color>
+    <color name="bg_screen4">#c873f4</color>
+
+    <!-- dots inactive colors -->
+    <color name="dot_dark_screen1">#d1395c</color>
+    <color name="dot_dark_screen2">#14a895</color>
+    <color name="dot_dark_screen3">#2278d4</color>
+    <color name="dot_dark_screen4">#a854d4</color>
+
+    <!-- dots active colors -->
+    <color name="dot_light_screen1">#f98da5</color>
+    <color name="dot_light_screen2">#8cf9eb</color>
+    <color name="dot_light_screen3">#93c6fd</color>
+    <color name="dot_light_screen4">#e4b5fc</color>
+
+    <color name="purple">#7c4dff</color>
+    <color name="green">#00bfa5</color>
+    <color name="pink">#ff4081</color>
+
+
+    <color name="buttonRedBackground">#ee5e35</color>
+    <color name="buttonGreenBackground">#20d2bb</color>
+    <color name="buttonOrangeBackground">#f67b58</color>
+
+
+
+    <color name="red_light">#ff7777</color>
+    <color name="red_custom">#ff5a5f</color>
+
+    <color name="lightTransparentBlue">#e4f2fd</color>
+    <color name="blue_card">#b1eafe</color>
+    <color name="blue_menu">#d2f2fd</color>
+    <color name="blue_bg_light">#e3f2fd</color>
+    <color name="blue_bg">#ebf8ff</color>
+    <color name="blue_card_bg">#afe2f5</color>
+
+    <color name="semi_transparent">#80000000</color>
+
+    <color name="transparent1">#0D000000</color>
+
+</resources>

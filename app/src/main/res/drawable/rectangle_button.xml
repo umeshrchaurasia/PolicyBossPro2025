@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+    <!-- rectangle_button.xml -->
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Pressed State -->
+    <item android:state_pressed="true">
+        <shape>
+            <solid android:color="@color/colorAccentPressed" />
+            <corners android:radius="6dp" />
+            <stroke android:color="@color/colorPrimaryDark" android:width="1dp"/>
+        </shape>
+    </item>
+
+    <!-- Disabled State  : same color for pressed and disable-->
+    <item android:state_enabled="false">
+        <shape>
+            <solid android:color="@color/colorAccentPressed" />
+            <corners android:radius="6dp" />
+            <stroke android:color="@color/colorPrimaryDark" android:width="1dp"/>
+        </shape>
+    </item>
+
+    <!-- Default State -->
+    <item>
+        <shape>
+            <solid android:color="@color/colorPrimaryDark" />
+            <corners android:radius="6dp" />
+            <stroke android:color="@color/colorPrimaryDark" android:width="1dp"/>
+        </shape>
+    </item>
+</selector>
