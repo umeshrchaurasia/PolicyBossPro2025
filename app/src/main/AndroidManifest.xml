@@ -5,6 +5,9 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
 
     <queries>
 
@@ -84,6 +87,7 @@
     <uses-permission android:name="com.policyboss.policybosspro.permission.MIPUSH_RECEIVE" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- For Workmanager Notification Permission -->
+    <uses-permission android:name="android.permission.RECEIVE_SMS" /> <!-- For RECEIVE SMS Permission. get Sms for OTP -->
     <permission
         android:name="com.policyboss.policybosspro.permission.MIPUSH_RECEIVE"
         android:protectionLevel="signature" />
@@ -93,15 +97,20 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/ic_policyboss"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_policyboss_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Policybossprov34"
         tools:targetApi="31">
         <activity
-            android:name=".view.splashscreen.SplashScreenActivity"
+            android:name=".webview.CommonWebViewActivity"
             android:exported="false" />
+        <activity
+            android:name=".view.home.HomeActivity"
+            android:exported="false" /> <!-- <activity -->
+        <!-- android:name=".view.splashscreen.SplashScreenActivity" -->
+        <!-- android:exported="false" /> -->
         <activity
             android:name=".view.login.LoginActivity"
             android:exported="false" />
@@ -115,10 +124,11 @@
         <activity
             android:name=".view.introslider.WelcomeActivity"
             android:exported="false"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait" /> <!-- android:theme="@style/Theme.Splash" -->
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
+            android:name=".view.splashscreen.SplashScreenActivity"
+            android:exported="true"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -150,19 +160,13 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
-        </provider>
-
-        <receiver
-            android:name=".broadcast.SMSReaderBroadCastReceiver"
-            android:enabled="true"
-            android:exported="false" />
-        <receiver
-            android:name=".broadcast.SMSBroadCastReceiver"
-            android:exported="true">
-            <intent-filter android:priority="5822">
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-            </intent-filter>
-        </receiver>
+        </provider> <!-- <receiver -->
+        <!-- android:name=".broadcast.SMSBroadCastReceiver" -->
+        <!-- android:exported="true"> &lt;!&ndash; Ensure this is true since it's receiving system broadcasts &ndash;&gt; -->
+        <!-- <intent-filter android:priority="5822"> -->
+        <!-- <action android:name="android.provider.Telephony.SMS_RECEIVED" /> -->
+        <!-- </intent-filter> -->
+        <!-- </receiver> -->
         <receiver
             android:name="com.google.android.gms.analytics.AnalyticsReceiver"
             android:enabled="true"
@@ -198,7 +202,9 @@
             android:name="com.google.android.gms.analytics.AnalyticsService"
             android:enabled="true"
             android:exported="false" />
-        <service android:name="com.google.android.gms.analytics.CampaignTrackingService" /> <!-- <activity -->
+        <service
+            android:name="com.google.android.gms.analytics.CampaignTrackingService"
+            android:exported="false" /> <!-- <activity -->
         <!-- android:name="com.yalantis.ucrop.UCropActivity" -->
         <!-- android:screenOrientation="portrait" -->
         <!-- android:theme="@style/Theme.AppCompat.Light.NoActionBar" /> -->
@@ -231,6 +237,13 @@ NoteThis service must be added to the version 3.0.1 or
 Notethis service must be added to version 2.2.5 or later
     includes version 2.2.5
         -->
+        <receiver
+            android:name=".broadcast.SMSReaderBroadCastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" />
+            </intent-filter>
+        </receiver>
         <receiver
             android:name="com.xiaomi.push.service.receivers.NetworkStatusReceiver"
             android:exported="true">

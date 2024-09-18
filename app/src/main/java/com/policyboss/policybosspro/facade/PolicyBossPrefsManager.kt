@@ -2,6 +2,15 @@ package com.policyboss.policybosspro.facade
 
 import android.content.Context
 import android.content.SharedPreferences
+
+import android.util.Log
+import com.google.gson.Gson
+import com.policyboss.policybosspro.core.response.login.EMP
+import com.policyboss.policybosspro.core.response.login.LoginNewResponse_DSAS_Horizon
+import com.policyboss.policybosspro.core.response.login.OtpLoginMsg
+import com.policyboss.policybosspro.core.response.login.POSP
+import com.policyboss.policybosspro.core.response.master.dynamicDashboard.MenuMasterResponse
+import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantResponse
 import com.policyboss.policybosspro.utils.Constant
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -17,6 +26,8 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
     private fun getEditor(): SharedPreferences.Editor {
         return pref.edit()
     }
+
+    private  val gson = Gson()
 
     companion object {
         const val PREF_NAME = "magic-finmart"
@@ -58,6 +69,20 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         private const val CONTACT_COUNT = "contact_count"
         private const val DEVICE_ID = "policybossproDeviceID"
         private const val APP_VERSION = "policybossproAppVersion"
+
+
+        private val LoginHorizonKey = "LOGIN_DSAS_Horizon"
+        private val LoginOTPDataKey = "Login_OTP_Data_Key"
+
+        private val IS_DEVICE_TOKEN_Login = "devicetokenLogin"
+
+        private val IS_DEVICE_ID = "deviceid"
+        private val IS_DEVICE_Name = "devicename"
+
+        private const val device_ID = "policybossproDeviceID"
+        private const val app_Version = "policybossproAppVersion"
+
+        private const val USER_CONSTANT_RESPONSE_KEY = "UserConstantResponseKey"
     }
 
 
@@ -185,13 +210,7 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         return pref.getString(FOS_USER_AUTHENTICATIONN, "")
     }
 
-    fun setToken(token: String) {
-        editor.putString(IS_DEVICE_TOKEN, token).apply()
-    }
 
-    fun getToken(): String? {
-        return pref.getString(IS_DEVICE_TOKEN, "")
-    }
 
     fun getNotificationCounter(): Int {
         return pref.getInt(NOTIFICATION_COUNTER, 0)
@@ -233,5 +252,453 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
     fun getSharePushType(): String? {
         return pref.getString(SHARED_KEY_PUSH_NOTIFY, "")
     }
+
+
+
+
+    //region Important all API data  //05
+    fun saveLoginHorizonResponse(  loginHorizon : LoginNewResponse_DSAS_Horizon?){
+
+        loginHorizon?.let { response ->
+
+            val json = gson.toJson(response)
+            pref.edit().putString(LoginHorizonKey, json).apply()
+
+            Log.d(Constant.TAG, " Horizon Respnse : LoginNewResponse_DSAS_Horizon response saved")
+
+        }
+
+
+    }
+
+    fun getLoginHorizonResponse() : LoginNewResponse_DSAS_Horizon?  {
+
+        val LoginResponse = pref.getString(LoginHorizonKey,null)
+
+        return gson.fromJson(LoginResponse,LoginNewResponse_DSAS_Horizon::class.java )
+    }
+
+
+    fun getEmpData() : EMP? {
+
+        val response = getLoginHorizonResponse()
+        return response?.EMP
+    }
+
+
+
+    fun getSSID() : String {
+
+        val response = getLoginHorizonResponse()
+
+        return response?.Ss_Id?:"0"
+    }
+
+    fun getFBAID() : String {
+
+        val response = getLoginHorizonResponse()
+
+        //  return response?.EMP?.FBA_ID?:"0"
+
+
+
+        val usertype= response?.user_type?:""
+
+        when(usertype){
+
+
+            "POSP" ->{
+                // return response?.POSP ?.Fba_Id?:"0"
+
+                var Fba_Id = "0"
+                response?.POSP?.let { posp ->
+                    when (posp) {
+
+                        is POSP -> {
+                            Fba_Id = posp.Fba_Id?.takeIf { it.isNotEmpty() } ?: "0" // Retrieve and handle Fba_Id
+                        }
+                        else -> {
+                            // Handle unexpected type (log, throw exception, etc.)
+                            println("Unexpected POSP type: ${posp?.javaClass}")
+                        }
+                    }
+                }
+                return Fba_Id
+            }
+            "FOS" ->{
+                var Fba_Id = "0"
+                response?.POSP?.let { posp ->
+                    when (posp) {
+
+                        is POSP -> {
+                            Fba_Id = posp.Fba_Id?.takeIf { it.isNotEmpty() } ?: "0" // Retrieve and handle Fba_Id
+                        }
+                        else -> {
+                            // Handle unexpected type (log, throw exception, etc.)
+                            println("Unexpected POSP type: ${posp?.javaClass}")
+                        }
+                    }
+                }
+                return Fba_Id
+
+            }
+
+            "EMP" ->{
+                return response?.EMP?.FBA_ID?:"0"
+
+            }
+            "MISP" ->{
+                return response?.EMP?.FBA_ID?:"0"
+
+
+            }
+
+        }
+
+        return "0"
+    }
+
+    fun  getERPID() : String {
+
+        val response = getLoginHorizonResponse()
+
+        val erpIDID: String? = when (val obj = response?.POSP_USER) {
+            is Map<*, *> -> {
+                // Assume it's a Map, you can adjust this based on your actual JSON structure
+                (obj["Erp_Id"] as? String) ?:"0"
+            }
+            else -> {
+
+                ""
+            }
+        }
+
+        Log.d("User Email ID.",erpIDID?:"0")
+        return  erpIDID?:"0"
+
+    }
+
+
+    fun getName() : String {
+
+        val response = getLoginHorizonResponse()
+
+        val usertype= response?.user_type?:""
+
+        when(usertype){
+
+
+            "POSP" , "FOS" ->{
+
+                val username: String? = when (val obj = response?.POSP_USER) {
+                    is Map<*, *> -> {
+                        // Assume it's a Map, you can adjust this based on your actual JSON structure
+                        (obj["Name_On_PAN"] as? String)?.takeIf { it.isNotEmpty() } ?:
+                        response?.EMP?.Emp_Name?:""
+                    }
+                    else -> {
+
+                        ""
+                    }
+                }
+                Log.d("User Name.",username?:"")
+                return  username?:""
+
+            }
+
+
+            "EMP" ->{
+                return response?.EMP?.Emp_Name?:""
+            }
+            "MISP" ->{
+                return response?.EMP?.Emp_Name?:""
+            }
+
+        }
+
+        return ""
+    }
+
+
+
+
+    fun getMobileNo() : String {
+
+        val response = getLoginHorizonResponse()
+
+        val usertype= response?.user_type?:""
+
+        when(usertype){
+
+
+            "POSP" , "FOS" ->{
+
+
+                val mobileNo: String? = when (val obj = response?.POSP_USER) {
+                    is Map<*, *> -> {
+                        // Assume it's a Map, you can adjust this based on your actual JSON structure
+                        (obj["Mobile_No"] as? String)?.takeIf { it.isNotEmpty() } ?:""
+                    }
+                    else -> {
+
+                        ""
+                    }
+                }
+
+                Log.d("MOBILE NO.",mobileNo?:"")
+                return  mobileNo?:""
+
+            }
+
+
+            "EMP" ->{
+                return response?.EMP?.Mobile_Number?:"0"
+            }
+            "MISP" ->{
+                return response?.EMP?.Mobile_Number?:"0"
+            }
+
+        }
+
+        return "0"
+    }
+
+    fun getEmailId() : String {
+
+        val response = getLoginHorizonResponse()
+
+        val usertype= response?.user_type?:""
+
+        when(usertype){
+
+
+            "POSP" , "FOS" ->{
+
+                val emailID: String? = when (val obj = response?.POSP_USER) {
+                    is Map<*, *> -> {
+                        // Assume it's a Map, you can adjust this based on your actual JSON structure
+                        (obj["Email_Id"] as? String)?.takeIf { it.isNotEmpty() } ?:""
+                    }
+                    else -> {
+
+                        ""
+                    }
+                }
+
+                Log.d("User Email ID.",emailID?:"")
+                return  emailID?:""
+
+            }
+
+
+            "EMP" ->{
+                return response?.EMP?.Email_Id?:"0"
+            }
+            "MISP" ->{
+                return response?.EMP?.Email_Id?:"0"
+            }
+
+        }
+
+        return ""
+    }
+
+    fun getUserType():String{
+
+
+        val response = getLoginHorizonResponse()
+        //  val usertype= response?.user_type?:""
+
+        return response?.user_type?:""
+
+    }
+    fun getUserId() : String {
+
+        val response = getLoginHorizonResponse()
+
+        val usertype= response?.user_type?:""
+
+        when(usertype){
+
+
+            "POSP" ->{
+                return response?.EMP?.UID?:"0"
+            }
+            "FOS" ->{
+                return response?.EMP?.UID?:"0"
+            }
+
+            "EMP" ->{
+                return response?.EMP?.UID?:"0"
+            }
+            "MISP" ->{
+                return response?.EMP?.UID?:"0"
+            }
+
+        }
+
+        return "0"
+    }
+    fun getappVersionHorizon() : String {
+
+        val response = getLoginHorizonResponse()
+
+        return response?.DEVICE?.App_Version?:""
+    }
+
+    fun getdeviceIDHorizon() : String {
+
+        val response = getLoginHorizonResponse()
+
+        return response?.DEVICE?.Device_Identifier?:""
+    }
+
+    fun clear() {
+        val strToken = getToken()
+        pref.edit().clear().apply()
+        setToken(strToken)
+    }
+
+    fun saveLoginOTPResponse(  loginOTP : OtpLoginMsg?){
+
+        loginOTP?.let { response ->
+
+            val json = gson.toJson(response)
+            pref.edit().putString(LoginOTPDataKey, json).apply()
+
+        }
+
+
+    }
+
+    fun getLoginOTPResponse() : OtpLoginMsg?  {
+
+        val loginOTP = pref.getString(LoginOTPDataKey,null)
+
+        return gson.fromJson(loginOTP,OtpLoginMsg::class.java )
+    }
+
+    fun getSSIDByOTP() : String {
+
+        val response = getLoginOTPResponse()
+
+        return response?.Ss_Id?.toString() ?:"0"
+    }
+
+    fun setToken(token: String) {
+        pref.edit()
+            .putString(IS_DEVICE_TOKEN_Login, token)
+            .apply()
+    }
+
+    fun getToken(): String {
+        return pref.getString(IS_DEVICE_TOKEN_Login, "") ?: ""
+    }
+
+//    fun setDEVICE_ID(token: String) {
+//        pref.edit()
+//            .putString(IS_DEVICE_ID, token)
+//            .apply()
+//    }
+//
+//    fun getDEVICE_ID(): String {
+//        return pref.getString(IS_DEVICE_ID, "") ?: ""
+//    }
+
+    fun setDEVICE_NAME(token: String) {
+        pref.edit()
+            .putString(IS_DEVICE_Name, token)
+            .apply()
+    }
+
+    fun getDEVICE_NAME(): String {
+        return pref.getString(IS_DEVICE_Name, "") ?: ""
+    }
+
+    // Device ID
+    fun setDeviceID(deviceID: String) {
+        editor.putString(DEVICE_ID, deviceID).apply()
+    }
+
+    fun getDeviceID(): String {
+        return pref.getString(DEVICE_ID, "") ?: ""
+    }
+
+    // App Version
+    fun setAppVersion(appVersion: String) {
+        editor.putString(APP_VERSION, appVersion).apply()
+    }
+
+    fun getAppVersion(): String {
+        return pref.getString(APP_VERSION, "") ?: ""
+    }
+
+
+
+
+    /////
+
+    fun setEnablePro_ADDSUBUSERurl(ProSignupurl: String) {
+        editor.putString(IS_ENABLE_PRO_ADDSUBUSER_URL, ProSignupurl)
+        editor.commit()
+    }
+
+    fun getEnablePro_ADDSUBUSERurl(): String {
+        return pref.getString(IS_ENABLE_PRO_ADDSUBUSER_URL, "") ?: ""
+    }
+
+
+
+    //endregion
+
+    // region UserConstant -Pb
+
+    fun saveUserConstantResponse(userConstantResponse: UserConstantResponse) {
+        val json = gson.toJson(userConstantResponse)
+        editor.putString(USER_CONSTANT_RESPONSE_KEY, json)
+        editor.apply() // Commit changes
+    }
+
+    // Retrieve UserConstantResponse from SharedPreferences
+    fun getUserConstantResponse(): UserConstantResponse? {
+        val json = pref.getString(USER_CONSTANT_RESPONSE_KEY, null)
+        return if (json != null) {
+            gson.fromJson(json, UserConstantResponse::class.java) // Convert JSON string back to UserConstantResponse
+        } else {
+            null // Return null if no data is found
+        }
+    }
+    //endregion
+
+
+    //region Store Menu Dashboard in SharedPreferences
+    fun storeMenuDashboard(menuMasterResponse: MenuMasterResponse): Boolean {
+        return try {
+            editor.apply {
+                remove(MENU_DASHBOARD)
+                putString(MENU_DASHBOARD, gson.toJson(menuMasterResponse))
+            }.commit() // commit() writes changes synchronously
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
+
+    // Retrieve Menu Dashboard from SharedPreferences
+    fun getMenuDashBoard(): MenuMasterResponse? {
+        val json = pref.getString(MENU_DASHBOARD, "")
+        return if (!json.isNullOrEmpty()) {
+            try {
+                gson.fromJson(json, MenuMasterResponse::class.java)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                null
+            }
+        } else {
+            null
+        }
+    }
+
+    //endregion
 
 }

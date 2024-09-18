@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -11,12 +12,11 @@ import android.provider.OpenableColumns
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
-import androidx.core.content.ContextCompat.getSystemService
 import com.policyboss.policybosspro.core.model.DeviceDetailEntity
 import java.io.File
 import java.io.FileOutputStream
 
-object UTILITY {
+object Utility {
 
 
       const val ErrorMessage : String = "Data Not Found.Please try Again!!"
@@ -136,6 +136,15 @@ object UTILITY {
 
 
         Toast.makeText(context, "Text copied to clipboard", Toast.LENGTH_LONG).show()
+    }
+
+
+    fun loadWebViewUrlInBrowser(context: Context, url: String) {
+        Log.d("URL", url)
+        val browserIntent = Intent(Intent.ACTION_VIEW).apply {
+            data = Uri.parse(url)
+        }
+        context.startActivity(browserIntent)
     }
 }
 

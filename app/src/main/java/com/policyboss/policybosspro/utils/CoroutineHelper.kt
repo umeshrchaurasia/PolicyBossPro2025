@@ -1,12 +1,6 @@
 package com.policyboss.policybosspro.utils
 
 import android.content.Context
-import android.util.Log
-import android.view.View
-import com.google.gson.Gson
-import com.policyboss.policybosspro.utility.UTILITY
-import kotlinx.coroutines.*
-
 
 
 class CoroutineHelper {

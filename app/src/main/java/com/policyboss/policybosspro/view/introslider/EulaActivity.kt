@@ -7,14 +7,20 @@ import android.view.View
 import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.analytics.WebEngageAnalytics
 import com.policyboss.policybosspro.databinding.ActivityEulaBinding
+import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.view.login.LoginActivity
 import com.policyboss.policybosspro.webview.MyWebViewClient
 import com.webengage.sdk.android.WebEngage
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-class EulaActivity : AppCompatActivity(), View.OnClickListener,{
+@AndroidEntryPoint
+class EulaActivity : AppCompatActivity(), View.OnClickListener{
 
     private lateinit var binding: ActivityEulaBinding
-   // private lateinit var prefManager: PrefManager   //05 temp
+
+    @Inject
+    private lateinit var prefManager: PolicyBossPrefsManager
 
     override fun onStart() {
         super.onStart()
@@ -26,8 +32,7 @@ class EulaActivity : AppCompatActivity(), View.OnClickListener,{
         binding = ActivityEulaBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //05 temp
-       // prefManager = PrefManager(this)
+
         setListener()
         setupWebView()
     }
@@ -40,8 +45,8 @@ class EulaActivity : AppCompatActivity(), View.OnClickListener,{
     override fun onClick(view: View) {
         when (view.id) {
             R.id.btnAgree -> {
-                //05 temp
-               // prefManager.setFirstTimeLaunch(false)
+
+                prefManager.setFirstTimeLaunch(false)
                 startActivity(Intent(this, LoginActivity::class.java))
                 trackEvent("I Agree")
             }

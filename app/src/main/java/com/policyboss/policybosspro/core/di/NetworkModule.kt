@@ -1,6 +1,7 @@
 package com.policyboss.policybosspro.core.di
 
-import com.policyboss.policybosspro.core.api.poilcyBossProApi
+import com.policyboss.policybosspro.core.api.poilcyBossProHomeApi
+import com.policyboss.policybosspro.core.api.poilcyBossProLoginApi
 import com.policyboss.policybosspro.utils.Constant
 import dagger.Module
 import dagger.Provides
@@ -49,8 +50,15 @@ class NetworkModule {
 
     @Singleton
     @Provides
-    fun providePolicyBossProAPI(retrofitBuilder: Retrofit.Builder, okHttpClient : OkHttpClient) : poilcyBossProApi {
+    fun providePolicyBossProLoginAPI(retrofitBuilder: Retrofit.Builder, okHttpClient : OkHttpClient) : poilcyBossProLoginApi {
 
-        return  retrofitBuilder.client(okHttpClient).build().create(poilcyBossProApi::class.java)
+        return  retrofitBuilder.client(okHttpClient).build().create(poilcyBossProLoginApi::class.java)
+    }
+
+    @Singleton
+    @Provides
+    fun providePolicyBossProHomeAPI(retrofitBuilder: Retrofit.Builder, okHttpClient : OkHttpClient) : poilcyBossProHomeApi {
+
+        return  retrofitBuilder.client(okHttpClient).build().create(poilcyBossProHomeApi::class.java)
     }
 }

@@ -3,6 +3,7 @@ package com.policyboss.policybosspro.broadcast
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.Status
@@ -12,6 +13,7 @@ class SMSReaderBroadCastReceiver : BroadcastReceiver() {
 
     interface OTPReceiveListener {
         fun onOTPReceived(otp: String?)
+        fun onOTPReceiveError(error: String)
     }
 
     private var otpListener: OTPReceiveListener? = null
@@ -20,29 +22,45 @@ class SMSReaderBroadCastReceiver : BroadcastReceiver() {
         this.otpListener = otpListener
     }
 
-
     override fun onReceive(context: Context, intent: Intent) {
-
-        if (intent.action == SmsRetriever.SMS_RETRIEVED_ACTION) {
+        if (SmsRetriever.SMS_RETRIEVED_ACTION == intent.action) {
             val extras = intent.extras
-            val status = extras!![SmsRetriever.EXTRA_STATUS] as Status?
+            val smsRetrieverStatus = getSmsRetrieverStatus(extras)
 
-            when (status!!.statusCode) {
+            when (smsRetrieverStatus?.statusCode) {
                 CommonStatusCodes.SUCCESS -> {
-                    val sms = extras[SmsRetriever.EXTRA_SMS_MESSAGE] as String?
-                    sms?.let {
-                        // val p = Pattern.compile("[0-9]+") check a pattern with only digit
-                        val p = Pattern.compile("\\d+")
-                        val m = p.matcher(it)
-                        if (m.find()) {
-                            val otp = m.group()
-                            if (otpListener != null) {
-                                otpListener!!.onOTPReceived(otp)
-                            }
-                        }
-                    }
+                    val messageContent = extras?.getString(SmsRetriever.EXTRA_SMS_MESSAGE)
+                    extractOTPFromMessage(messageContent)
+                }
+                CommonStatusCodes.TIMEOUT -> {
+                    otpListener?.onOTPReceiveError("OTP retrieval timed out")
+                }
+                else -> {
+                    otpListener?.onOTPReceiveError("OTP retrieval failed")
                 }
             }
         }
+    }
+
+    private fun getSmsRetrieverStatus(extras: android.os.Bundle?): Status? {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            extras?.getParcelable(SmsRetriever.EXTRA_STATUS, Status::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            extras?.getParcelable(SmsRetriever.EXTRA_STATUS) as? Status
+        }
+    }
+
+    private fun extractOTPFromMessage(message: String?) {
+        message?.let {
+            val otpPattern = Pattern.compile("\\d+")
+            val matcher = otpPattern.matcher(it)
+            if (matcher.find()) {
+                val otp = matcher.group()
+                otpListener?.onOTPReceived(otp)
+            } else {
+                otpListener?.onOTPReceiveError("OTP not found in the message")
+            }
+        } ?: otpListener?.onOTPReceiveError("Received message is null")
     }
 }

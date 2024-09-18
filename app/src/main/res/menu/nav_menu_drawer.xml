@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group
+        android:id="@+id/dashboard_menu_group"
+        android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_home"
+            android:icon="@drawable/home"
+            android:orderInCategory="50"
+            android:title="@string/nav_home" />
+
+        <item
+            android:id="@+id/nav_REQUEST"
+            android:icon="@drawable/ic_business_name"
+            android:orderInCategory="51"
+            android:visible="true"
+            android:title="App Code">
+
+        </item>
+        <item
+            android:id="@+id/nav_QA"
+            android:icon="@drawable/ic_business_name"
+            android:orderInCategory="53"
+            android:visible="false"
+            android:title="QA razorpay">
+
+        </item>
+
+
+
+        <item
+            android:id="@+id/nav_language"
+            android:icon="@drawable/logout"
+            android:orderInCategory="100"
+            android:title="Switch Language"
+            android:visible="false" />
+
+
+        <item
+            android:id="@+id/nav_finbox"
+            android:icon="@drawable/mps"
+            android:orderInCategory="100"
+            android:visible="false"
+            android:title="@string/nav_finbox" />
+
+
+        <item
+            android:id="@+id/nav_finperk"
+            android:icon="@drawable/ic_business_name"
+            android:orderInCategory="100"
+            android:visible="false"
+            android:title="@string/nav_finperks" />
+        <item
+            android:id="@+id/nav_festivelink"
+            android:icon="@drawable/share_data"
+            android:orderInCategory="100"
+            android:title="FESTIVE LINKS"
+            android:visible="false" />
+
+
+        <item
+            android:id="@+id/nav_insert_contact"
+            android:icon="@drawable/home"
+            android:orderInCategory="105"
+            android:title="Finmart Business Contact"
+            android:visible="false" />
+
+        <item
+            android:id="@+id/nav_myaccount_pro"
+            android:icon="@drawable/my_account"
+            android:orderInCategory="200"
+            android:title="MY ACCOUNT">
+            <menu>
+                <item
+                    android:id="@+id/nav_myaccount"
+                    android:icon="@drawable/vector_person"
+                    android:orderInCategory="210"
+                    android:title="My Profile" />
+
+                <item
+                    android:id="@+id/nav_pospenrollment"
+                    android:icon="@drawable/posp_enrollment"
+                    android:orderInCategory="220"
+                    android:title="Enrol as POSP" />
+
+                <item
+                    android:id="@+id/nav_addposp"
+                    android:icon="@drawable/posp_enrollment"
+                    android:orderInCategory="230"
+                    android:title="Add Sub User" />
+
+                <item
+                    android:id="@+id/nav_raiseTicket"
+                    android:icon="@drawable/posp_enrollment"
+                    android:orderInCategory="240"
+                    android:title="Raise a Ticket" />
+
+                <item
+                    android:id="@+id/nav_sendSmsTemplate"
+                    android:icon="@drawable/mps"
+                    android:orderInCategory="242"
+                    android:title="Sms Templates"
+                    android:visible="false" />
+                <item
+                    android:id="@+id/nav_changepassword"
+                    android:icon="@drawable/change_password"
+                    android:orderInCategory="245"
+                    android:title="Change Password" />
+
+<!--                <item-->
+<!--                    android:id="@+id/nav_rate"-->
+<!--                    android:icon="@drawable/ic_rate"-->
+<!--                    android:orderInCategory="248"-->
+<!--                    android:title="Rate our App"-->
+<!--                    android:visible="false"/>-->
+<!--                <item-->
+<!--                    android:id="@+id/nav_rateweb"-->
+<!--                    android:icon="@drawable/ic_rate"-->
+<!--                    android:orderInCategory="248"-->
+<!--                    android:title="Web Rating"-->
+<!--                    android:visible="false" />-->
+
+            </menu>
+        </item>
+
+        <item
+            android:id="@+id/nav_Doc"
+            android:icon="@drawable/my_account"
+            android:orderInCategory="250"
+            android:visible="false"
+            android:title="My DOCUMENTS">
+            <menu>
+                <item
+                    android:id="@+id/nav_franchise1"
+                    android:icon="@drawable/agreemnet"
+                    android:orderInCategory="260"
+                    android:title="Loan Agreement"
+                    android:visible="false" />
+
+                <item
+                    android:id="@+id/nav_AppointmentLetter"
+                    android:icon="@drawable/agreemnet"
+                    android:orderInCategory="270"
+                    android:title="POSP Appointment Letter"
+                    android:visible="true" />
+
+                <item
+                    android:id="@+id/nav_Certificate"
+                    android:icon="@drawable/agreemnet"
+                    android:orderInCategory="280"
+                    android:title="POSP Application Form"
+                    android:visible="true" />
+            </menu>
+        </item>
+
+
+        <item
+            android:id="@+id/nav_TRANSACTIONS"
+            android:icon="@drawable/my_account"
+            android:orderInCategory="300"
+            android:visible="false"
+            android:title="MY TRANSACTIONS">
+            <menu>
+
+                <item
+                    android:id="@+id/nav_mybusiness_insurance"
+                    android:icon="@drawable/ic_business_name"
+                    android:orderInCategory="310"
+                    android:title="My Insurance Business"
+                    android:visible="true" />
+
+                <item
+                    android:id="@+id/nav_transactionhistory"
+                    android:icon="@drawable/vector_date"
+                    android:orderInCategory="320"
+                    android:title="My Transactions"
+                    android:visible="true" />
+
+                <item
+                    android:id="@+id/nav_MessageCentre"
+                    android:icon="@drawable/sms"
+                    android:orderInCategory="330"
+                    android:title="My Messages"
+                    android:visible="true" />
+
+                <item
+                    android:id="@+id/nav_MyAlert"
+                    android:icon="@drawable/notification_ic"
+                    android:orderInCategory="340"
+                    android:title="My Alerts"
+                    android:visible="false" />
+
+                <item
+                    android:id="@+id/nav_crnpolicy"
+                    android:icon="@drawable/insurance_policy_ic"
+                    android:orderInCategory="350"
+                    android:title="Get Policy by CRN"
+                    android:visible="false" />
+
+
+            </menu>
+        </item>
+
+
+        <item
+            android:id="@+id/nav_LEADS"
+            android:icon="@drawable/my_account"
+            android:orderInCategory="400"
+            android:title="SYNC CONTACTS">
+            <menu>
+
+                <item
+                    android:id="@+id/nav_contact"
+                    android:icon="@drawable/sync_contact_ic"
+                    android:orderInCategory="410"
+                    android:title="Sync/ReSync Now"
+                    android:visible="true" />
+                <item
+                    android:id="@+id/nav_generateLead"
+                    android:icon="@drawable/vehicledetail"
+                    android:orderInCategory="420"
+                    android:title="Generate Motor Leads" />
+
+                <item
+                    android:id="@+id/nav_scan_vehicle"
+                    android:icon="@drawable/camera_search_ic"
+                    android:orderInCategory="425"
+                    android:title="Scan Vehicle"
+                    android:visible="false" />
+
+                <item
+                    android:id="@+id/nav_sharedata1"
+                    android:icon="@drawable/share_data"
+                    android:orderInCategory="440"
+                    android:visible="false"
+                    android:title="Generate Loan Leads" />
+
+                <item
+                    android:id="@+id/nav_leaddetail"
+                    android:icon="@drawable/insurance_policy_ic"
+                    android:orderInCategory="450"
+                    android:title="Summary &amp; Dashboard"
+                    android:visible="true" />
+
+
+
+
+                <!--added temp =05-->
+                <item
+                    android:id="@+id/nav_gift"
+                    android:icon="@drawable/mps"
+                    android:orderInCategory="470"
+                    android:title="Gift Voucher"
+                    android:visible="false" />
+
+            </menu>
+        </item>
+
+
+
+
+    </group>
+
+
+
+
+    <item
+        android:id="@+id/nav_MYUtilities"
+        android:icon="@drawable/training_ic"
+        android:orderInCategory="710"
+        android:title="MY UTILITIES">
+
+    </item>
+
+    <item
+        android:id="@+id/nav_legal"
+        android:icon="@drawable/my_account"
+        android:orderInCategory="800"
+        android:title="LEGAL">
+        <menu>
+
+            <item
+                android:id="@+id/nav_disclosure"
+                android:icon="@drawable/insurance_policy_ic"
+                android:orderInCategory="810"
+                android:title="Disclosure"
+                android:visible="true" />
+            <item
+                android:id="@+id/nav_policy"
+                android:icon="@drawable/agreemnet"
+                android:orderInCategory="820"
+                android:title="Privacy Policy" />
+
+            <item
+                android:id="@+id/nav_delete"
+                android:icon="@drawable/delete"
+                android:orderInCategory="830"
+                android:title="Account-Delete" />
+
+        </menu>
+    </item>
+
+    <item
+        android:id="@+id/nav_whatsnew"
+        android:icon="@drawable/whats_new"
+        android:orderInCategory="900"
+        android:visible="false"
+        android:title="WHAT'S NEW" />
+    <item
+        android:id="@+id/nav_cobrowser"
+        android:icon="@drawable/whats_new"
+        android:orderInCategory="910"
+        android:title="Co Browser User"
+        android:visible="false" />
+    <item
+        android:id="@+id/nav_logout"
+        android:icon="@drawable/logout"
+        android:orderInCategory="10000"
+        android:title="LOG-OUT" />
+
+    <group
+        android:id="@+id/dynamic_menu"
+        android:checkableBehavior="single">
+    </group>
+</menu>

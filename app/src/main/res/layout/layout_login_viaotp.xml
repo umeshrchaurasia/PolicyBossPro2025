@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/_8dp"
+    android:padding="@dimen/_8dp"
+
+    app:cardCornerRadius="@dimen/_12dp">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/txtTextLogin"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/_16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                style="@style/TextViewStyle.Large"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:text="Verify Your Account"
+                />
+
+
+            <ImageView
+                android:id="@+id/imgClose"
+                android:visibility="visible"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_close_24"
+                android:layout_marginTop="@dimen/_8dp"
+               app:layout_constraintTop_toTopOf="parent"
+               app:layout_constraintEnd_toEndOf="parent"
+
+                />
+
+            <View
+                android:id="@+id/view7"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/gray_light"
+                app:layout_constraintTop_toBottomOf="@+id/txtTextLogin" />
+
+            <TextView
+                android:id="@+id/txtTextMesaage"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16dp"
+                android:layout_marginLeft="@dimen/_16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txtTextLogin"
+                style="@style/TextViewStyle.Large"
+                 android:textSize="17sp"
+                android:gravity="left"
+
+                android:text="Login via email id or mobile number\n or Erp Code(6 digits)"
+                />
+
+            <EditText
+                android:id="@+id/etOTP"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/_12dp"
+                android:focusableInTouchMode="true"
+                android:hint="Enter OTP"
+                android:text="9098"
+                android:inputType="number"
+                 android:maxLength="4"
+                 android:layout_marginHorizontal="@dimen/_16dp"
+                android:layout_marginTop="@dimen/_16dp"
+                android:background="@drawable/rect_lightgray_shape"
+                app:layout_constraintTop_toBottomOf="@+id/txtTextMesaage"
+
+            />
+<!--    for its backround only        android:itemBackground="@drawable/text_handle"-->
+            <com.chaos.view.PinView
+                android:id="@+id/pinview"
+                app:itemCount="4"
+                app:itemWidth="50dp"
+                app:itemHeight="50dp"
+                android:gravity="center"
+                android:layout_marginTop="20dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:itemBackground="@drawable/text_handle"
+                app:itemSpacing="@dimen/fab_margin"
+                android:textColor="@color/black"
+                android:fontFamily="@font/poppinsbold"
+                android:layout_gravity="center"
+                android:inputType="number"
+                android:cursorVisible="false"
+                app:hideLineWhenFilled="false"
+                app:itemRadius="10dp"
+                app:viewType="rectangle"
+                app:layout_constraintHorizontal_bias="0.526"
+                style="@style/PinWidget.PinView"
+                app:lineColor="@color/black"
+
+                app:layout_constraintTop_toBottomOf="@+id/txtTextMesaage"
+                android:contentDescription="otp pin"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                ></com.chaos.view.PinView>
+
+
+            <TextView
+                android:id="@+id/txtError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16dp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/pinview"
+                style="@style/TextViewStyle.Large"
+                android:layout_marginHorizontal="@dimen/_16dp"
+                android:textColor="@color/red_button"
+                android:gravity="left"
+
+                android:text=""
+                />
+            <TextView
+                android:id="@+id/txtTextDtl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txtError"
+                style="@style/TextViewStyle.Large"
+                android:layout_marginHorizontal="@dimen/_16dp"
+                android:gravity="left"
+
+                android:text=""
+                />
+
+            <TextView
+                android:visibility="visible"
+                android:id="@+id/txtcountdown_timer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:textSize="20sp"
+                android:textColor="@color/blue"
+                android:layout_gravity="center"
+                app:layout_constraintTop_toBottomOf="@+id/txtTextDtl"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:layout_marginRight="@dimen/_16dp"
+                android:text="02:00" />
+
+            <LinearLayout
+                android:id="@+id/lyPaste"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:gravity="left"
+                android:paddingLeft="@dimen/_16dp"
+                android:paddingRight="@dimen/_16dp"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@+id/txtcountdown_timer"
+                android:orientation="horizontal">
+
+                <TextView
+                    style="@style/TextViewStyle.BannerLarge"
+                    android:textSize="20sp"
+                    android:text=""
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                </TextView>
+                <ImageView
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_paste_24"
+                    />
+
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnSubmit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                style="@style/ButtonStyle"
+                app:layout_constraintStart_toStartOf="parent"
+                android:gravity="center"
+                android:text="Verify"
+                android:padding="@dimen/_12dp"
+                android:layout_marginTop="@dimen/_16dp"
+                android:layout_marginHorizontal="@dimen/_16dp"
+
+                app:layout_constraintBottom_toTopOf="@+id/txtResend"
+                app:layout_goneMarginBottom="24dp"
+                app:layout_constraintEnd_toEndOf="parent"
+
+                app:layout_constraintTop_toBottomOf="@+id/lyPaste"/>
+
+
+            <ProgressBar
+                android:id="@+id/progessBar"
+                style="?android:attr/progressBarStyle"
+
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:indeterminate="true"
+                android:visibility="gone"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintVertical_bias="0.5" />
+
+            <TextView
+                android:id="@+id/txtResend"
+                style="@style/TextViewStyle.Large"
+                android:layout_width="wrap_content"
+                android:visibility="gone"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_16dp"
+                android:layout_marginBottom="@dimen/_16dp"
+                android:gravity="center"
+                android:padding="@dimen/_12dp"
+                android:text="Resend OTP"
+                android:textColor="@color/blue"
+                android:textSize="17sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/btnSubmit"
+                app:layout_constraintStart_toStartOf="@+id/btnSubmit"
+                app:layout_constraintTop_toBottomOf="@+id/btnSubmit"
+
+                />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
+</androidx.cardview.widget.CardView>

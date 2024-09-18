@@ -7,8 +7,6 @@
     <string name="next"> NEXT</string>
     <string name="previous">Previous</string>
 
-    <string name="welcome_slide_1_text">India’s first and most comprehensive business enabling platform for Insurance advisors/Posps</string>
-
     <string name="Finmart_underline"><u>Know Your PolicyBoss Pro</u>.</string>
 
     <string name="nav_home">Home</string>
@@ -28,7 +26,64 @@
     <string name="no_internet">NO INTERNET</string>
     <string name="check_network">Check your internet connection and try again</string>
     <string name="retry">RETRY</string>
-
+    <string name="forgot_password"><u><i>Forgot Password?</i></u></string>
 
     <string name="skin_walkthrogh">Already have an account? <b>Login</b></string>
+    <string name="sell_everything_digitally">Sell everything <b>DIGITALLY !!!</b></string>
+    <string name="welcome_slide_1_text">India’s first and most comprehensive business enabling platform for Insurance advisors/Posps</string>
+    <string name="title_activity_health_check_up_list">HEALTH CHECK UP PLANS</string>
+    <string name="title_activity_early_salary">Early Salary</string>
+    <string name="mps_popup_text">Congratulations and welcome to the PolicyBoss Pro Family. As our privileged associate, you are eligible to an exclusive Magic Platinum Subscription (MPS) for </string>
+    <!--<string name="title_activity_main">ICICI Credit Card</string>-->
+    <string name="know_more_mps_desc">Magic Platinum Subscription (MPS) is an exclusive offer from Datatcomp, available to Finmart Business Associates only. In this subscrition you pay ₹
+        </string>
+
+
+    <string name="permission_required">Required Permssion to access it</string>
+    <string name="allow">ALLOW</string>
+    <string name="location_req">Required for PolicyBoss Pro to get Location </string>
+    <string name="empty_directory">Empty Directory</string>
+    <string name="NoConnection">No Internet Connection</string>
+    <string name="storage_removed">Storage was removed or unmounted.</string>
+    <string name="choose_file">Select a file</string>
+    <string name="error_selecting_file">Error selecting File</string>
+    <string name="internal_storage">Internal storage</string>
+    <string name="myaccount_update"> Please update your profile photo.</string>
+
+    <string name="oauth_note">Kindly Click on "Login via App" on PolicyBoss.com website.Please enter this App Code on PolicyBoss.com and Submit to Login.\n\n<b>This generated App Code is valid only for next 15 minutes.</b></string>
+
+    <string name="title_activity_home">Home</string>
+    <string name="camera_access_required">Camera access is required to display the camera.</string>
+
+    <string name="signup">Not a Member? <b><u>Sign up now!</u></b></string>
+    <string name="clickhere"><b><u>Click Here</u></b></string>
+    <string name="settings">please go to  <b><u>settings.</u></b></string>
+    <string name="threedots">&#8942;</string>
+    <string name="disclosure"><b><u>DISCLOSURE</u></b></string>
+
+    <string name="popup_Profile"> PROFILE PICTURE</string>
+    <string name="popup_PanCard"> FBA PAN CARD</string>
+    <string name="popup_CancelCHQ"> CANCELLED CHQ</string>
+    <string name="popup_AadharCard"> FBA AADHAR CARD</string>
+
+
+    <string name="popup1_PHOTO"> RECENT PHOTOGRAPH</string>
+    <string name="popup1_PanCard"> RECENT PAN CARD</string>
+    <string name="popup1_AadharCardFont"> RECENT AADHAR CARD FRONT</string>
+    <string name="popup1_AadharCardBack"> RECENT AADHAR CARD BACK</string>
+    <string name="popup1_CancelCHQ"> RECENT CANCELLED CHQ</string>
+    <string name="popup1_HighestEdu"> RECENT HIGHEST EDU. PROOF </string>
+
+
+    <string name="Emp_detail">Employment &amp; Income Details</string>
+
+    <string name="RM_Calling">Do you want to call/mail to your: </string>
+
+    <string name="NineHundredNinetyNine">Pro Membership(\u20B9 999)</string>
+    <string name="TwoHundredNinetyNine">Lite Membership(\u20B9 299)</string>
+    <string name="NinetyNine">Lite Membership(\u20B9 99)</string>
+
+    <string name="FM_Contact">Hello, Welcome to Finmart Whatsapp chat.\nyou can use this to communicate with us,\nto allow press Add to Contact</string>
+
+
 </resources>

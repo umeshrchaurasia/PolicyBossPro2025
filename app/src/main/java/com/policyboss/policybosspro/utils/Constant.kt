@@ -8,7 +8,7 @@ object Constant {
 
 
 
-    const val base_url = "https://horizon.policyboss.com"
+    const val base_url = "https://horizon.policyboss.com:5443"
     const val SHARED_PREF = "policybosspro_preference"
     const val token = "1234567890"
     const val TAG = "POLICYBOSS"
@@ -57,7 +57,21 @@ object Constant {
     const val PUSH_NOTITIFICATION = "demoAndroidApp_notification"
     const val   NOTIFICATION_RECEIVERNAME = "receiverName"
 
+    const val CONTACT_LOG_DataFetching = "Data is Fetching Please Wait..."
+    const val CONTACT_LOG_DataSending = "Sending Data to Server..."
 
+
+
+
+    const val   NOData = "No Data Found"
+    const val   MasterData = "Master API Failed"
+    const val   InValidUser = "User Not Found"
+    const val   InValidPass = "Invalid UserId and Password"
+    const val   ServerError = "Service Unavailable : No Data Found"
+    const val   ServerNotFound = "Service Not Found "
+    const val   InValidOTP = "Invalid OTP"
+
+    const val PERMISSION_CAMERA_STORACGE_CONSTANT = 103
 
 
 }

@@ -26,6 +26,12 @@ import android.provider.Settings
 import java.text.SimpleDateFormat
 
 
+
+fun Context.showAlert(msg: String) {
+
+    Toast.makeText(this,msg, Toast.LENGTH_SHORT).show()
+}
+
 fun Context.showSnackbar(view: View, msg: String?) {
     Snackbar.make(view, msg ?: "Something went wrong", Snackbar.LENGTH_SHORT).show()
 }

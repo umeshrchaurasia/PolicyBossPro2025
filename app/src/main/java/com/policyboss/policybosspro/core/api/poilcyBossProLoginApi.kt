@@ -15,6 +15,8 @@ import com.policyboss.policybosspro.core.response.login.LoginNewResponse_DSAS_Ho
 import com.policyboss.policybosspro.core.response.login.OtpLoginResponse
 import com.policyboss.policybosspro.core.response.login.OtpVerifyResponse
 import com.policyboss.policybosspro.core.response.login.UserNewSignUpResponse
+import com.policyboss.policybosspro.core.response.master.dynamicDashboard.MenuMasterResponse
+import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantResponse
 import com.policyboss.policybosspro.core.response.syncContact.ContactLogResponse
 import com.policyboss.policybosspro.utils.Constant
 import okhttp3.MultipartBody
@@ -30,7 +32,7 @@ import retrofit2.http.PartMap
 import retrofit2.http.Path
 import retrofit2.http.Url
 
-interface poilcyBossProApi {
+interface poilcyBossProLoginApi {
 
     @POST()
     suspend fun saveContactLead(@Url url: String, @Body body : ContactLeadRequestEntity): Response<ContactLeadResponse>
@@ -124,5 +126,7 @@ interface poilcyBossProApi {
 
     @POST("/quote/Postfm/notification-auth-token")
     suspend fun insert_notification_token(@Body body: HashMap<String,String>): Response<DevicetokenResponse?>
+
+
 
 }

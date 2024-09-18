@@ -23,7 +23,20 @@
     <color name="secondary_text_color">#9ba0a6</color>
     <color name="color_close">#757575</color>
 
+
+
     <color name="tab_color">#00476e</color>
+
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="colorWhiteFog">#F9F9F9</color>
+    <color name="color_light_grey">#D3D3D3</color>
+    <color name="color_light_grey_version">#55D3D3D3</color>
+    <color name="transparent">#00000000</color>
+    <color name="color_grey">#808080</color>
+
+    <color name="error_red">#ff8566</color>
+    <color name="default_icon_color">#ffffff</color>
+
 
 
     <color name="button_color">@color/colorPrimary</color>
