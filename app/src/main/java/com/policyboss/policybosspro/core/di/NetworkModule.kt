@@ -1,11 +1,14 @@
 package com.policyboss.policybosspro.core.di
 
+import android.content.Context
 import com.policyboss.policybosspro.core.api.poilcyBossProHomeApi
 import com.policyboss.policybosspro.core.api.poilcyBossProLoginApi
+import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utils.Constant
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -60,5 +63,12 @@ class NetworkModule {
     fun providePolicyBossProHomeAPI(retrofitBuilder: Retrofit.Builder, okHttpClient : OkHttpClient) : poilcyBossProHomeApi {
 
         return  retrofitBuilder.client(okHttpClient).build().create(poilcyBossProHomeApi::class.java)
+    }
+
+
+    @Singleton
+    @Provides
+    fun providePolicyBossPrefsManager(@ApplicationContext context: Context): PolicyBossPrefsManager {
+        return PolicyBossPrefsManager(context)
     }
 }

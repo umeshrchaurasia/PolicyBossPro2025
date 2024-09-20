@@ -104,6 +104,24 @@
         android:theme="@style/Theme.Policybossprov34"
         tools:targetApi="31">
         <activity
+            android:name=".view.incomePotential.IncomePotentialActivity"
+            android:exported="false" />
+        <activity
+            android:name=".webview.SyncWebViewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".paymentEliteplan.SyncRazorPaymentActivity"
+            android:exported="false" />
+        <activity
+            android:name=".paymentEliteplan.RazorPaymentEliteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".webview.ShareQuoteActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.syncContact.welcome.WelcomeSyncContactActivityKotlin"
+            android:exported="false" />
+        <activity
             android:name=".webview.CommonWebViewActivity"
             android:exported="false" />
         <activity

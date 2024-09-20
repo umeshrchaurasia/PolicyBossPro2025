@@ -20,7 +20,7 @@ class EulaActivity : AppCompatActivity(), View.OnClickListener{
     private lateinit var binding: ActivityEulaBinding
 
     @Inject
-    private lateinit var prefManager: PolicyBossPrefsManager
+    lateinit var prefManager: PolicyBossPrefsManager
 
     override fun onStart() {
         super.onStart()

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_marginLeft="15dp"
+        android:paddingTop="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/lyParent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/dashboard_bg"
+            android:orientation="vertical">
+
+
+
+            <TextView
+                android:id="@+id/txtHdr"
+                style="@style/TextViewStyle.Large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:layout_alignParentTop="true"
+
+                android:background="@color/header_light_text"
+                android:gravity="center"
+                android:padding="14dp"
+                android:text="Document"
+                android:textColor="@color/white"
+                android:textStyle="bold" />
+
+
+            <ImageView
+                android:id="@+id/ivDocFile"
+                android:layout_width="match_parent"
+                android:layout_height="400dp"
+
+                />
+
+
+
+            <Button
+                android:id="@+id/btnClose"
+                style="@style/ButtonStyle"
+                android:layout_marginBottom="@dimen/fab_margin"
+                android:layout_marginRight="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="@dimen/fab_margin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+
+                android:text="CLOSE" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivClose"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_alignParentRight="true"
+        android:layout_gravity="top|right"
+        android:adjustViewBounds="true"
+        android:background="@drawable/cross"
+        android:backgroundTint="@color/colorPrimary"
+        android:scaleType="center" />
+
+</RelativeLayout>

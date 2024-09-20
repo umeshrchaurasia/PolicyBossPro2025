@@ -7,13 +7,18 @@
     <string name="next"> NEXT</string>
     <string name="previous">Previous</string>
 
+    <string name="yes">Yes</string>
+    <string name="confirm">Confirm</string>
+
+
     <string name="Finmart_underline"><u>Know Your PolicyBoss Pro</u>.</string>
 
     <string name="nav_home">Home</string>
     <string name="nav_finbox">MY FINBOX</string>
     <string name="nav_finperks">FINPERKS</string>
-
-
+    <!--    //Drawer Menu -->
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
     <!--    // Dashboard Menu -->
     <string name="dash_finmart_exclusive">FINMART EXCLUSIVES</string>
     <string name="dash_private_car">PRIVATE CAR</string>

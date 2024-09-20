@@ -23,58 +23,42 @@ class DBPersistanceController @Inject constructor(
     }
 
 
-    private lateinit var dashBoardItemEntities: List<DashBoardItemEntity>
+// Function to get the insurance product language list
+    fun getInsurProductLangList(): List<DashboardMultiLangEntity> {
+        val dashboardEntities = mutableListOf<DashboardMultiLangEntity>()
 
+        // Retrieve the dashboard data from prefManager
+        val dashBoardItemEntities = prefManager.getMenuDashBoard()?.MasterData?.Dashboard
 
-
-    /*
-    fun getInsurProductList(): List<DashboardEntity> {
-        val dashboardEntities = mutableListOf<DashboardEntity>()
-
-        // region Now Insurance Dashboard Dynamically added from server
-
-
-        // Add predefined insurance products
-        dashboardEntities.addAll(listOf(
-            DashboardEntity("INSURANCE", 1, "PRIVATE CAR",
-                "Best quotes for Private Car Insurance of your customers with instant policy.",
-                R.drawable.private_car),
-            DashboardEntity("INSURANCE", 10, "TWO WHEELER",
-                "Best quotes for Two Wheeler Insurance of your customers with instant policy.",
-                R.drawable.two_wheeler),
-            DashboardEntity("INSURANCE", 12, "COMMERCIAL VEHICLE",
-                "Best quotes for CV Insurance of your customers with instant policy.",
-                R.drawable.commercial_vehicle),
-            DashboardEntity("INSURANCE", 3, "HEALTH INSURANCE",
-                "Get quotes, compare benefits and buy online from top Health Insurance companies.",
-                R.drawable.health_insurance),
-            DashboardEntity("INSURANCE", 18, "TERM INSURANCE",
-                "Get quotes, compare benefits and buy online from top Life Insurance companies.",
-                R.drawable.life_insurance),
-            DashboardEntity("INSURANCE", 16, "REQUEST OFFLINE QUOTES",
-                "Get offline quotes.", R.drawable.offlineportal)
-        ))
-        // endregion
-
-        // Add dashboard items from preferences
-        prefManager.getMenuDashBoard()?.masterData?.dashboard?.let { dashBoardItems ->
-            dashboardEntities.addAll(
-                dashBoardItems
-                    .filter { it.dashboard_type == "1" && it.isActive == 1 }
-                    .map { item ->
-                        DashboardEntity("INSURANCE", item.sequence.toInt(), item.menuname,
-                            item.description, -1).apply {
-                            serverIcon = item.iconimage
-                            link = item.link
-                        }
-                    }
-            )
+        dashBoardItemEntities?.let { items ->
+            items.filter { it.dashboard_type.equals("1")  && it.isActive == 1 }
+                .forEach { dashBoardItemEntity ->
+                val dashboardEntity = DashboardMultiLangEntity(
+                    category = "INSURANCE",
+                    sequence = dashBoardItemEntity.sequence.toInt(),
+                    menuName = dashBoardItemEntity.menuname,
+                    description = dashBoardItemEntity.description,
+                    iconResId = -1,  // Assuming no local resource, replace if needed
+                    titleKey = "Insurance",
+                    descriptionKey = ""
+                ).apply {
+                    serverIcon = dashBoardItemEntity.iconimage
+                    link = dashBoardItemEntity.link
+                    productNameFontColor = dashBoardItemEntity.ProductNameFontColor
+                    productDetailsFontColor = dashBoardItemEntity.ProductDetailsFontColor
+                    productBackgroundColor = dashBoardItemEntity.ProductBackgroundColor
+                    isExclusive = dashBoardItemEntity.IsExclusive
+                    isNewPrdClickable = dashBoardItemEntity.IsNewprdClickable
+                    isSharable = dashBoardItemEntity.IsSharable
+                    title = dashBoardItemEntity.title
+                    info = dashBoardItemEntity.info
+                    popupmsg = dashBoardItemEntity.popupmsg
+                }
+                dashboardEntities.add(dashboardEntity)
+            }
         }
 
         return dashboardEntities
     }
-
-
-     */
 
 }

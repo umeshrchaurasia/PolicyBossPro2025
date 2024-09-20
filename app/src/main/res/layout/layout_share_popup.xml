@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+    android:background="@color/white"
+    android:elevation="2dp"
+    android:orientation="vertical"
+    app:cardCornerRadius="2dp">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg_popup"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:background="@color/header_dark_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/txtTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                style="@style/TextViewStyle.Large"
+                android:layout_alignParentLeft="true"
+                android:gravity="left"
+                android:padding="15dp"
+                android:text="Share Description"
+                android:textColor="@color/white" />
+
+            <ImageView
+                android:id="@+id/ivCross"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="8dp"
+                android:src="@drawable/close"
+                android:visibility="visible" />
+
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.8dp"
+            android:background="@color/lightGrey" />
+
+        <LinearLayout
+            android:id="@+id/lyCamera"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:padding="5dp">
+
+
+
+            <TextView
+                android:id="@+id/txtMessage"
+                style="@style/TextViewStyle.Large"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:textColor="@color/header_light_text"
+                android:text=""
+                android:textStyle="normal" />
+
+
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.8dp"
+            android:background="@color/lightGrey" />
+
+       <Button
+           android:id="@+id/btnShare"
+           android:text="share"
+           android:layout_marginTop="12dp"
+           android:layout_marginBottom="12dp"
+           style="@style/ButtonStyle"
+           android:layout_gravity="center"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"/>
+
+
+
+    </LinearLayout>
+
+
+</androidx.cardview.widget.CardView>

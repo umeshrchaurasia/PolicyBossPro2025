@@ -5,16 +5,28 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageInfo
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import com.policyboss.policybosspro.core.model.DeviceDetailEntity
+import okhttp3.MediaType
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 object Utility {
 
@@ -79,6 +91,7 @@ object Utility {
     }
 
 
+    @JvmStatic
     fun getDeviceDetail(context: Context) : DeviceDetailEntity {
 
       return  DeviceDetailEntity(
@@ -93,6 +106,8 @@ object Utility {
         )
     }
 
+
+    @JvmStatic
     @SuppressLint("HardwareIds")
     fun getDeviceID(context: Context): String {
         try {
@@ -106,6 +121,7 @@ object Utility {
 
     }
 
+    @JvmStatic
     @SuppressLint("HardwareIds")
     fun getDeviceName(): String {
         try {
@@ -139,6 +155,7 @@ object Utility {
     }
 
 
+    @JvmStatic
     fun loadWebViewUrlInBrowser(context: Context, url: String) {
         Log.d("URL", url)
         val browserIntent = Intent(Intent.ACTION_VIEW).apply {
@@ -146,5 +163,120 @@ object Utility {
         }
         context.startActivity(browserIntent)
     }
+
+
+    @JvmStatic
+    fun getVersionName(context: Context): String {
+        return try {
+            val pinfo: PackageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            pinfo.versionName ?: ""
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+            ""
+        }
+    }
+
+    @JvmStatic
+    fun getVersionCode(context: Context): Long {
+        return try {
+            val pinfo: PackageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                pinfo.longVersionCode
+            } else {
+                @Suppress("DEPRECATION")
+                pinfo.versionCode.toLong()
+            }
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+            0L
+        }
+    }
+
+    @JvmStatic
+    fun createDirIfNotExists(): File? {
+        val file = File(Environment.getExternalStorageDirectory(), "/PolicyBossPro")
+        if (!file.exists()) {
+            if (!file.mkdirs()) {
+                Log.e("TravellerLog", "Problem creating Image folder")
+                return null
+            }
+        }
+        return file
+    }
+
+    @JvmStatic
+    fun createShareDirIfNotExists(): File? {
+        val file = File(Environment.getExternalStorageDirectory(), "/PolicyBossPro/QUOTES")
+        if (!file.exists()) {
+            if (!file.mkdirs()) {
+                Log.e("TravellerLog", "Problem creating Quotes folder")
+                return null
+            }
+        }
+        return file
+    }
+
+    @JvmStatic
+    fun getNewFileName(name: String): String? {
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        return "$name$timeStamp.jpg"
+    }
+
+    @JvmStatic
+    fun getPdfFileName(name: String): String? {
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        return "$name$timeStamp.pdf"
+    }
+
+    @JvmStatic
+    fun getImageDirectoryPath(): String? {
+        return Environment.DIRECTORY_PICTURES + File.separator + "PolicyBossPro"
+    }
+
+
+    @JvmStatic
+    fun getCurrentMobileDateTime(): String {
+        val sdf = SimpleDateFormat("ddMMyyyy_HHmmss", Locale.getDefault())
+        return sdf.format(Date())
+    }
+
+    @JvmStatic
+    fun getMultipartImage(file: File): MultipartBody.Part {
+//        val imgBody = RequestBody.create(MediaType.parse("image/*"), file)
+//        return MultipartBody.Part.createFormData("DocFile", file.name, imgBody)
+
+        val mediaType = "image/*".toMediaTypeOrNull() // Use the new `toMediaTypeOrNull()` method
+        val imgBody = file.asRequestBody(mediaType)  // Use `asRequestBody()` extension function
+        return MultipartBody.Part.createFormData("DocFile", file.name, imgBody)
+
+    }
+
+    @JvmStatic
+    fun getMultipartImage(file: File, serverKey: String): MultipartBody.Part {
+        val mediaType = "image/*".toMediaTypeOrNull()
+        val imgBody = file.asRequestBody(mediaType)
+        return MultipartBody.Part.createFormData(serverKey, file.name, imgBody)
+    }
+
+    @JvmStatic
+    fun getMultipartPdf(file: File, fileName: String, serverKey: String): MultipartBody.Part {
+//        val pdfBody = RequestBody.create(MediaType.parse("file/*"), file)
+//        return MultipartBody.Part.createFormData(serverKey, fileName, pdfBody)
+
+        val mediaType = "application/pdf".toMediaType()  // Use correct media type for PDFs
+        val pdfBody = file.asRequestBody(mediaType)      // Create RequestBody for PDF file
+        return MultipartBody.Part.createFormData(serverKey, fileName, pdfBody)
+    }
+
+    @JvmStatic
+    fun getBodyCommon(context: Context, id: String, crn: String, fileType: String, insurerId: String): HashMap<String, String> {
+        return hashMapOf(
+            "crn" to crn,
+            "document_id" to id,
+            "insurer_id" to insurerId,
+            "document_type" to fileType
+        )
+    }
+
 }
 

@@ -1,10 +1,11 @@
 package com.policyboss.policybosspro.webview;
 
+import static com.policyboss.policybosspro.utils.FileUtilNew.generateFileName;
+
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
@@ -50,9 +51,31 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.policyboss.policybosspro.BaseActivity;
+import com.policyboss.policybosspro.BaseJavaActivity;
 import com.policyboss.policybosspro.R;
+import com.policyboss.policybosspro.core.model.sysncContact.POSPHorizonEnity;
+import com.policyboss.policybosspro.core.model.sysncContact.SyncContactEntity;
+import com.policyboss.policybosspro.core.oldWayApi.IResponseSubcriber;
+import com.policyboss.policybosspro.core.oldWayApi.controller.dynamicController.DynamicController;
+import com.policyboss.policybosspro.core.oldWayApi.controller.zoho.ZohoController;
+import com.policyboss.policybosspro.core.response.APIResponse;
+import com.policyboss.policybosspro.core.response.horizonResponse.horizonSyncDetails.HorizonsyncDetailsResponse;
+import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantEntity;
+import com.policyboss.policybosspro.core.response.raiseTicket.RaiseTicketWebDocResponse;
+import com.policyboss.policybosspro.core.response.syncContact.syncContactDetailsResponse.synctransactionDetailEntity;
+import com.policyboss.policybosspro.core.response.syncContact.syncContactDetailsResponse.synctransactionDetailReponse;
+import com.policyboss.policybosspro.core.response.webDocResponse.CommonWebDocResponse;
 import com.policyboss.policybosspro.databinding.ProgressdialogLoadingBinding;
+import com.policyboss.policybosspro.facade.PolicyBossPrefsManager;
+import com.policyboss.policybosspro.paymentEliteplan.RazorPaymentEliteActivity;
+import com.policyboss.policybosspro.paymentEliteplan.SyncRazorPaymentActivity;
+import com.policyboss.policybosspro.utility.Utility;
+import com.policyboss.policybosspro.utils.Constant;
+import com.policyboss.policybosspro.utils.DBPersistanceController;
+import com.policyboss.policybosspro.utils.FileDownloader;
+import com.policyboss.policybosspro.utils.FileUtilNew;
+import com.policyboss.policybosspro.view.home.HomeActivity;
+import com.policyboss.policybosspro.view.syncContact.welcome.WelcomeSyncContactActivityKotlin;
 import com.webengage.sdk.android.Analytics;
 import com.webengage.sdk.android.WebEngage;
 import com.webengage.sdk.android.bridge.WebEngageMobileBridge;
@@ -61,10 +84,14 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.inject.Inject;
+
+import dagger.hilt.android.AndroidEntryPoint;
 import okhttp3.MultipartBody;
 
 
-public class CommonWebViewActivity extends BaseActivity implements BaseActivity.PopUpListener, BaseActivity.WebViewPopUpListener, IResponseSubcriber {
+@AndroidEntryPoint
+public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaActivity.PopUpListener, BaseJavaActivity.WebViewPopUpListener, IResponseSubcriber {
 
     WebView webView;
     String url = "";
@@ -80,7 +107,7 @@ public class CommonWebViewActivity extends BaseActivity implements BaseActivity.
     Toolbar toolbar;
 
     // LoginResponseEntity loginResponseEntity;
-    DBPersistanceController db;
+
     UserConstantEntity userConstantEntity;
 
     SyncContactEntity syncContactEntity;
@@ -93,7 +120,9 @@ public class CommonWebViewActivity extends BaseActivity implements BaseActivity.
     Button btnSubmit;
     EditText etComment;
     ImageView ivUser, ivCross, ivProfile;
-    PrefManager prefManager;
+
+    @Inject
+    PolicyBossPrefsManager prefManager;
     String[] perms = {
             "android.permission.CAMERA",
             "android.permission.WRITE_EXTERNAL_STORAGE",
@@ -177,31 +206,11 @@ public class CommonWebViewActivity extends BaseActivity implements BaseActivity.
 
         showDialog = new Dialog(CommonWebViewActivity.this,R.style.Dialog);
 
-        db = new DBPersistanceController(this);
-        //    loginResponseEntity = db.getUserData();
-        userConstantEntity = db.getUserConstantsData();
-        prefManager = new PrefManager(this);
+
+        prefManager = new PolicyBossPrefsManager(this);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
-        //
-
-//        if (name.equals("ICICI PRUDENTIAL DOWNLOAD")
-//                || name.equals("LOAN_AGREEMENT") || name.equals("LIC Business") || name.equals("OfflineQuotes")) {
-//            // fab.setVisibility(View.VISIBLE);
-//           // fab.setVisibility(View.VISIBLE);
-//        } else {
-//           // fab.setVisibility(View.GONE);
-//        }
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//               /* Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();*/
-//
-//                downloadPdf(url, name);   //05 temp
-//            }
-//        });
 
 
 
@@ -215,25 +224,26 @@ public class CommonWebViewActivity extends BaseActivity implements BaseActivity.
         // region  Camera and Gallery Launcher
         galleryLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(), result ->  {
 
-            Intent intent = new Intent(CommonWebViewActivity.this.getApplicationContext(), UcropperActivity.class);
-
-            intent.putExtra("SendImageData",result.toString());
-
-            startActivityForResult(intent, SELECT_PICTURE);
+//            Intent intent = new Intent(CommonWebViewActivity.this.getApplicationContext(), UcropperActivity.class);
+//
+//
+//            intent.putExtra("SendImageData",result.toString());
+//
+//            startActivityForResult(intent, SELECT_PICTURE);
         });
 
         cameraLauncher = registerForActivityResult(new ActivityResultContracts.TakePicture(), result -> {
             if (result) {
                 // binding.imgProfile.setImageURI(imageUri);
 
-                if(imageUri != null){
-                    Intent intent = new Intent(CommonWebViewActivity.this.getApplicationContext(),UcropperActivity.class);
-
-                    intent.putExtra("SendImageData",imageUri.toString());
-
-
-                    startActivityForResult(intent, CAMERA_REQUEST);
-                }
+//                if(imageUri != null){
+//                    Intent intent = new Intent(CommonWebViewActivity.this.getApplicationContext(),UcropperActivity.class);
+//
+//                    intent.putExtra("SendImageData",imageUri.toString());
+//
+//
+//                    startActivityForResult(intent, CAMERA_REQUEST);
+//                }
 
             } else {
                 // Handle failure or cancellation
@@ -464,7 +474,7 @@ public class CommonWebViewActivity extends BaseActivity implements BaseActivity.
         @JavascriptInterface
         public void rating() {
 
-            FeedbackHelper.showFeedbackDialog(CommonWebViewActivity.this);
+            //FeedbackHelper.showFeedbackDialog(CommonWebViewActivity.this);
 
 
         }
@@ -529,7 +539,7 @@ public class CommonWebViewActivity extends BaseActivity implements BaseActivity.
         public void SendShareQuotePdf(String url, String shareHtml) {
 
             Intent intent = new Intent(CommonWebViewActivity.this, ShareQuoteActivity.class);
-            intent.putExtra(Constants.SHARE_WHATSAPP, "SHARE_WHATSAPP");
+            intent.putExtra(Constant.SHARE_WHATSAPP, "SHARE_WHATSAPP");
             intent.putExtra("HTML", shareHtml);
             intent.putExtra("URL", url);
             startActivity(intent);
@@ -539,28 +549,32 @@ public class CommonWebViewActivity extends BaseActivity implements BaseActivity.
 
         @JavascriptInterface
         public void AddNewMotorQuote() { //Android.AddNewMotorQuote();
-            Intent intent;
-            if (url.contains("buynowTwoWheeler")) {
-                intent = new Intent(CommonWebViewActivity.this, TwoWheelerQuoteAppActivity.class);
-            } else {
-                intent = new Intent(CommonWebViewActivity.this, InputQuoteBottmActivity.class);
-            }
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+            //05 temp
+//            Intent intent;
+//            if (url.contains("buynowTwoWheeler")) {
+//                intent = new Intent(CommonWebViewActivity.this, TwoWheelerQuoteAppActivity.class);
+//            } else {
+//                intent = new Intent(CommonWebViewActivity.this, InputQuoteBottmActivity.class);
+//            }
+//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//            startActivity(intent);
+//            finish();
         }
 
         @JavascriptInterface
         public void AddNewTermQuote() {//Android.AddNewTermQuote();
-            Intent intent;
-            intent = new Intent(CommonWebViewActivity.this, TermSelectionActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-            finish();
+
+            //05 temp
+//            Intent intent;
+//            intent = new Intent(CommonWebViewActivity.this, TermSelectionActivity.class);
+//            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+//            startActivity(intent);
+//            finish();
         }
 
         @JavascriptInterface
         public void RedirectToHomepage() {//Android.RedirectToHomepage();
+
             Intent intent = new Intent(CommonWebViewActivity.this, HomeActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
@@ -580,13 +594,7 @@ public class CommonWebViewActivity extends BaseActivity implements BaseActivity.
 
 
 
-        @JavascriptInterface
-        public void redirecthomeloan() {//Android.RedirectToHomepage();
-//            Intent intent = new Intent(CommonWebViewActivity.this, NewHomeApplicaionActivity.class);
-            //        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            //       startActivity(intent);
-            //       finish();
-        }
+
 
         @JavascriptInterface
         public void redirectbusinessloan() {//Android.RedirectToHomepage();
@@ -630,7 +638,7 @@ public class CommonWebViewActivity extends BaseActivity implements BaseActivity.
         public void copyToClipboard(String str) {
 
             if (!str.equals("")) {
-                UTILITY.copyTextToClipboard(str,CommonWebViewActivity.this);
+                Utility.copyTextToClipboard(str,CommonWebViewActivity.this);
             }
         }
 
@@ -844,7 +852,7 @@ public class CommonWebViewActivity extends BaseActivity implements BaseActivity.
     }
 
     private void requestPermission() {
-        ActivityCompat.requestPermissions(this, perms, Constants.PERMISSION_CAMERA_STORACGE_CONSTANT);
+        ActivityCompat.requestPermissions(this, perms, Constant.PERMISSION_CAMERA_STORACGE_CONSTANT);
     }
 
     @Override
@@ -852,7 +860,7 @@ public class CommonWebViewActivity extends BaseActivity implements BaseActivity.
 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
-            case Constants.PERMISSION_CAMERA_STORACGE_CONSTANT:
+            case Constant.PERMISSION_CAMERA_STORACGE_CONSTANT:
                 if (grantResults.length > 0) {
 
                     //boolean writeExternal = grantResults[0] == PackageManager.PERMISSION_GRANTED;
@@ -975,14 +983,14 @@ public class CommonWebViewActivity extends BaseActivity implements BaseActivity.
                             String sPath = sUri.getPath();
                             Log.d("URL",""+ Html.fromHtml(
                                     "<big><b>PDF Path</b></big><br>" + sPath));
-                            String path =   UTILITY.getFilePath(CommonWebViewActivity.this, sUri);
+                            String path =   Utility.getFilePath(CommonWebViewActivity.this, sUri);
                             File file = new File(path);
 
 
 
                             if (file.exists()) {
 
-                                if(UTILITY.isFileLessThan5MB(file)){
+                                if(Utility.isFileLessThan5MB(file)){
 
                                     showAlert("File is too Big, please select a file less than 5mb");
                                     return;
@@ -1002,8 +1010,8 @@ public class CommonWebViewActivity extends BaseActivity implements BaseActivity.
                                         }
                                         case "COMMON": {
 
-                                            // Change Here
-                                            body = Utility.getBody_Common(CommonWebViewActivity.this, DocCommonID, DocCommonCrn, DocCommonType, Docinsurer_id);
+
+                                            body = Utility.getBodyCommon(CommonWebViewActivity.this, DocCommonID, DocCommonCrn, DocCommonType, Docinsurer_id);
 
                                             part = Utility.getMultipartImage(file, "file_1");
 
@@ -1071,7 +1079,7 @@ public class CommonWebViewActivity extends BaseActivity implements BaseActivity.
         Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
         Uri uri = Uri.fromParts("package", getPackageName(), null);
         intent.setData(uri);
-        startActivityForResult(intent, Constants.REQUEST_PERMISSION_SETTING);
+        startActivityForResult(intent, Constant.REQUEST_PERMISSION_SETTING);
     }
 
     @Override
@@ -1152,9 +1160,11 @@ public class CommonWebViewActivity extends BaseActivity implements BaseActivity.
                     file = saveImageToStorage(mphoto, PHOTO_File);
                     // setProfilePhoto(mphoto);
 
-                    body = Utility.getBody_Common(this, DocCommonID, DocCommonCrn,DocCommonType,Docinsurer_id);
+
+                    body = Utility.getBodyCommon(this, DocCommonID, DocCommonCrn,DocCommonType,Docinsurer_id);
 
                     part = Utility.getMultipartImage(file, "file_1");
+
 
                     new ZohoController(CommonWebViewActivity.this).uploadCommonDocuments(part, body, CommonWebViewActivity.this);
 
@@ -1210,55 +1220,7 @@ public class CommonWebViewActivity extends BaseActivity implements BaseActivity.
 
         }
 
-        // region  Only For Pdf {Not working old
 
-
-//        if (requestCode == PICK_PDF_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-//
-//            final Uri uri = data.getData();
-//            // Get the File path from the Uri
-//            try {
-//
-//
-//                String path = FileUtilNew.getPath(this, uri);
-//
-//                if (!path.contains(".")) {
-//
-//                    showAlert("Only file type allowed to be uploaded are\n(Image,Docs,PDF,Excel & Text.)");
-//                    return;
-//                }
-//                String extension = path.substring(path.lastIndexOf(".")).toLowerCase();
-//                if (extension.contains("pdf") || extension.contains("xls") || extension.contains("xlsx") || extension.contains("txt") || extension.contains("doc")
-//                        || extension.contains("docs") || extension.contains("jpeg") || extension.contains("jpg") || extension.contains("png")) {
-//
-//
-//                    File pdfFile = new File(path);
-//                    if (pdfFile.exists()) {
-//                        showDialog();
-//
-//
-//                        part = Utility.getMultipartPdf(pdfFile, PHOTO_File, "doc_type");
-//                        new ZohoController(this).uploadRaiseTicketDocWeb(part, this);
-//
-//                    } else {
-//                        showAlert("Select file from File Manager.");
-//                    }
-//                } else {
-//
-//                    showAlert("Only file type allowed to be uploaded are\n(Image,Docs,PDF,Excel & Text.)");
-//                }
-//
-//
-//            } catch (Exception ex) {
-//
-//                showAlert("Select file from File Manager.");
-//            }
-//        } else {
-//
-//
-//        }
-
-        //endregion
 
         // Below For Cropping The Camera Image
         //     if (requestCode == CAMERA_REQUEST && resultCode == RESULT_OK) {
@@ -1449,7 +1411,7 @@ public class CommonWebViewActivity extends BaseActivity implements BaseActivity.
     public void OnFailure(Throwable t) {
 
         cancelDialogMain();
-        Log.d(Constants.TAG, t.getMessage() );
+        Log.d(Constant.TAG, t.getMessage() );
         //  Toast.makeText(CommonWebViewActivity.this, "Error :" + t.getMessage(), Toast.LENGTH_SHORT).show();
     }
 

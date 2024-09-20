@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.policyboss.policybosspro.core.APIState
+import com.policyboss.policybosspro.core.model.homeDashboard.DashboardMultiLangEntity
 import com.policyboss.policybosspro.core.repository.homeRepository.HomeRepository
 import com.policyboss.policybosspro.core.response.master.MasterDataCombine
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
@@ -87,6 +88,44 @@ class HomeViewModel @Inject constructor(
         }
 
     }
+
+   fun getInsurProductLangList(): List<DashboardMultiLangEntity> {
+        val dashboardEntities = mutableListOf<DashboardMultiLangEntity>()
+
+        // Retrieve the dashboard data from prefManager
+        val dashBoardItemEntities = prefManager.getMenuDashBoard()?.MasterData?.Dashboard
+
+        dashBoardItemEntities?.let { items ->
+            items.filter { it.dashboard_type.equals("1")  && it.isActive == 1 }
+                .forEach { dashBoardItemEntity ->
+                    val dashboardEntity = DashboardMultiLangEntity(
+                        category = "INSURANCE",
+                        sequence = dashBoardItemEntity.sequence.toInt(),
+                        menuName = dashBoardItemEntity.menuname,
+                        description = dashBoardItemEntity.description,
+                        iconResId = -1,  // Assuming no local resource, replace if needed
+                        titleKey = "Insurance",
+                        descriptionKey = ""
+                    ).apply {
+                        serverIcon = dashBoardItemEntity.iconimage
+                        link = dashBoardItemEntity.link
+                        productNameFontColor = dashBoardItemEntity.ProductNameFontColor
+                        productDetailsFontColor = dashBoardItemEntity.ProductDetailsFontColor
+                        productBackgroundColor = dashBoardItemEntity.ProductBackgroundColor
+                        isExclusive = dashBoardItemEntity.IsExclusive
+                        isNewPrdClickable = dashBoardItemEntity.IsNewprdClickable
+                        isSharable = dashBoardItemEntity.IsSharable
+                        title = dashBoardItemEntity.title
+                        info = dashBoardItemEntity.info
+                        popupmsg = dashBoardItemEntity.popupmsg
+                    }
+                    dashboardEntities.add(dashboardEntity)
+                }
+        }
+
+        return dashboardEntities
+    }
+
 
     fun getUserConstant(appVersion: String, deviceCode: String) = viewModelScope.launch {
 

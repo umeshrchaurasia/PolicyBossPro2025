@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_sales"
+        android:icon="@drawable/sales_material_icon"
+        android:title="CUSTOMER COMM." />
+
+    <item
+        android:id="@+id/nav_pending"
+        android:icon="@drawable/pending_cases_icon"
+        android:title="PENDING CASE" />
+
+    <item
+        android:id="@+id/nav_knowledge"
+        android:icon="@drawable/knowledge_guru_icon"
+        android:title="KNOWLEDGE GURU" />
+
+    <!--<item-->
+    <!--android:id="@+id/nav_notification"-->
+    <!--android:icon="@drawable/camera_icon"-->
+    <!--android:title="notification" />-->
+
+</menu>

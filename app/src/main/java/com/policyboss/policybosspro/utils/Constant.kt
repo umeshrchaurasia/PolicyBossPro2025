@@ -46,6 +46,7 @@ object Constant {
     const val lastWeek = "Last Week"
     const val thisMonth = "This Month"
     const val lastMonth = "Last Month"
+    const val SHARE_WHATSAPP = "sharewhatsapp"
 
 
 
@@ -72,6 +73,7 @@ object Constant {
     const val   InValidOTP = "Invalid OTP"
 
     const val PERMISSION_CAMERA_STORACGE_CONSTANT = 103
+    const val REQUEST_PERMISSION_SETTING = 101
 
 
 }

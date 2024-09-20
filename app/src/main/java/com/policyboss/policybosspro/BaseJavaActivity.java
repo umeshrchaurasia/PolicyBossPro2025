@@ -50,6 +50,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
 
+import com.policyboss.policybosspro.facade.PolicyBossPrefsManager;
+import com.policyboss.policybosspro.utility.Utility;
+import com.policyboss.policybosspro.utils.DBPersistanceController;
+import com.policyboss.policybosspro.view.login.LoginActivity;
+import com.policyboss.policybosspro.view.syncContact.welcome.WelcomeSyncContactActivityKotlin;
+import com.policyboss.policybosspro.webview.CommonWebViewActivity;
 
 import org.json.JSONObject;
 
@@ -70,8 +76,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-
-
+import com.policyboss.policybosspro.BuildConfig;
 
 public class BaseJavaActivity extends AppCompatActivity {
 
@@ -95,6 +100,7 @@ public class BaseJavaActivity extends AppCompatActivity {
     Dialog webviewDialog;
     Dialog webviewDialog_mrk;
 
+    PolicyBossPrefsManager prefManager ;
     public String getDateFromAge(int age) {
 
         Calendar cal = Calendar.getInstance();
@@ -178,7 +184,7 @@ public class BaseJavaActivity extends AppCompatActivity {
     }
 
     public void dialogLogout(final Context context) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(BaseJavaActivity.this);
         builder.setTitle("");
         builder.setMessage("Do you really want to logout?");
         builder.setCancelable(false);
@@ -188,15 +194,15 @@ public class BaseJavaActivity extends AppCompatActivity {
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.cancel();
-                        new PrefManager(context).clearAll();
-                        new DBPersistanceController(context).logout();
+                        //05 temp
+                        new PolicyBossPrefsManager(context).clearAll();
 
 
-                        Intent intent = new Intent(context, LoginNewActivity.class);
+
+                        Intent intent = new Intent(context, LoginActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         startActivity(intent);
                         finish();
-                      //  new TrackingController(context).sendData(new TrackingRequestEntity(new TrackingData("Logout : Logout button in menu "), Constants.LOGOUT), null);
 
                     }
                 });
@@ -214,7 +220,7 @@ public class BaseJavaActivity extends AppCompatActivity {
     }
 
     public void dialogExit() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(BaseJavaActivity.this);
         builder.setTitle("Exit");
         builder.setMessage("Do you want to exit the application?");
         builder.setCancelable(false);
@@ -250,10 +256,6 @@ public class BaseJavaActivity extends AppCompatActivity {
 
         try{
             // Initialize Realm
-            Realm.init(BaseActivity.this);
-            // Get a Realm instance for this thread
-            realm = Realm.getDefaultInstance();
-            webviewDialog_mrk = new Dialog(BaseActivity.this);
 
         }catch ( Exception ex){
 
@@ -299,7 +301,7 @@ public class BaseJavaActivity extends AppCompatActivity {
     }
 
     protected void showDialog() {
-//        dialog = ProgressDialog.show(BaseActivity.this, "", "Loading...", true);
+//        dialog = ProgressDialog.show(BaseJavaActivity.this, "", "Loading...", true);
         showDialog("Loading...");
 
     }
@@ -319,10 +321,10 @@ public class BaseJavaActivity extends AppCompatActivity {
     protected void showDialog(String msg, Context context) {
         try {
                 if (dialog == null)
-                    dialog = ProgressDialog.show(BaseActivity.this, "", msg, true);
+                    dialog = ProgressDialog.show(BaseJavaActivity.this, "", msg, true);
                 else {
                     if (!dialog.isShowing())
-                        dialog = ProgressDialog.show(BaseActivity.this, "", msg, true);
+                        dialog = ProgressDialog.show(BaseJavaActivity.this, "", msg, true);
                 }
              }
         catch (Exception e) {
@@ -335,11 +337,11 @@ public class BaseJavaActivity extends AppCompatActivity {
         try {
 
             if (dialog == null)
-                dialog = ProgressDialog.show(BaseActivity.this, "", msg, true);
+                dialog = ProgressDialog.show(BaseJavaActivity.this, "", msg, true);
             else {
                 if (!dialog.isShowing())
 
-                    dialog = ProgressDialog.show(BaseActivity.this, "", msg, true);
+                    dialog = ProgressDialog.show(BaseJavaActivity.this, "", msg, true);
             }
         }
         catch (Exception e) {
@@ -377,81 +379,7 @@ public class BaseJavaActivity extends AppCompatActivity {
             Toast.makeText(this, "Invalid Number", Toast.LENGTH_SHORT).show();
         }
 
-//        if (ActivityCompat.checkSelfPermission(BaseActivity.this, permissionsRequired[0]) != PackageManager.PERMISSION_GRANTED) {
-//
-//            if (ActivityCompat.shouldShowRequestPermissionRationale(BaseActivity.this, permissionsRequired[0])) {
-//                //Show Information about why you need the permission
-//                ActivityCompat.requestPermissions(BaseActivity.this, permissionsRequired, Constants.PERMISSION_CALLBACK_CONSTANT);
-//
-//            } else {
-//                //Previously Permission Request was cancelled with 'Dont Ask Again',
-//                // Redirect to Settings after showing Information about why you need the permission
-//                try {
-//                    android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(BaseActivity.this);
-//                    builder.setTitle("Need Call Permission");
-//
-//                    builder.setMessage("This app needs Call permission.");
-//                    String positiveText = "GRANT";
-//                    String NegativeText = "CANCEL";
-//                    builder.setPositiveButton(positiveText,
-//                            new DialogInterface.OnClickListener() {
-//                                @Override
-//                                public void onClick(DialogInterface dialog, int which) {
-//
-//                                    if (permissionListener != null)
-//                                        dialog.dismiss();
-//
-//                                    /////
-//
-//                                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-//                                    Uri uri = Uri.fromParts("package", getPackageName(), null);
-//                                    intent.setData(uri);
-//                                    startActivityForResult(intent, Constants.REQUEST_PERMISSION_SETTING);
-//
-//
-//                                }
-//                            });
-//
-//                    builder.setNegativeButton(NegativeText,
-//                            new DialogInterface.OnClickListener() {
-//                                @Override
-//                                public void onClick(DialogInterface dialog, int which) {
-//                                    dialog.dismiss();
-//                                }
-//                            });
-//                    final android.support.v7.app.AlertDialog dialog = builder.create();
-//                    dialog.setCancelable(false);
-//                    dialog.setCanceledOnTouchOutside(false);
-//                    dialog.show();
-//                } catch (Exception ex) {
-//                    Toast.makeText(this, "Please try again..", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        } else {
-//
-//            try {
-//                mobNumber = mobNumber.replaceAll("\\s", "");
-//                mobNumber = mobNumber.replaceAll("\\+", "");
-//                mobNumber = mobNumber.replaceAll("-", "");
-//                mobNumber = mobNumber.replaceAll(",", "");
-//                Intent callIntent = new Intent(Intent.ACTION_CALL);
-//                callIntent.setData(Uri.parse("tel:" + mobNumber));
-//                if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
-//                    // TODO: Consider calling
-//                    //    ActivityCompat#requestPermissions
-//                    // here to request the missing permissions, and then overriding
-//                    //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-//                    //                                          int[] grantResults)
-//                    // to handle the case where the user grants the permission. See the documentation
-//                    // for ActivityCompat#requestPermissions for more details.
-//                    return;
-//                }
-//                startActivity(callIntent);
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//                Toast.makeText(this, "Invalid Number", Toast.LENGTH_SHORT).show();
-//            }
-//        }
+
     }
 
     public void composeEmail(String addresses, String subject) {
@@ -644,7 +572,7 @@ public class BaseJavaActivity extends AppCompatActivity {
             out.close();
 
             //  Uri screenshotUri = Uri.fromFile(file);
-            Uri screenshotUri = FileProvider.getUriForFile(BaseActivity.this,
+            Uri screenshotUri = FileProvider.getUriForFile(BaseJavaActivity.this,
                     getString(R.string.file_provider_authority),
                     file);
 
@@ -946,7 +874,7 @@ public class BaseJavaActivity extends AppCompatActivity {
                 file = new File(imagesDir, "PolicyBossPro_product" + ".jpg");
                 fos = new FileOutputStream(file);
 
-                screenshotUri = FileProvider.getUriForFile(BaseActivity.this,
+                screenshotUri = FileProvider.getUriForFile(BaseJavaActivity.this,
                         getString(R.string.file_provider_authority),
                         file);
 
@@ -1013,7 +941,7 @@ public class BaseJavaActivity extends AppCompatActivity {
         try {
             File outputFile = new File(Environment.getExternalStorageDirectory(), "/FINMART/QUOTES/" + pdfFileName + ".pdf");
 
-            Uri uri = FileProvider.getUriForFile(BaseActivity.this,
+            Uri uri = FileProvider.getUriForFile(BaseJavaActivity.this,
                     getString(R.string.file_provider_authority),
                     outputFile);
             //Uri uri = Uri.fromFile(outputFile);
@@ -1263,7 +1191,7 @@ public class BaseJavaActivity extends AppCompatActivity {
     public void openPopUp(final View view, String title, String desc, String positiveButtonName, boolean isCancelable) {
         try {
             final Dialog dialog;
-            dialog = new Dialog(BaseActivity.this);
+            dialog = new Dialog(BaseJavaActivity.this);
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             dialog.setContentView(R.layout.layout_common_popup);
 
@@ -1310,7 +1238,7 @@ public class BaseJavaActivity extends AppCompatActivity {
 
     public void showAlert(String strBody) {
         try {
-            AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(BaseJavaActivity.this);
             builder.setTitle("PolicyBossPro");
 
             builder.setMessage(strBody);
@@ -1332,57 +1260,9 @@ public class BaseJavaActivity extends AppCompatActivity {
         }
     }
 
-    public void setLanguageFont(Context mContext, String langType, MenuItem mi) {
-
-        Typeface typeface = Typeface.createFromAsset(mContext.getAssets(), "fonts/english.ttf");
-        SpannableString mNewTitle = new SpannableString(mi.getTitle());
-
-
-        switch (langType) {
-
-            case "English":
-                // English
-                typeface = Typeface.createFromAsset(mContext.getAssets(),
-                        "fonts/english.ttf");
-                break;
-
-            case "Hindi":
-//                typeface = Typeface.createFromAsset(mContext.getAssets(),
-//                        "fonts/hindi.ttf");
-
-                typeface = Typeface.createFromAsset(mContext.getAssets(),
-                        "fonts/aparaj.ttf");
-                break;
-
-            case "Marathi":
-                typeface = Typeface.createFromAsset(mContext.getAssets(),
-                        "fonts/marathi.ttf");
-                break;
-
-            case "Gujrathi":
-                typeface = Typeface.createFromAsset(mContext.getAssets(),
-                        "fonts/gujrati.ttf");
-                break;
-
-
-            default:
-                typeface = Typeface.createFromAsset(mContext.getAssets(),
-                        "fonts/english.ttf");
-        }
-
-
-        mNewTitle.setSpan(new CustomTypefaceSpan("", typeface), 0, mNewTitle.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-        mi.setTitle(mNewTitle);
-
-
-        /////////////////////////////////////////////////////////////////////////////////////////////
-
-    }
-
-
     public void permissionAlert(final View view, String Title, String strBody) {
         try {
-            AlertDialog.Builder builder = new AlertDialog.Builder(BaseActivity.this);
+            AlertDialog.Builder builder = new AlertDialog.Builder(BaseJavaActivity.this);
             builder.setTitle(Title);
 
             builder.setMessage(strBody);
@@ -1423,7 +1303,7 @@ public class BaseJavaActivity extends AppCompatActivity {
         try {
 
 
-            webviewDialog = new Dialog(BaseActivity.this);
+            webviewDialog = new Dialog(BaseJavaActivity.this);
             webviewDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
             webviewDialog.setContentView(R.layout.layout_common_webview_popup);
 
@@ -1573,7 +1453,7 @@ public class BaseJavaActivity extends AppCompatActivity {
         public void synccontacts() {
             //Get the string value to process
             //shareQuote();
-            startActivity(new Intent(BaseActivity.this, WelcomeSyncContactActivityKotlin.class));
+            startActivity(new Intent(BaseJavaActivity.this, WelcomeSyncContactActivityKotlin.class));
         }
 
         @JavascriptInterface
@@ -1581,9 +1461,9 @@ public class BaseJavaActivity extends AppCompatActivity {
             //Get the string value to process
             //shareQuote();
 
-            UserConstantEntity userConstantEntity =    new DBPersistanceController(BaseActivity.this).getUserConstantsData();
-            startActivity(new Intent(BaseActivity.this, CommonWebViewActivity.class) // .putExtra("URL", "https://bo.magicfinmart.com/motor-lead-details/" + String.valueOf(loginResponseEntity.getFBAId()))
-                    .putExtra("URL", "" + userConstantEntity.getLeadDashUrl())
+            PolicyBossPrefsManager prefManager  =    new PolicyBossPrefsManager(BaseJavaActivity.this);
+            startActivity(new Intent(BaseJavaActivity.this, CommonWebViewActivity.class) // .putExtra("URL", "https://bo.magicfinmart.com/motor-lead-details/" + String.valueOf(loginResponseEntity.getFBAId()))
+                    .putExtra("URL", "" + prefManager.getLeadDashUrl())
                     .putExtra("NAME", "" + "Sync Contact DashBoard")
                     .putExtra("TITLE", "" + "Sync Contact DashBoard"));
         }
@@ -1593,15 +1473,17 @@ public class BaseJavaActivity extends AppCompatActivity {
         public void incomePotential() {
             //Get the string value to process
             //shareQuote();
-            startActivity(new Intent(BaseActivity.this, IncomePotentialActivity.class));
+            //05 temp
+           // startActivity(new Intent(BaseJavaActivity.this, IncomePotentialActivity.class));
         }
 
         @JavascriptInterface
         public void incomeCalculator() {
             //Get the string value to process
             //shareQuote();
-            startActivity(new Intent(BaseActivity.this, IncomePotentialActivity.class));
-            // startActivity(new Intent(BaseActivity.this, IncomeCalculatorActivity.class));
+            // //05 temp
+           // startActivity(new Intent(BaseJavaActivity.this, IncomePotentialActivity.class));
+            // startActivity(new Intent(BaseJavaActivity.this, IncomeCalculatorActivity.class));
         }
 
         @JavascriptInterface
@@ -1612,7 +1494,7 @@ public class BaseJavaActivity extends AppCompatActivity {
 
         @JavascriptInterface
         public void callPDF(String url) {
-            startActivity(new Intent(BaseActivity.this, CommonWebViewActivity.class)
+            startActivity(new Intent(BaseJavaActivity.this, CommonWebViewActivity.class)
                     .putExtra("URL", url)
                     .putExtra("NAME", "LIC Business")
                     .putExtra("TITLE", "LIC Business"));
@@ -1620,7 +1502,7 @@ public class BaseJavaActivity extends AppCompatActivity {
 
         @JavascriptInterface
         public void callPDFCREDIT(String url) {
-            startActivity(new Intent(BaseActivity.this, CommonWebViewActivity.class)
+            startActivity(new Intent(BaseJavaActivity.this, CommonWebViewActivity.class)
                     .putExtra("URL", url)
                     .putExtra("NAME", "FREE CREDIT REPORT")
                     .putExtra("TITLE", "LIC FREE CREDIT REPORT"));
@@ -1634,10 +1516,11 @@ public class BaseJavaActivity extends AppCompatActivity {
                 webviewDialog.dismiss();
             }
 
-            if(mReal==null)
-            {  mReal = new DBPersistanceController(BaseActivity.this);  }
+            if(prefManager==null)
+            {
+                prefManager = new PolicyBossPrefsManager(BaseJavaActivity.this);  }
 
-            String motorUrl = mReal.getUserConstantsData().getFourWheelerUrl();
+            String motorUrl = prefManager.getFourWheelerUrl();
 
             String ipaddress = "0.0.0.0";
             try {
@@ -1647,23 +1530,23 @@ public class BaseJavaActivity extends AppCompatActivity {
             }
 
             //fetching parent ss_id in case of switch user
-            Map<String, String> map = (BaseActivity.this).loadMap();
-            String parent_ssid = "";
-            if (map.size() > 0) {
-                parent_ssid = map.get("Parent_POSPNo");
-            }
+//            Map<String, String> map = (BaseJavaActivity.this).loadMap();
+//            String parent_ssid = "";
+//            if (map.size() > 0) {
+//                parent_ssid = map.get("Parent_POSPNo");
+//            }
 
 
             //&ip_address=10.0.3.64&mac_address=10.0.3.64&app_version=2.2.0&product_id=1
             String append = "&ip_address=" + ipaddress + "&mac_address=" + ipaddress
                     + "&app_version=policyboss-" + BuildConfig.VERSION_NAME
-                    + "&device_id=" + Utility.getDeviceId(BaseActivity.this)
+                    + "&device_id=" + Utility.getDeviceID(BaseJavaActivity.this)
                     + "&product_id=1&login_ssid=" + parent_ssid;
             motorUrl = motorUrl + append;
 
 
 
-            startActivity(new Intent(BaseActivity.this, CommonWebViewActivity.class)
+            startActivity(new Intent(BaseJavaActivity.this, CommonWebViewActivity.class)
                     .putExtra("URL", motorUrl)
                     .putExtra("NAME", "Motor Insurance")
                     .putExtra("TITLE", "Motor Insurance"));
@@ -1675,10 +1558,13 @@ public class BaseJavaActivity extends AppCompatActivity {
             if(webviewDialog!= null && webviewDialog.isShowing()){
                 webviewDialog.dismiss();
             }
-            if(mReal==null)
-            {  mReal = new DBPersistanceController(BaseActivity.this);  }
+            if(prefManager==null)
+            {
+                prefManager = new PolicyBossPrefsManager(BaseJavaActivity.this);
 
-            String motorUrl = mReal.getUserConstantsData().getTwoWheelerUrl();
+            }
+
+            String motorUrl = prefManager.getTwoWheelerUrl();
 
             String ipaddress = "0.0.0.0";
             try {
@@ -1688,22 +1574,22 @@ public class BaseJavaActivity extends AppCompatActivity {
             }
 
             //fetching parent ss_id in case of switch user
-            Map<String, String> map = (BaseActivity.this).loadMap();
-            String parent_ssid = "";
-            if (map.size() > 0) {
-                parent_ssid = map.get("Parent_POSPNo");
-            }
+//            Map<String, String> map = (BaseJavaActivity.this).loadMap();
+//            String parent_ssid = "";
+//            if (map.size() > 0) {
+//                parent_ssid = map.get("Parent_POSPNo");
+//            }
 
 
             //&ip_address=10.0.3.64&mac_address=10.0.3.64&app_version=2.2.0&product_id=1
             String append = "&ip_address=" + ipaddress + "&mac_address=" + ipaddress
                     + "&app_version=policyboss-" + BuildConfig.VERSION_NAME
-                    + "&device_id=" + Utility.getDeviceId(BaseActivity.this)
+                    + "&device_id=" +Utility.getDeviceID(BaseJavaActivity.this)
                     + "&product_id=10&login_ssid=" + parent_ssid;
             motorUrl = motorUrl + append;
 
 
-            startActivity(new Intent(BaseActivity.this, CommonWebViewActivity.class)
+            startActivity(new Intent(BaseJavaActivity.this, CommonWebViewActivity.class)
                     .putExtra("URL", motorUrl)
                     .putExtra("NAME", "Two Wheeler Insurance")
                     .putExtra("TITLE", "Two Wheeler Insurance"));
@@ -1716,10 +1602,12 @@ public class BaseJavaActivity extends AppCompatActivity {
             if(webviewDialog!= null && webviewDialog.isShowing()){
                 webviewDialog.dismiss();
             }
-            if(mReal==null)
-            {  mReal = new DBPersistanceController(BaseActivity.this);  }
+            if(prefManager==null)
+            {
+                prefManager = new PolicyBossPrefsManager(BaseJavaActivity.this);
 
-            String cvUrl = mReal.getUserConstantsData().getCVUrl();
+            }
+            String cvUrl = prefManager.getCVUrl();
 
             String ipaddress = "0.0.0.0";
             try {
@@ -1729,22 +1617,22 @@ public class BaseJavaActivity extends AppCompatActivity {
             }
 
             //fetching parent ss_id in case of switch user
-            Map<String, String> map = (BaseActivity.this).loadMap();
-            String parent_ssid = "";
-            if (map.size() > 0) {
-                parent_ssid = map.get("Parent_POSPNo");
-            }
+//            Map<String, String> map = (BaseJavaActivity.this).loadMap();
+//            String parent_ssid = "";
+//            if (map.size() > 0) {
+//                parent_ssid = map.get("Parent_POSPNo");
+//            }
 
 
             //&ip_address=10.0.3.64&mac_address=10.0.3.64&app_version=2.2.0&product_id=1
             String append = "&ip_address=" + ipaddress + "&mac_address=" + ipaddress
                     + "&app_version=policyboss-" + BuildConfig.VERSION_NAME
-                    + "&device_id=" + Utility.getDeviceId(BaseActivity.this)
+                    + "&device_id=" + Utility.getDeviceID(BaseJavaActivity.this)
                     + "&product_id=12&login_ssid=" + parent_ssid;
             cvUrl = cvUrl + append;
 
 
-            startActivity(new Intent(BaseActivity.this, CommonWebViewActivity.class)
+            startActivity(new Intent(BaseJavaActivity.this, CommonWebViewActivity.class)
                     .putExtra("URL", cvUrl)
                     .putExtra("NAME", "Commercial Vehicle Insurance")
                     .putExtra("TITLE", "Commercial Vehicle Insurance"));
@@ -1758,11 +1646,14 @@ public class BaseJavaActivity extends AppCompatActivity {
                 webviewDialog.dismiss();
             }
 
-            if(mReal==null)
-            {  mReal = new DBPersistanceController(BaseActivity.this);  }
+            if(prefManager==null)
+            {
+                prefManager = new PolicyBossPrefsManager(BaseJavaActivity.this);
+
+            }
 
 
-            String healthUrl = mReal.getUserConstantsData().getHealthurl();
+            String healthUrl = prefManager.getHealthurl();
 
             String ipaddress = "0.0.0.0";
             try {
@@ -1772,23 +1663,23 @@ public class BaseJavaActivity extends AppCompatActivity {
             }
 
             //fetching parent ss_id in case of switch user
-            Map<String, String> map = (BaseActivity.this).loadMap();
-            String parent_ssid = "";
-            if (map.size() > 0) {
-                parent_ssid = map.get("Parent_POSPNo");
-            }
+//            Map<String, String> map = (BaseJavaActivity.this).loadMap();
+//            String parent_ssid = "";
+//            if (map.size() > 0) {
+//                parent_ssid = map.get("Parent_POSPNo");
+//            }
 
 
             //&ip_address=10.0.3.64&mac_address=10.0.3.64&app_version=2.2.0&product_id=1
 
             String append = "&ip_address=" + ipaddress
-                    + "&app_version=policyboss-" + Utility.getVersionName(BaseActivity.this)
-                    + "&device_id=" + Utility.getDeviceId(BaseActivity.this) + "&login_ssid=" + parent_ssid;
+                    + "&app_version=policyboss-" + Utility.getVersionName(BaseJavaActivity.this)
+                    + "&device_id=" + Utility.getDeviceID(BaseJavaActivity.this) + "&login_ssid=" + parent_ssid;
 
             healthUrl = healthUrl + append;
 
 
-            startActivity(new Intent(BaseActivity.this, CommonWebViewActivity.class)
+            startActivity(new Intent(BaseJavaActivity.this, CommonWebViewActivity.class)
                     .putExtra("URL", healthUrl)
                     .putExtra("NAME", "Health Insurance")
                     .putExtra("TITLE", "Health Insurance"));
@@ -1796,39 +1687,45 @@ public class BaseJavaActivity extends AppCompatActivity {
         }
         @JavascriptInterface
         public void showicici() {
-            if(webviewDialog!= null && webviewDialog.isShowing()){
-                webviewDialog.dismiss();
-            }
-            Intent intent = new Intent(BaseActivity.this, IciciTermActivity.class);
-            intent.putExtra(TERM_FOR_INPUT_FRAGMENT, 39);
-            //intent.putExtra(TERM_INPUT_FRAGMENT, null);
-            startActivity(intent);
+
+            //05 temp
+//            if(webviewDialog!= null && webviewDialog.isShowing()){
+//                webviewDialog.dismiss();
+//            }
+//            Intent intent = new Intent(BaseJavaActivity.this, IciciTermActivity.class);
+//            intent.putExtra(TERM_FOR_INPUT_FRAGMENT, 39);
+//            //intent.putExtra(TERM_INPUT_FRAGMENT, null);
+//            startActivity(intent);
         }
         @JavascriptInterface
         public void showhdfc() {
-            if(webviewDialog!= null && webviewDialog.isShowing()){
-                webviewDialog.dismiss();
-            }
-            Intent intent = new Intent(BaseActivity.this, HdfcTermActivity.class);
-            intent.putExtra(TERM_FOR_INPUT_FRAGMENT, 28);
-            //intent.putExtra(TERM_INPUT_FRAGMENT, null);
-            startActivity(intent);
+
+            //05 temp
+//            if(webviewDialog!= null && webviewDialog.isShowing()){
+//                webviewDialog.dismiss();
+//            }
+//            Intent intent = new Intent(BaseJavaActivity.this, HdfcTermActivity.class);
+//            intent.putExtra(TERM_FOR_INPUT_FRAGMENT, 28);
+//            //intent.putExtra(TERM_INPUT_FRAGMENT, null);
+//            startActivity(intent);
         }
         @JavascriptInterface
         public void showtermcomp() {
-            if(webviewDialog!= null && webviewDialog.isShowing()){
-                webviewDialog.dismiss();
-            }
-            //Life Insurance
-            // mContext.startActivity(new Intent(mContext, TermSelectionActivity.class));
-            startActivity(new Intent(BaseActivity.this, TermSelectionActivity.class));
+
+            // 05 temp
+//            if(webviewDialog!= null && webviewDialog.isShowing()){
+//                webviewDialog.dismiss();
+//            }
+//            //Life Insurance
+//            // mContext.startActivity(new Intent(mContext, TermSelectionActivity.class));
+//            startActivity(new Intent(BaseJavaActivity.this, TermSelectionActivity.class));
         }
         @JavascriptInterface
         public void userdefurl(String url,String title) {
             if(webviewDialog!= null && webviewDialog.isShowing()){
                 webviewDialog.dismiss();
             }
-            startActivity(new Intent(BaseActivity.this, CommonWebViewActivity.class)
+            startActivity(new Intent(BaseJavaActivity.this, CommonWebViewActivity.class)
                     .putExtra("URL", url)
                     .putExtra("NAME", title)
                     .putExtra("TITLE", title));
@@ -1880,7 +1777,7 @@ public class BaseJavaActivity extends AppCompatActivity {
         });
         webView.getSettings().setBuiltInZoomControls(true);
 
-        webView.addJavascriptInterface(new MyJavaScriptInterface(BaseActivity.this), "Android");
+        webView.addJavascriptInterface(new MyJavaScriptInterface(this), "Android");
 
         Log.d("URL", url);
         if (url.endsWith(".pdf")) {
@@ -1892,25 +1789,7 @@ public class BaseJavaActivity extends AppCompatActivity {
         }
     }
 
-    public Map<String, String> loadMap() {
-        Map<String, String> outputMap = new HashMap<>();
-        SharedPreferences pSharedPref = getApplicationContext().getSharedPreferences(Constants.SWITCh_ParentDeatils_FINMART,
-                Context.MODE_PRIVATE);
-        try {
-            if (pSharedPref != null) {
-                String jsonString = pSharedPref.getString(mapKey, (new JSONObject()).toString());
-                JSONObject jsonObject = new JSONObject(jsonString);
-                Iterator<String> keysItr = jsonObject.keys();
-                while (keysItr.hasNext()) {
-                    String key = keysItr.next();
-                    outputMap.put(key, jsonObject.get(key).toString());
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return outputMap;
-    }
+
     //endregion
 
 

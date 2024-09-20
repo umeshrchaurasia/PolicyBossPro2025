@@ -65,6 +65,7 @@ dependencies {
     implementation ("androidx.room:room-ktx:2.6.1")
     implementation("androidx.paging:paging-runtime:3.3.2")
     implementation("io.github.chaosleung:pinview:1.4.4")
+    implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
     ksp ("androidx.room:room-compiler:2.6.1")
 
     // Coroutines
@@ -102,8 +103,7 @@ dependencies {
     implementation ("com.google.firebase:firebase-dynamic-links:22.1.0")
     implementation ("com.google.firebase:firebase-messaging:24.0.0")
 
-
-
+    implementation ("com.github.bumptech.glide:glide:4.15.1")
 //    implementation ("com.google.firebase:firebase-iid:21.1.0") {
 //        transitive = true
 //    }

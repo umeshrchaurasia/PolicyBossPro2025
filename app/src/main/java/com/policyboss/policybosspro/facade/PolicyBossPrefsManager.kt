@@ -651,7 +651,7 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
 
     //endregion
 
-    // region UserConstant -Pb
+    // region UserConstant -For DashUrl,private car, two Wheeler etc
 
     fun saveUserConstantResponse(userConstantResponse: UserConstantResponse) {
         val json = gson.toJson(userConstantResponse)
@@ -667,6 +667,31 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         } else {
             null // Return null if no data is found
         }
+    }
+
+    fun getLeadDashUrl(): String {
+
+     return   getUserConstantResponse()?.MasterData?.LeadDashUrl?:""
+    }
+
+    fun getFourWheelerUrl(): String {
+
+        return   getUserConstantResponse()?.MasterData?.FourWheelerUrl?:""
+    }
+
+    fun getTwoWheelerUrl(): String {
+
+        return   getUserConstantResponse()?.MasterData?.TwoWheelerUrl?:""
+    }
+
+    fun getCVUrl(): String {
+
+        return   getUserConstantResponse()?.MasterData?.CVUrl?:""
+    }
+
+    fun getHealthurl(): String {
+
+        return   getUserConstantResponse()?.MasterData?.healthurl?:""
     }
     //endregion
 
@@ -700,5 +725,39 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
     }
 
     //endregion
+
+    fun clearAll() {
+        val strToken = getToken()
+        val strContact = getContactMsgFirst()
+
+        editor.clear().apply()
+
+        setToken(strToken)
+        updateContactMsgFirst(strContact)
+
+        // Uncomment if needed
+        /* getEditor().remove(POSP_INFO)
+            .remove(SHARED_KEY_PUSH_NOTIFY)
+            .remove(SHARED_KEY_PUSH_WEB_URL)
+            .remove(MENU_DASHBOARD)
+            .remove(SHARED_KEY_PUSH_WEB_TITLE)
+            .apply() */
+    }
+
+    // Example of getToken()
+
+
+    // Example of setToken()
+
+
+    // Example of getContactMsgFirst()
+    fun getContactMsgFirst(): String? {
+        return pref.getString("contact_msg_key", null)
+    }
+
+    // Example of updateContactMsgFirst()
+    fun updateContactMsgFirst(contactMsg: String?) {
+        editor.putString("contact_msg_key", contactMsg).apply()
+    }
 
 }
