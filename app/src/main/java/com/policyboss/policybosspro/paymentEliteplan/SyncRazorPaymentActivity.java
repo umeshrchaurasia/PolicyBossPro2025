@@ -1,7 +1,6 @@
 package com.policyboss.policybosspro.paymentEliteplan;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 
@@ -15,11 +14,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.policyboss.policybosspro.BaseActivity;
 import com.policyboss.policybosspro.BaseJavaActivity;
 import com.policyboss.policybosspro.R;
 import com.policyboss.policybosspro.core.model.paymentElite.PaymentEliteEntity;
-import com.policyboss.policybosspro.core.model.sysncContact.POSPHorizonEnity;
+import com.policyboss.policybosspro.core.model.sysncContact.POSPHorizonEntity;
 import com.policyboss.policybosspro.core.oldWayApi.IResponseSubcriber;
 import com.policyboss.policybosspro.core.response.APIResponse;
 import com.policyboss.policybosspro.core.response.syncContact.syncContactDetailsResponse.synctransactionDetailEntity;
@@ -51,7 +49,7 @@ public class SyncRazorPaymentActivity extends BaseJavaActivity implements Paymen
 
     synctransactionDetailEntity synctransactionEntity;
 
-    POSPHorizonEnity posphorizonEnity;
+    POSPHorizonEntity posphorizonEntity;
 
     PaymentEliteEntity paymentEliteEntity;
     String transactionId="";
@@ -77,12 +75,12 @@ public class SyncRazorPaymentActivity extends BaseJavaActivity implements Paymen
 
         synctransactionEntity = getIntent().getExtras().getParcelable("SYNC_TRANSACTION");
 
-        posphorizonEnity = getIntent().getExtras().getParcelable("posphorizon_TRANSACTION");
+        posphorizonEntity = getIntent().getExtras().getParcelable("posphorizon_TRANSACTION");
 
         payment_type  = getIntent().getStringExtra("payment_type");
 
         if (payment_type !=null) {
-            if (posphorizonEnity != null) {
+            if (posphorizonEntity != null) {
                 startPayment_posp();
             }
         }
@@ -180,19 +178,19 @@ public class SyncRazorPaymentActivity extends BaseJavaActivity implements Paymen
             JSONObject options = new JSONObject();
 
             String Emp_name = "";
-            Emp_name = posphorizonEnity.getFirst_Name()+" "+posphorizonEnity.getMiddle_Name()+" "+ posphorizonEnity.getLast_Name();
+            Emp_name = posphorizonEntity.getFirst_Name()+" "+ posphorizonEntity.getMiddle_Name()+" "+ posphorizonEntity.getLast_Name();
             options.put("name", Emp_name);
             // options.put("description", synctransactionEntity.getPlan());
             //You can omit the image option to fetch the image from dashboard
             //options.put("image", paymentEliteEntity.getImage());
             options.put("currency", "INR");
 
-            String finalamount = String.valueOf(posphorizonEnity.getRegAmount() * 100);
+            String finalamount = String.valueOf(posphorizonEntity.getRegAmount() * 100);
             options.put("amount", finalamount);//paymentEliteEntity.getAmount());
             //options.put("amount", 100);
             JSONObject preFill = new JSONObject();
-            preFill.put("email", posphorizonEnity.getEmail_Id());
-            preFill.put("contact", posphorizonEnity.getMobile_No());
+            preFill.put("email", posphorizonEntity.getEmail_Id());
+            preFill.put("contact", posphorizonEntity.getMobile_No());
 
 
             options.put("prefill", preFill);
@@ -227,9 +225,9 @@ public class SyncRazorPaymentActivity extends BaseJavaActivity implements Paymen
         this.finish();
 
         if (payment_type !=null) {
-            if (posphorizonEnity != null) {
+            if (posphorizonEntity != null) {
 
-                String suceessurl = "https://horizon.policyboss.com/razorpay-transaction-status/" + String.valueOf(posphorizonEnity.getSs_Id())+"/Success/"+razorpayPaymentID+"/POSP_ONBOARD";
+                String suceessurl = "https://horizon.policyboss.com/razorpay-transaction-status/" + String.valueOf(posphorizonEntity.getSs_Id())+"/Success/"+razorpayPaymentID+"/POSP_ONBOARD";
                 startActivity(new Intent(SyncRazorPaymentActivity.this, SyncWebViewActivity.class)
                         .putExtra("URL",suceessurl)
                         .putExtra("NAME", "Razor Payment")
@@ -257,11 +255,11 @@ public class SyncRazorPaymentActivity extends BaseJavaActivity implements Paymen
             this.finish();
 
             if (payment_type !=null) {
-                if (posphorizonEnity != null) {
+                if (posphorizonEntity != null) {
 
 
 
-                    String suceessurl = "https://horizon.policyboss.com/razorpay-transaction-status/" + String.valueOf(posphorizonEnity.getSs_Id())+"/Cancle/NA/POSP_ONBOARD";
+                    String suceessurl = "https://horizon.policyboss.com/razorpay-transaction-status/" + String.valueOf(posphorizonEntity.getSs_Id())+"/Cancle/NA/POSP_ONBOARD";
                     startActivity(new Intent(SyncRazorPaymentActivity.this, SyncWebViewActivity.class)
                             .putExtra("URL",suceessurl)
                             .putExtra("NAME", "Razor Payment")

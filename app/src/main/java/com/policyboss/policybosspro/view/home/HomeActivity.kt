@@ -1,6 +1,7 @@
 package com.policyboss.policybosspro.view.home
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
@@ -10,20 +11,25 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.core.APIState
 import com.policyboss.policybosspro.core.model.homeDashboard.DashboardMultiLangEntity
+import com.policyboss.policybosspro.core.model.sysncContact.SyncContactEntity
 import com.policyboss.policybosspro.core.viewModel.homeVM.HomeViewModel
 import com.policyboss.policybosspro.databinding.ActivityHomeBinding
+import com.policyboss.policybosspro.databinding.LayoutMysyncPopupBinding
 import com.policyboss.policybosspro.databinding.LayoutSharePopupBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
-import com.policyboss.policybosspro.utils.showAlert
+import com.policyboss.policybosspro.utils.showSnackbar
 import com.policyboss.policybosspro.view.home.adapter.DashboardRowAdapter
+import com.policyboss.policybosspro.view.syncContact.welcome.WelcomeSyncContactActivityKotlin
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.math.roundToInt
 
 @AndroidEntryPoint
 class HomeActivity : BaseActivity() {
@@ -31,8 +37,11 @@ class HomeActivity : BaseActivity() {
     private lateinit var binding: ActivityHomeBinding
     private lateinit var dashboardAdapter: DashboardRowAdapter
     private lateinit var shareProdDialog: AlertDialog
+    private var mySyncPopUpAlert: AlertDialog? = null
 
-    private val vewModel by viewModels<HomeViewModel>()
+    private var isSwipeRefresh = false
+
+    private val viewModel by viewModels<HomeViewModel>()
     @Inject
     lateinit var prefsManager: PolicyBossPrefsManager
 
@@ -46,7 +55,7 @@ class HomeActivity : BaseActivity() {
         setContentView(binding.root)
 
         // Initialize views
-        // Set the toolbar as ActionBar
+        // region Set the toolbar as ActionBar
         setSupportActionBar(binding.toolbar)
 
         // Initialize ActionBarDrawerToggle
@@ -60,7 +69,10 @@ class HomeActivity : BaseActivity() {
         binding.drawer.addDrawerListener(toggle)
         toggle.syncState()
 
-        // Add a back press dispatcher callback to handle back presses
+        binding.swipeRefreshLayout.isEnabled = false
+        //endregion
+
+
         //region Handle OnBackPressed()
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -85,8 +97,25 @@ class HomeActivity : BaseActivity() {
         observeMasterState()
 
         //Called Master Data ie UserConstant and Dynamic Dashb oard Parallel
-        vewModel.getMasterData()
+        viewModel.getMasterData()
 
+
+        //region Swipe To Regresh not in used
+//        binding.swipeRefreshLayout.setColorSchemeResources(
+//            R.color.white // Progress spinner (circle) color
+//        )
+//
+//        // Set the background color of the progress circle to blue
+//        binding.swipeRefreshLayout.setProgressBackgroundColorSchemeResource(
+//            R.color.colorPrimary // Background color of the progress circle
+//        )
+//        binding.swipeRefreshLayout.setOnRefreshListener {
+//            // Trigger API refresh only on user swipe
+//            isSwipeRefresh = true
+//            vewModel.getMasterData()
+//        }
+
+        //endregion
 
         //region Set up navigation item click listener
         binding.navigationView.setNavigationItemSelectedListener {
@@ -105,6 +134,7 @@ class HomeActivity : BaseActivity() {
         }
         //endregion
 
+
     }
 
     private fun setupDashBoardData() {
@@ -114,7 +144,7 @@ class HomeActivity : BaseActivity() {
             mContext = this,
             insurancePosition = 0,
             disclosurePosition = 1,
-            listIns =  vewModel.getInsurProductLangList(),
+            listIns =  viewModel.getInsurProductLangList(),
             prefsManager = prefsManager,
             onShareClick = ::onShareListener,
             onInfoClick = ::onInfoListener
@@ -129,7 +159,9 @@ class HomeActivity : BaseActivity() {
     }
 
     fun onShareListener(entity: DashboardMultiLangEntity){
+        viewModel.setCurrentDashboardShareEntity(entity)
         shareProductPopUp(shareEntity = entity)
+
     }
     fun onInfoListener(entity: DashboardMultiLangEntity){
 
@@ -154,8 +186,8 @@ class HomeActivity : BaseActivity() {
 
         // Set up share button click listener
         binding.btnShare.setOnClickListener {
-            //05 temp
-          //  shareDashbordProduct(shareEntity)
+
+           viewModel.getProductShareURL(shareEntity.productId.toString(),"0")
             shareProdDialog.dismiss()
         }
 
@@ -169,31 +201,170 @@ class HomeActivity : BaseActivity() {
         shareProdDialog.show()
     }
 
+    fun showMySyncPopUpAlert(syncContactEntity: SyncContactEntity) {
+        try {
+            if (mySyncPopUpAlert != null && mySyncPopUpAlert?.isShowing == true) {
+                return
+            }
+
+            val builder = AlertDialog.Builder(this, R.style.CustomDialog)
+
+            // ViewBinding usage
+            val binding = LayoutMysyncPopupBinding.inflate(layoutInflater)
+            builder.setView(binding.root)
+            mySyncPopUpAlert = builder.create()
+
+            // Extract data from syncContactEntity
+            val actionNeeded = syncContactEntity.ACTION_NEEDED
+            val firstSyncCampaignCreative = syncContactEntity.FIRST_SYNC_CAMPAIGN_CREATIVE
+            val reSyncCampaignCreative = syncContactEntity.RE_SYNC_CAMPAIGN_CREATIVE
+
+            var url = ""
+            var titleText = ""
+
+            // Set data based on actionNeeded
+            if (actionNeeded == "RE_SYNC") {
+                titleText = "Update Resync Contacts!!"
+                url = "$reSyncCampaignCreative?${(Math.random() * 1000).roundToInt()}"
+                binding.btnAllow.text = "Go To Resync Contacts"
+            } else {
+                titleText = "Update Sync Contacts!!"
+                url = "$firstSyncCampaignCreative?${(Math.random() * 1000).roundToInt()}"
+                binding.btnAllow.text = "Go To Sync Contacts"
+            }
+
+            // Load image using Glide
+            Glide.with(this)
+                .load(url)
+                .into(binding.ivMessage)
+
+            // Set title
+            binding.txtTile.text = titleText
+
+            // Handle cross (close) button click
+            binding.ivCross.setOnClickListener {
+                mySyncPopUpAlert?.dismiss()
+            }
+
+            // Handle allow button click
+            binding.btnAllow.setOnClickListener {
+                mySyncPopUpAlert?.dismiss()
+                if (actionNeeded == "RE_SYNC") {
+                   // startActivity(Intent(this, SyncContactActivity::class.java))
+                } else {
+                    startActivity(Intent(this, WelcomeSyncContactActivityKotlin::class.java))
+                }
+            }
+
+            mySyncPopUpAlert?.apply {
+                setCancelable(true)
+                setCanceledOnTouchOutside(true)
+                show()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
     private fun observeMasterState() {
+
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.CREATED) {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
 
-                vewModel.masterState.collectLatest { state ->
-                    when (state) {
+                // Collecting masterState
+                launch {
+                    viewModel.masterState.collectLatest { state ->
+                        when (state) {
 
-                        is APIState.Loading -> {
-                            displayLoadingWithText()
-                        }
-                        is APIState.Success -> {
-                            hideLoading()
+                            is APIState.Loading -> {
 
-                            setupDashBoardData()
-                        }
-                        is APIState.Empty -> {
-                            hideLoading()
-                        }
-                        is APIState.Failure -> {
+                                //region comment
+                                // displayLoadingWithText()
+//                            if( isSwipeRefresh){
+//                                binding.swipeRefreshLayout.isRefreshing = true
+//                            }else{
+//                                displayLoadingWithText()
+//                            }
+                                //endregion
+                                displayLoadingWithText()
 
-                            hideLoading()
+                            }
+                            is APIState.Success -> {
+
+                                hideLoading()
+
+                                setupDashBoardData()
+
+                                state.data?.horizonDetail?.SYNC_CONTACT?.let { syncContactEntity ->
+
+
+                                   showMySyncPopUpAlert(syncContactEntity)
+
+                                }
+                                // binding.swipeRefreshLayout.isRefreshing = false
+
+
+
+                            }
+                            is APIState.Empty -> {
+                                hideLoading()
+                            }
+                            is APIState.Failure -> {
+                                // binding.swipeRefreshLayout.isRefreshing = false
+                                hideLoading()
+                            }
                         }
                     }
                 }
+
+                launch {
+                    viewModel.productShareResponse.collect{  event->
+
+                        event.contentIfNotHandled?.let {
+
+                            when (it) {
+                                is APIState.Empty -> {
+
+                                    hideLoading()
+                                }
+
+                                is APIState.Failure -> {
+                                    hideLoading()
+                                    this@HomeActivity.showSnackbar(binding.root, it.errorMessage)
+                                }
+
+                                is APIState.Loading -> {
+
+                                    displayLoadingWithText()
+                                }
+
+                                is APIState.Success -> {
+                                    hideLoading()
+
+                                    if (it.data != null) {
+                                        it.data?.let { shareEntity ->
+                                            datashareList(
+                                                this@HomeActivity,
+
+                                                viewModel.ShareTitle(),
+                                                shareEntity.msg,
+                                                shareEntity.url
+                                            )
+                                        }
+
+                                    }
+
+                                }
+
+
+                            }
+                        }
+
+                    }
+                }
+
             }
         }
+
+
     }
 }

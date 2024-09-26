@@ -228,13 +228,6 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         return pref.getBoolean(PUSH_VERIFY_LOGIN, false)
     }
 
-    fun setEnableProPOSPurl(proSignupUrl: String) {
-        editor.putString(IS_ENABLE_PRO_POSPURL, proSignupUrl).apply()
-    }
-
-    fun getEnableProPOSPurl(): String? {
-        return pref.getString(IS_ENABLE_PRO_POSPURL, "")
-    }
 
     fun setEnableProAddSubUserUrl(proSignupUrl: String) {
         editor.putString(IS_ENABLE_PRO_ADDSUBUSER_URL, proSignupUrl).apply()
@@ -245,15 +238,16 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
     }
 
     // Notification Methods
-    fun setSharePushType(type: String) {
-        editor.putString(SHARED_KEY_PUSH_NOTIFY, type).apply()
+
+    fun setEnableProPOSPurl(proSignupUrl: String) {
+        editor.putString(IS_ENABLE_PRO_POSPURL, proSignupUrl)
+        editor.apply()  // Use apply() instead of commit() for asynchronous saving
     }
 
-    fun getSharePushType(): String? {
-        return pref.getString(SHARED_KEY_PUSH_NOTIFY, "")
+    // Getter for EnableProPOSPurl
+    fun getEnableProPOSPurl(): String {
+        return pref.getString(IS_ENABLE_PRO_POSPURL, "") ?: ""
     }
-
-
 
 
     //region Important all API data  //05
@@ -640,7 +634,7 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
 
     fun setEnablePro_ADDSUBUSERurl(ProSignupurl: String) {
         editor.putString(IS_ENABLE_PRO_ADDSUBUSER_URL, ProSignupurl)
-        editor.commit()
+        editor.apply()
     }
 
     fun getEnablePro_ADDSUBUSERurl(): String {

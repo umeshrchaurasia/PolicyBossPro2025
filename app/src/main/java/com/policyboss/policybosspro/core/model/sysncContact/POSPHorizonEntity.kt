@@ -3,7 +3,7 @@ package com.policyboss.policybosspro.core.model.sysncContact
 import android.os.Parcel
 import android.os.Parcelable
 
-data class POSPHorizonEnity(
+data class POSPHorizonEntity(
     val Aadhar: String?,
     val Account_Type: String?,
     val Agent_City: String?,
@@ -317,12 +317,12 @@ data class POSPHorizonEnity(
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<POSPHorizonEnity> {
-        override fun createFromParcel(parcel: Parcel): POSPHorizonEnity {
-            return POSPHorizonEnity(parcel)
+    companion object CREATOR : Parcelable.Creator<POSPHorizonEntity> {
+        override fun createFromParcel(parcel: Parcel): POSPHorizonEntity {
+            return POSPHorizonEntity(parcel)
         }
 
-        override fun newArray(size: Int): Array<POSPHorizonEnity?> {
+        override fun newArray(size: Int): Array<POSPHorizonEntity?> {
             return arrayOfNulls(size)
         }
     }

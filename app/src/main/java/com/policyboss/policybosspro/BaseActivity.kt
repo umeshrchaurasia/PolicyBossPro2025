@@ -67,8 +67,8 @@ open class BaseActivity() : AppCompatActivity() {
         var loadingLayout: ProgressdialogLoadingBinding? = null
         try {
             if (!this::dialog.isInitialized) {
-                dialog = Dialog(this.applicationContext)
-                val requestWindowFeature = dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+                dialog = Dialog(this@BaseActivity)
+               dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
                 if (dialog.window != null) {
 
                     dialog.window!!.setBackgroundDrawable(ColorDrawable(0))
@@ -76,7 +76,6 @@ open class BaseActivity() : AppCompatActivity() {
                 }
                 loadingLayout = ProgressdialogLoadingBinding.inflate(layoutInflater)
                 dialog.setContentView(loadingLayout.root)
-                // dialog!!.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                 dialog.setCancelable(cancelable ?: false)
 
             }
@@ -100,11 +99,8 @@ open class BaseActivity() : AppCompatActivity() {
 
     open fun hideLoading() {
         try {
-            if (this.dialog != null) {
-                if(dialog.isShowing){
-                    dialog.dismiss()
-                }
-
+            if (this::dialog.isInitialized && dialog.isShowing) {
+                dialog.dismiss()
             }
         } catch (e: Exception) {
         }
@@ -112,6 +108,7 @@ open class BaseActivity() : AppCompatActivity() {
 
     //endregion
 
+    //region ShowAlert Custom AlertDialog
     open fun showAlert(
         msg: String,
         title: String? = null,
@@ -150,6 +147,27 @@ open class BaseActivity() : AppCompatActivity() {
         }.create().show()
     }
 
+    //endregion
+
+    //region Share Data as Text
+    fun datashareList(context: Context, prdSubject: String, bodyMsg: String, link: String) {
+        val deeplink = "$bodyMsg\n$link"
+        val finalSubject = if (prdSubject.isEmpty()) "PolicyBoss Pro" else prdSubject
+        val prdDetail = deeplink
+
+        val shareIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, prdDetail)
+            type = "text/plain"
+            putExtra(Intent.EXTRA_SUBJECT, finalSubject)
+            putExtra(Intent.EXTRA_TEXT, prdDetail)
+        }
+
+        context.startActivity(Intent.createChooser(shareIntent, "Share Via"))
+    }
+    //endregion
+
+    //region Method for marketing web view pop-up
     fun openWebViewPopUp(view: View, url: String, isCancelable: Boolean, strHdr: String) {
         try {
             // Initialize dialog if not already
@@ -188,7 +206,6 @@ open class BaseActivity() : AppCompatActivity() {
         }
     }
 
-    // Method for marketing web view pop-up
     fun openWebViewPopUp_marketing(view: View, url: String, isCancelable: Boolean, strHdr: String) {
         try {
             // Ensure dialog is only shown if not already visible
@@ -230,7 +247,11 @@ open class BaseActivity() : AppCompatActivity() {
         }
     }
 
+    //endregion
+
     // Helper function to configure dialog window properties
+
+    //region WebView handling
     private fun configureDialogWindow(dialog: Dialog) {
         dialog.window?.let { window ->
             window.attributes = window.attributes.apply {
@@ -442,5 +463,7 @@ open class BaseActivity() : AppCompatActivity() {
             mContext.startActivity(intent)
         }
     }
+
+    //endregion
 
 }

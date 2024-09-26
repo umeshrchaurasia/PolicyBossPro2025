@@ -117,12 +117,21 @@ tools:context=".view.home.HomeActivity">
             android:visibility="gone"
             app:menu="@menu/dashboard_header_menu" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvHome"
-            android:background="@color/bg_dashboard"
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/swipeRefreshLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:scrollbars="none" />
+            android:layout_height="wrap_content">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvHome"
+                android:background="@color/bg_dashboard"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none" />
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+
 
     </LinearLayout>
 

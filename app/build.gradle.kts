@@ -104,6 +104,8 @@ dependencies {
     implementation ("com.google.firebase:firebase-messaging:24.0.0")
 
     implementation ("com.github.bumptech.glide:glide:4.15.1")
+
+   implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")  // for swipe to refresh
 //    implementation ("com.google.firebase:firebase-iid:21.1.0") {
 //        transitive = true
 //    }

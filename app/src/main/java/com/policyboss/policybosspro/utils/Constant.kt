@@ -12,6 +12,10 @@ object Constant {
     const val SHARED_PREF = "policybosspro_preference"
     const val token = "1234567890"
     const val TAG = "POLICYBOSS"
+
+    const val enable_pro_signupurl	=	"https://www.policyboss.com/posp/registration?v=240709"
+    const val enable_pro_pospurl	=	"https://www.policyboss.com/posp-form?product_id=1&ClientID=2&v=20231102"
+
     // production url
     //public static String URL = "https://horizon.policyboss.com:5443";
     // Test Environment url
@@ -65,7 +69,7 @@ object Constant {
 
 
     const val   NOData = "No Data Found"
-    const val   MasterData = "Master API Failed"
+    const val   MasterData = "Failed to fetch master data"
     const val   InValidUser = "User Not Found"
     const val   InValidPass = "Invalid UserId and Password"
     const val   ServerError = "Service Unavailable : No Data Found"

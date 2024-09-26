@@ -151,6 +151,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
             return
         }
 
+        displayLoadingWithText()
         //endregion
 
     }

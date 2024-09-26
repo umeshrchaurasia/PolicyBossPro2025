@@ -30,33 +30,7 @@ class DBPersistanceController @Inject constructor(
         // Retrieve the dashboard data from prefManager
         val dashBoardItemEntities = prefManager.getMenuDashBoard()?.MasterData?.Dashboard
 
-        dashBoardItemEntities?.let { items ->
-            items.filter { it.dashboard_type.equals("1")  && it.isActive == 1 }
-                .forEach { dashBoardItemEntity ->
-                val dashboardEntity = DashboardMultiLangEntity(
-                    category = "INSURANCE",
-                    sequence = dashBoardItemEntity.sequence.toInt(),
-                    menuName = dashBoardItemEntity.menuname,
-                    description = dashBoardItemEntity.description,
-                    iconResId = -1,  // Assuming no local resource, replace if needed
-                    titleKey = "Insurance",
-                    descriptionKey = ""
-                ).apply {
-                    serverIcon = dashBoardItemEntity.iconimage
-                    link = dashBoardItemEntity.link
-                    productNameFontColor = dashBoardItemEntity.ProductNameFontColor
-                    productDetailsFontColor = dashBoardItemEntity.ProductDetailsFontColor
-                    productBackgroundColor = dashBoardItemEntity.ProductBackgroundColor
-                    isExclusive = dashBoardItemEntity.IsExclusive
-                    isNewPrdClickable = dashBoardItemEntity.IsNewprdClickable
-                    isSharable = dashBoardItemEntity.IsSharable
-                    title = dashBoardItemEntity.title
-                    info = dashBoardItemEntity.info
-                    popupmsg = dashBoardItemEntity.popupmsg
-                }
-                dashboardEntities.add(dashboardEntity)
-            }
-        }
+
 
         return dashboardEntities
     }

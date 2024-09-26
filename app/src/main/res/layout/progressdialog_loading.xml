@@ -1,60 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@android:color/transparent"
-    android:layout_gravity="center">
+    style="@style/card_view"
+    android:layout_width="160dp"
+    android:layout_height="150dp"
+    app:cardCornerRadius="4dp"
+    app:cardElevation="2dp"
+    android:background="@color/white"
+    >
 
-    <androidx.cardview.widget.CardView
-        app:cardCornerRadius="10dp"
-        android:layout_margin="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="160dp"
+        android:layout_height="150dp"
+        android:gravity="center_vertical|center_horizontal"
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:indeterminateTint="@color/colorAccent"
+            android:indeterminateTintMode="src_in"
+            android:layout_marginTop="16dp" />
+
+        <TextView
+            android:id="@+id/txtMessage"
+            style="@style/TextStyle.TextMedium"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:gravity="center"
-            android:padding="25dp"
+            android:text="Loading.." />
 
-            android:orientation="horizontal"
-            >
-
-            <ProgressBar
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:visibility="visible"
-                android:indeterminate="true"
-                style="?android:attr/progressBarStyle"
-               />
-
-<!--            <ImageView-->
-<!--                android:id="@+id/imgLoader"-->
-<!--                android:layout_width="120dp"-->
-<!--                android:layout_height="120dp"-->
-<!--                android:scaleType="centerInside"-->
-<!--                android:src="@drawable/loading_spinner"-->
-<!--                />-->
-
-            <TextView
-                android:id="@+id/txtMessage"
-                android:layout_weight="1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/twelve"
-                android:gravity="left"
-                android:text=" Loading...."
-                android:textColor="@color/black"
-                android:textSize="16sp"
-              style="@style/TextViewStyle.Large"
-                android:visibility="visible"
-
-                />
-
-
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-
-
-</RelativeLayout>
+        <TextView
+            android:id="@+id/txtDesc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</com.google.android.material.card.MaterialCardView>

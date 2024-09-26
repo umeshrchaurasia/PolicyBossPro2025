@@ -1,12 +1,20 @@
 package com.policyboss.policybosspro.core.api
 
+import com.policyboss.policybosspro.core.response.home.ProductURLShareResponse
+import com.policyboss.policybosspro.core.response.home.UsersignupResponse
+import com.policyboss.policybosspro.core.response.horizonResponse.horizonSyncDetails.HorizonsyncDetailsResponse
+
 import com.policyboss.policybosspro.core.response.master.dynamicDashboard.MenuMasterResponse
 import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantResponse
 import com.policyboss.policybosspro.utils.Constant
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.Path
+import retrofit2.http.Url
 
 interface poilcyBossProHomeApi {
 
@@ -24,4 +32,21 @@ interface poilcyBossProHomeApi {
     @POST("/quote/Postfm/get-dynamic-app-pb")
     suspend fun getDynamicDashboardMenu(@Body body: HashMap<String,String>): Response<MenuMasterResponse?>?
 
+
+    /****************************************************************************************
+     *   Home Page API
+     *************************************************************************************/
+
+    @Headers("token:" + Constant.token)
+    @POST("/quote/Postfm/GetShareUrl")
+    suspend fun getProductShareURL(@Body body: HashMap<String,String>): Response<ProductURLShareResponse>
+
+
+//    @Headers("token:" + Constant.token)
+//    @POST("/quote/Postfm/Getusersignup")
+//    fun getusersignup(@Body body: HashMap<String,String>): Response<UsersignupResponse?>
+
+
+    @GET("/posps/dsas/view/{Ss_Id}")
+    suspend fun getsyncDetailshorizondetail(@Path("Ss_Id") ssId: Int): Response<HorizonsyncDetailsResponse?>
 }

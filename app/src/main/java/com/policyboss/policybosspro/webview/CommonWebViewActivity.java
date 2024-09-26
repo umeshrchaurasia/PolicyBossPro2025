@@ -53,7 +53,7 @@ import android.widget.Toast;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.policyboss.policybosspro.BaseJavaActivity;
 import com.policyboss.policybosspro.R;
-import com.policyboss.policybosspro.core.model.sysncContact.POSPHorizonEnity;
+import com.policyboss.policybosspro.core.model.sysncContact.POSPHorizonEntity;
 import com.policyboss.policybosspro.core.model.sysncContact.SyncContactEntity;
 import com.policyboss.policybosspro.core.oldWayApi.IResponseSubcriber;
 import com.policyboss.policybosspro.core.oldWayApi.controller.dynamicController.DynamicController;
@@ -71,7 +71,6 @@ import com.policyboss.policybosspro.paymentEliteplan.RazorPaymentEliteActivity;
 import com.policyboss.policybosspro.paymentEliteplan.SyncRazorPaymentActivity;
 import com.policyboss.policybosspro.utility.Utility;
 import com.policyboss.policybosspro.utils.Constant;
-import com.policyboss.policybosspro.utils.DBPersistanceController;
 import com.policyboss.policybosspro.utils.FileDownloader;
 import com.policyboss.policybosspro.utils.FileUtilNew;
 import com.policyboss.policybosspro.view.home.HomeActivity;
@@ -112,7 +111,7 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
 
     SyncContactEntity syncContactEntity;
 
-    POSPHorizonEnity posphorizonEnity;
+    POSPHorizonEntity posphorizonEntity;
     // region Camera Permission
     private static final int CAMERA_REQUEST = 1888;
     private static final int SELECT_PICTURE = 1800;
@@ -1389,12 +1388,13 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
             cancelDialogMain();
             if (((HorizonsyncDetailsResponse) response).getStatus().equals("SUCCESS")) {
                 // syncContactEntity = ((HorizonsyncDetailsResponse) response).getResult();
-                posphorizonEnity = ((HorizonsyncDetailsResponse) response).getPOSP();
-                if (posphorizonEnity != null) {
+
+                posphorizonEntity = (POSPHorizonEntity) ((HorizonsyncDetailsResponse) response).getPOSP();  // :-- 05 temp
+                if (posphorizonEntity != null) {
 
                     Intent intent = new Intent(CommonWebViewActivity.this, SyncRazorPaymentActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    intent.putExtra("posphorizon_TRANSACTION", posphorizonEnity);
+                    intent.putExtra("posphorizon_TRANSACTION", posphorizonEntity);
                     intent.putExtra("payment_type", "POSP");
                     startActivity(intent);
                     finish();
