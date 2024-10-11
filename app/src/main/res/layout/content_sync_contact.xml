@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg1"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".view.syncContact.ui.SyncContactActivity"
+    tools:showIn="@layout/activity_sync_contact">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="8dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical">
+
+
+
+
+            <LinearLayout
+                android:id="@+id/lySync"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="visible">
+
+
+
+
+                <TextView
+                    android:id="@+id/textHome"
+                    style="@style/TextViewStyle.BannerBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:text="Contact &amp; Call Log "
+                    android:textSize="18sp"
+                    android:gravity="center"
+                    />
+
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imgOverlay"
+                    android:layout_width="match_parent"
+                    android:layout_height="140dp"
+                    android:layout_marginTop="@dimen/twelve"
+                    android:src="@drawable/overlay_ring" />
+
+                <ProgressBar
+
+                    android:id="@+id/progress_circular"
+                    android:layout_marginTop="@dimen/_8dp"
+                    style="?android:attr/progressBarStyleLarge"
+                    android:progressDrawable="@drawable/custom_progress_bg"
+                    android:layout_width="40dp"
+                    android:layout_gravity="center"
+                    android:layout_height="40dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="8dp"
+                    android:visibility="visible" />
+
+
+
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card1"
+                    android:clickable="true"
+                    android:padding="@dimen/eight"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/lightGrey"
+                    android:layout_marginHorizontal="@dimen/twelve"
+                    app:cardCornerRadius="@dimen/twelve"
+                    app:layout_constraintTop_toBottomOf="@+id/imgOverlay"
+                    android:layout_marginTop="@dimen/_8dp">
+
+                    <LinearLayout
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/eight"
+                        android:orientation="vertical"
+                        >
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/txtDisplayOverApp"
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_marginTop="@dimen/_8dp"
+                                style="@style/TextViewStyle.BannerLarge"
+                                android:text="Fetching the data"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/eight"
+                                app:layout_constrainedWidth="true"
+                                app:layout_constraintEnd_toEndOf="parent"
+                                app:layout_constraintStart_toEndOf="@+id/tvOvelayInfo"
+                                app:layout_constraintTop_toTopOf="parent" />
+
+                            <ImageView
+
+                                android:id="@+id/imgFetchData"
+
+                                android:layout_width="26dp"
+                                android:layout_height="26dp"
+
+                                android:layout_marginTop="@dimen/twelve"
+                                android:gravity="center|center_vertical"
+                                android:src="@drawable/circular_exclaimlayer"
+                                android:textColor="@color/white"
+                                android:textSize="16sp"
+                                />
+
+
+
+                        </LinearLayout>
+
+
+                        <ProgressBar
+
+                            android:id="@+id/progressBar"
+                            android:layout_marginTop="@dimen/_8dp"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:progressDrawable="@drawable/custom_progress_bg"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp"
+
+
+                            android:visibility="visible" />
+
+
+                        <RelativeLayout
+
+                            android:visibility="visible"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="6dp"
+                            android:layout_marginRight="6dp">
+
+                            <TextView
+                                android:id="@+id/txtPercent"
+                                style="@style/TextViewStyle.Medium"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentLeft="true"
+                                android:text="0%"
+                                android:textStyle="bold" />
+
+                            <TextView
+
+                                style="@style/TextViewStyle.Medium"
+                                android:layout_alignParentRight="true"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="100%"
+                                android:textColor="@color/black" />
+
+                        </RelativeLayout>
+
+
+
+
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/card2"
+                    android:clickable="true"
+                    android:padding="@dimen/eight"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:backgroundTint="@color/lightGrey"
+                    android:layout_marginHorizontal="@dimen/twelve"
+                    app:cardCornerRadius="@dimen/twelve"
+                    app:layout_constraintTop_toBottomOf="@+id/imgOverlay"
+                    android:layout_marginTop="@dimen/twenty_four">
+
+                    <LinearLayout
+
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/eight"
+                        android:orientation="vertical"
+                        >
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <TextView
+
+                                android:layout_width="0dp"
+                                android:layout_weight="1"
+                                android:layout_marginTop="@dimen/_8dp"
+                                style="@style/TextViewStyle.BannerLarge"
+                                android:text="Sending to server"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/eight"
+                                app:layout_constrainedWidth="true"
+                                 />
+
+                            <ImageView
+
+                                android:id="@+id/imgSendToServer"
+
+                                android:layout_width="26dp"
+                                android:layout_height="26dp"
+
+                                android:layout_marginTop="@dimen/twelve"
+                                android:gravity="center|center_vertical"
+                                android:src="@drawable/circular_exclaimlayer"
+                                android:textColor="@color/white"
+                                android:textSize="16sp"
+                                />
+
+                        </LinearLayout>
+
+
+                        <ProgressBar
+
+                            android:id="@+id/progressBarServer"
+                            android:layout_marginTop="@dimen/_8dp"
+                            style="?android:attr/progressBarStyleHorizontal"
+                            android:progressDrawable="@drawable/custom_progress_bg"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="8dp"
+                            android:layout_marginRight="8dp"
+
+
+                            android:visibility="visible" />
+
+
+                        <RelativeLayout
+
+                            android:visibility="visible"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="6dp"
+                            android:layout_marginRight="6dp">
+
+                            <TextView
+                                android:id="@+id/txtPercentServer"
+                                style="@style/TextViewStyle.Medium"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentLeft="true"
+                                android:text="0%"
+                                android:textStyle="bold" />
+
+                            <TextView
+
+                                style="@style/TextViewStyle.Medium"
+                                android:layout_alignParentRight="true"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="100%"
+                                android:textColor="@color/black" />
+
+                        </RelativeLayout>
+
+
+
+
+
+                    </LinearLayout>
+
+                </androidx.cardview.widget.CardView>
+
+
+
+                <TextView
+                    android:id="@+id/txtProgressMessage"
+                    android:visibility="visible"
+                    android:layout_marginBottom="@dimen/eight"
+                    android:layout_marginTop="@dimen/fab_margin"
+                    style="@style/TextViewStyle.Large"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                   android:fontFamily="@font/poppinsbold"
+                    android:text="Data is Fetching Please Wait..."
+                    android:textColor="@color/dark_blue" />
+                <LinearLayout
+                    android:id="@+id/lyTotal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
+
+
+                    <TextView
+                        android:id="@+id/txtOutput"
+                        style="@style/TextViewStyle.Large"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="17sp"
+                        android:text="Total Contacts"
+                        android:textColor="@color/blue" />
+
+                    <TextView
+                        style="@style/TextViewStyle.Medium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" / " />
+
+                    <TextView
+                        android:id="@+id/txtCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=""
+
+                        android:textColor="@color/black" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/txtMessage"
+                    android:layout_marginBottom="@dimen/fab_margin"
+                    android:layout_marginTop="@dimen/fab_margin"
+                    style="@style/TextViewStyle.Large"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text=""
+                    android:textColor="@color/dark_blue" />
+
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+</LinearLayout>

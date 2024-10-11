@@ -9,5 +9,5 @@ data class MenuMasterResponse(
 
 data class MenuMasterEntity(
     val Dashboard: List<DashBoardItemEntity>,
-    val Menu: List<Any>
+    val Menu: List<MenuItemEntity>
 )

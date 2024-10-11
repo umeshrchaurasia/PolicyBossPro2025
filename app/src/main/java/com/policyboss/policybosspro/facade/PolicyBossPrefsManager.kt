@@ -5,11 +5,14 @@ import android.content.SharedPreferences
 
 import android.util.Log
 import com.google.gson.Gson
+import com.policyboss.policybosspro.core.APIState
 import com.policyboss.policybosspro.core.response.login.EMP
 import com.policyboss.policybosspro.core.response.login.LoginNewResponse_DSAS_Horizon
 import com.policyboss.policybosspro.core.response.login.OtpLoginMsg
 import com.policyboss.policybosspro.core.response.login.POSP
 import com.policyboss.policybosspro.core.response.master.dynamicDashboard.MenuMasterResponse
+import com.policyboss.policybosspro.core.response.master.userConstant.Dashboardarray
+import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantEntity
 import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantResponse
 import com.policyboss.policybosspro.utils.Constant
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -287,6 +290,15 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
 
         return response?.Ss_Id?:"0"
     }
+
+    fun getPOSPNo() : String {
+
+        val response = getLoginHorizonResponse()
+
+        return response?.Ss_Id?:"0"
+    }
+
+
 
     fun getFBAID() : String {
 
@@ -663,9 +675,21 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         }
     }
 
+    fun getUserConstantEntity(): UserConstantEntity? {
+       return getUserConstantResponse()?.MasterData
+    }
+    fun getDashboardarray(): List<Dashboardarray> {
+
+        return   getUserConstantResponse()?.MasterData?.dashboardarray?: emptyList()
+    }
+
     fun getLeadDashUrl(): String {
 
      return   getUserConstantResponse()?.MasterData?.LeadDashUrl?:""
+    }
+    fun getRaiseTickitUrl(): String {
+
+        return   getUserConstantResponse()?.MasterData?.RaiseTickitUrl?:""
     }
 
     fun getFourWheelerUrl(): String {
@@ -686,6 +710,16 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
     fun getHealthurl(): String {
 
         return   getUserConstantResponse()?.MasterData?.healthurl?:""
+    }
+
+    fun getInvestmentEnabled(): String {
+
+        return   getUserConstantResponse()?.MasterData?.InvestmentEnabled?:""
+    }
+
+    fun getInvestmentUrl(): String {
+
+        return   getUserConstantResponse()?.MasterData?.InvestmentUrl?:""
     }
     //endregion
 

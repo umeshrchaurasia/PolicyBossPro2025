@@ -30,7 +30,8 @@ class DashboardRowAdapter(
      private val listIns : List<DashboardMultiLangEntity>,
      private val prefsManager: PolicyBossPrefsManager,
      private val onShareClick: (DashboardMultiLangEntity) -> Unit,
-     private val onInfoClick: (DashboardMultiLangEntity) -> Unit
+     private val onInfoClick: (DashboardMultiLangEntity) -> Unit,
+     private val onDashBoardClick: (DashboardMultiLangEntity) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private val ROW_INSURANCE = insurancePosition
@@ -60,7 +61,8 @@ class DashboardRowAdapter(
                                         context = mContext,
                                         listInsur = listIns,
                                         onShareClick = onShareClick,
-                                        onInfoClick = onInfoClick
+                                        onInfoClick = onInfoClick,
+                                        onDashBoardClick = onDashBoardClick
 
             )
         }

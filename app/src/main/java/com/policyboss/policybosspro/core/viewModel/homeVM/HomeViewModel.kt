@@ -7,6 +7,7 @@ import com.policyboss.policybosspro.core.APIState
 import com.policyboss.policybosspro.core.Event
 import com.policyboss.policybosspro.core.model.homeDashboard.DashboardMultiLangEntity
 import com.policyboss.policybosspro.core.repository.homeRepository.HomeRepository
+import com.policyboss.policybosspro.core.response.authToken.OauthTokenResponse
 import com.policyboss.policybosspro.core.response.home.ProductURLShareEntity
 import com.policyboss.policybosspro.core.response.home.ProductURLShareResponse
 import com.policyboss.policybosspro.core.response.master.MasterDataCombine
@@ -30,13 +31,12 @@ class HomeViewModel @Inject constructor(
 ): ViewModel() {
 
 
-    // StateFlow to manage loader state
-
+    //region Declaeration of Master Data State
     private val _masterState = MutableStateFlow<APIState<MasterDataCombine>>(APIState.Empty())
     val masterState: StateFlow<APIState<MasterDataCombine>> = _masterState
+    //endregion
 
-
-    //region Share DashBoard Product
+    //region Decleration OF Share DashBoard Product State
     private val productShareMutableFlow: MutableStateFlow<Event<APIState<ProductURLShareEntity>>> =
         MutableStateFlow(Event(APIState.Empty()))
 
@@ -46,6 +46,16 @@ class HomeViewModel @Inject constructor(
     //endregion
 
 
+    //region Declaeration of AuthToken State
+    private var oauthMutuableStateFlow : MutableStateFlow<APIState<OauthTokenResponse>> = MutableStateFlow(APIState.Empty())
+
+    // data is collected in OauthStateFlow variable, we have to get from here
+    val OauthStateFlow : StateFlow<APIState<OauthTokenResponse>>
+        get() = oauthMutuableStateFlow
+
+    //endregion
+
+    //region set  CurrentDashboard Entity for Sharing
     private var _currentDashboardEntity: DashboardMultiLangEntity? = null
 
     // Setter method
@@ -60,6 +70,9 @@ class HomeViewModel @Inject constructor(
 
     fun ShareTitle() = getCurrentDashboardSharedEntity()?.title?:""
 
+    //endregion
+
+    //region  Master Data
     fun getMasterData() = viewModelScope.launch {
 
 
@@ -127,10 +140,13 @@ class HomeViewModel @Inject constructor(
 
     }
 
-   fun getInsurProductLangList(): List<DashboardMultiLangEntity> {
+    //endregion
+
+    //regionDynamic List filter Logic : After Api called
+    fun getInsurProductLangList(): List<DashboardMultiLangEntity> {
         val dashboardEntities = mutableListOf<DashboardMultiLangEntity>()
 
-        // Retrieve the dashboard data from prefManager
+        // Retrieve the dashboard data from prefManager {api :get-dynamic-app-pb }
         val dashBoardItemEntities = prefManager.getMenuDashBoard()?.MasterData?.Dashboard
 
         dashBoardItemEntities?.let { items ->
@@ -165,8 +181,49 @@ class HomeViewModel @Inject constructor(
         return dashboardEntities
     }
 
+    //endregion
+
+    //region  Share DashBoard Product
+    fun getProductShareURL(product_id: String, sub_fba_id: String) = viewModelScope.launch {
 
 
+        val body = hashMapOf(
+
+            "fba_id" to prefManager.getFBAID(),
+            "ss_id" to prefManager.getSSID(),
+            "product_id" to product_id,
+            "sub_fba_id" to sub_fba_id,
+
+
+        )
+
+        productShareMutableFlow.value = Event(APIState.Loading())
+
+        homeRepository.getProductShareURL(body)
+            .catch {
+                productShareMutableFlow.value =  Event(APIState.Failure(it.message ?: Constant.Fail))
+            }.collect{
+                if (it.isSuccessful) {
+                    if (it.body() != null && it.body()?.statusNo == 0) {
+
+                        productShareMutableFlow.value =  Event(APIState.Success(it.body()?.MasterData))
+                    } else {
+                        productShareMutableFlow.value =
+                            Event(APIState.Failure(it.body()?.message?: Constant.ErrorMessage ))
+                    }
+                } else {
+                    productShareMutableFlow.value =
+                        Event(APIState.Failure(it.message()))
+                }
+            }
+
+
+    }
+
+    //endregion
+
+
+    //region Not in Used
     fun getUserConstant(appVersion: String, deviceCode: String) = viewModelScope.launch {
 
         var body = HashMap<String, String>()
@@ -225,45 +282,43 @@ class HomeViewModel @Inject constructor(
 
     }
 
+    //endregion
+
+    fun getAuthToken(ss_id : String, deviceID : String,app_version : String,fbaid : String) = viewModelScope.launch {
 
 
-    //region  Share DashBoard Product
-    fun getProductShareURL(product_id: String, sub_fba_id: String) = viewModelScope.launch {
+        var body = HashMap<String,String>()
+        body.put("ss_id",ss_id)
+        body.put("device_id",deviceID)
+        body.put("user_agent","")
+        body.put("app_version",app_version)
+        body.put("fbaid",fbaid)
 
+        oauthMutuableStateFlow.value = APIState.Loading()
+        // delay(8000)
 
-        val body = hashMapOf(
+            homeRepository.getAuthToken(body)
+                .catch {
+                    oauthMutuableStateFlow.value =  APIState.Failure(it.message ?: Constant.Fail)
 
-            "fba_id" to prefManager.getFBAID(),
-            "ss_id" to prefManager.getSSID(),
-            "product_id" to product_id,
-            "sub_fba_id" to sub_fba_id,
+                }.collect{ data ->
 
+                    if(data.isSuccessful){
 
-        )
+                        if(data.body()?.Status?.uppercase().equals("SUCCESS")){
+                            oauthMutuableStateFlow.value = APIState.Success(data = data.body())
+                        }else{
+                            oauthMutuableStateFlow.value = APIState.Failure(errorMessage = data.body()?.Msg ?: Constant.ErrorMessage)
+                        }
 
-        productShareMutableFlow.value = Event(APIState.Loading())
-
-        homeRepository.getProductShareURL(body)
-            .catch {
-                productShareMutableFlow.value =  Event(APIState.Failure(it.message ?: Constant.Fail))
-            }.collect{
-                if (it.isSuccessful) {
-                    if (it.body() != null && it.body()?.statusNo == 0) {
-
-                        productShareMutableFlow.value =  Event(APIState.Success(it.body()?.MasterData))
-                    } else {
-                        productShareMutableFlow.value =
-                            Event(APIState.Failure(it.body()?.message?: Constant.ErrorMessage ))
+                    }else{
+                        oauthMutuableStateFlow.value = APIState.Failure(errorMessage = Constant.ErrorMessage)
                     }
-                } else {
-                    productShareMutableFlow.value =
-                        Event(APIState.Failure(it.message()))
+
                 }
-            }
 
 
     }
 
-    //endregion
 
 }

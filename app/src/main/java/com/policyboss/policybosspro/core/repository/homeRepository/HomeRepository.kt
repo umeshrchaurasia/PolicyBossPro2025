@@ -19,6 +19,11 @@ class HomeRepository @Inject constructor(
 ){
 
 
+    //region  Master API
+    /****************************************************************************************
+     *   Master Repository
+     *************************************************************************************/
+
     suspend fun getUserConstant(body : HashMap<String,String> ): Response<UserConstantResponse?>? {
 
 
@@ -39,8 +44,10 @@ class HomeRepository @Inject constructor(
     suspend fun getSyncDetails(ssId: Int): Response<HorizonsyncDetailsResponse?> {
         return apiService.getsyncDetailshorizondetail(ssId)
     }
+    //*************************************************************************************/
+    //endregion
 
-
+    //region Share URL
     suspend fun getProductShareURL(body : HashMap<String,String> ) = flow {
         val response = apiService.getProductShareURL(body)
 
@@ -48,7 +55,21 @@ class HomeRepository @Inject constructor(
 
     }.flowOn(Dispatchers.IO)
 
+    //endregion
+
+    //region  App Code API
+    /****************************************************************************************
+     *   App Code
+     *************************************************************************************/
+
+    suspend fun getAuthToken(body : HashMap<String,String>) = flow {
 
 
+        val response = apiService.getOauthToken(body)
+        emit(response)
+
+    }.flowOn(Dispatchers.IO)
+
+    //endregion
 
 }

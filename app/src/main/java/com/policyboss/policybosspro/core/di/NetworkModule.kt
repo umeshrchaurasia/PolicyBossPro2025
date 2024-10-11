@@ -1,8 +1,13 @@
 package com.policyboss.policybosspro.core.di
 
+import android.app.Application
 import android.content.Context
+import androidx.work.WorkManager
+import com.google.firebase.analytics.FirebaseAnalytics
+import com.policyboss.policybosspro.PolicyBossProApplication
 import com.policyboss.policybosspro.core.api.poilcyBossProHomeApi
 import com.policyboss.policybosspro.core.api.poilcyBossProLoginApi
+import com.policyboss.policybosspro.core.api.poilcyBossProSyncApi
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utils.Constant
 import dagger.Module
@@ -65,10 +70,14 @@ class NetworkModule {
         return  retrofitBuilder.client(okHttpClient).build().create(poilcyBossProHomeApi::class.java)
     }
 
-
     @Singleton
     @Provides
-    fun providePolicyBossPrefsManager(@ApplicationContext context: Context): PolicyBossPrefsManager {
-        return PolicyBossPrefsManager(context)
+    fun providePolicyBossProSyncAPI(retrofitBuilder: Retrofit.Builder, okHttpClient : OkHttpClient) : poilcyBossProSyncApi {
+
+        return  retrofitBuilder.client(okHttpClient).build().create(poilcyBossProSyncApi::class.java)
     }
+
+
+
+
 }

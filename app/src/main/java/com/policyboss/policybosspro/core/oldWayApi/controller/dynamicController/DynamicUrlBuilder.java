@@ -1,6 +1,7 @@
 package com.policyboss.policybosspro.core.oldWayApi.controller.dynamicController;
 
 import com.policyboss.policybosspro.core.oldWayApi.oldRequestBuilder.GenericRetroRequestBuilder;
+import com.policyboss.policybosspro.core.response.horizonResponse.horizonSyncDetails.HorizonSyncDetailsWebResponse;
 import com.policyboss.policybosspro.core.response.horizonResponse.horizonSyncDetails.HorizonsyncDetailsResponse;
 import com.policyboss.policybosspro.core.response.othere.SalesclickResponse;
 import com.policyboss.policybosspro.core.response.othere.syncrazorsucessReponse;
@@ -97,7 +98,7 @@ public class DynamicUrlBuilder extends GenericRetroRequestBuilder {
         Call<syncrazorsucessReponse> getSync_razor_payment(@Url String strUrl);
 
         @GET
-        Call<HorizonsyncDetailsResponse> getsyncDetailshorizondetail(@Url String strUrl);
+        Call<HorizonSyncDetailsWebResponse> getsyncDetailshorizondetail(@Url String strUrl);
 
         @POST
         Call<SalesclickResponse> save_sales_contentclick(@Url String url, @Body HashMap<String, String> body);

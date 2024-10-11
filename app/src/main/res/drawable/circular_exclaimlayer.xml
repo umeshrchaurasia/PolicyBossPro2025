@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android" >
+    <!-- set image to be shown on circular ImageView -->
+    <item android:drawable="@drawable/circularbg"/>
+
+    <item
+        android:left="6dp"
+        android:right="6dp"
+        android:top="6dp"
+        android:bottom="6dp"
+        android:drawable="@drawable/ic_priority_high_24">
+
+
+    </item>
+
+</layer-list>

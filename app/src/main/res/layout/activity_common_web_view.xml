@@ -16,7 +16,7 @@ tools:context=".webview.CommonWebViewActivity">
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
+        android:background="@color/colorPrimary"
         app:popupTheme="@style/AppTheme.PopupOverlay"
 
         app:contentInsetLeft="0dp"

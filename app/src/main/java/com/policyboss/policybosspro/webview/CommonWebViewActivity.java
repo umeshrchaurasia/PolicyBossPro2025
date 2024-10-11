@@ -59,6 +59,7 @@ import com.policyboss.policybosspro.core.oldWayApi.IResponseSubcriber;
 import com.policyboss.policybosspro.core.oldWayApi.controller.dynamicController.DynamicController;
 import com.policyboss.policybosspro.core.oldWayApi.controller.zoho.ZohoController;
 import com.policyboss.policybosspro.core.response.APIResponse;
+import com.policyboss.policybosspro.core.response.horizonResponse.horizonSyncDetails.HorizonSyncDetailsWebResponse;
 import com.policyboss.policybosspro.core.response.horizonResponse.horizonSyncDetails.HorizonsyncDetailsResponse;
 import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantEntity;
 import com.policyboss.policybosspro.core.response.raiseTicket.RaiseTicketWebDocResponse;
@@ -74,7 +75,8 @@ import com.policyboss.policybosspro.utils.Constant;
 import com.policyboss.policybosspro.utils.FileDownloader;
 import com.policyboss.policybosspro.utils.FileUtilNew;
 import com.policyboss.policybosspro.view.home.HomeActivity;
-import com.policyboss.policybosspro.view.syncContact.welcome.WelcomeSyncContactActivityKotlin;
+
+import com.policyboss.policybosspro.view.syncContact.ui.WelcomeSyncContactActivityKotlin;
 import com.webengage.sdk.android.Analytics;
 import com.webengage.sdk.android.WebEngage;
 import com.webengage.sdk.android.bridge.WebEngageMobileBridge;
@@ -1383,13 +1385,13 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
 
             }
         }
-        else if (response instanceof HorizonsyncDetailsResponse)
+        else if (response instanceof HorizonSyncDetailsWebResponse)
         {
             cancelDialogMain();
-            if (((HorizonsyncDetailsResponse) response).getStatus().equals("SUCCESS")) {
+            if (((HorizonSyncDetailsWebResponse) response).getStatus().equals("SUCCESS")) {
                 // syncContactEntity = ((HorizonsyncDetailsResponse) response).getResult();
 
-                posphorizonEntity = (POSPHorizonEntity) ((HorizonsyncDetailsResponse) response).getPOSP();  // :-- 05 temp
+                posphorizonEntity =  ((HorizonSyncDetailsWebResponse) response).getPOSP();  // :-- 05 temp
                 if (posphorizonEntity != null) {
 
                     Intent intent = new Intent(CommonWebViewActivity.this, SyncRazorPaymentActivity.class);

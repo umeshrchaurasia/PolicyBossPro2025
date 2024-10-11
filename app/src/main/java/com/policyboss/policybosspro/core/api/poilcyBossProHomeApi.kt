@@ -1,5 +1,6 @@
 package com.policyboss.policybosspro.core.api
 
+import com.policyboss.policybosspro.core.response.authToken.OauthTokenResponse
 import com.policyboss.policybosspro.core.response.home.ProductURLShareResponse
 import com.policyboss.policybosspro.core.response.home.UsersignupResponse
 import com.policyboss.policybosspro.core.response.horizonResponse.horizonSyncDetails.HorizonsyncDetailsResponse
@@ -17,6 +18,8 @@ import retrofit2.http.Path
 import retrofit2.http.Url
 
 interface poilcyBossProHomeApi {
+
+
 
     /****************************************************************************************
      *   Master API
@@ -49,4 +52,16 @@ interface poilcyBossProHomeApi {
 
     @GET("/posps/dsas/view/{Ss_Id}")
     suspend fun getsyncDetailshorizondetail(@Path("Ss_Id") ssId: Int): Response<HorizonsyncDetailsResponse?>
+
+
+
+    /****************************************************************************************
+     *   App Code API
+     *************************************************************************************/
+
+    @Headers("token:" +  Constant.token)
+    @POST("/auth_tokens/generate_web_auth_token")
+    suspend fun getOauthToken( @Body body : HashMap<String,String> ): Response<OauthTokenResponse>
+
+
 }

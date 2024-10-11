@@ -26,6 +26,7 @@
     <style name="TextViewStyle.Medium" parent="TextViewStyle">
         <item name="android:textSize">13sp</item>
         <item name="android:textColor">@color/header_light_text</item>
+
     </style>
 
 
@@ -40,6 +41,12 @@
     </style>
 
 
+    <style name="MaterialCheckBoxStyle" parent="Widget.MaterialComponents.CompoundButton.CheckBox">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/header_light_text</item>
+        <item name="buttonTint">@color/colorAccent</item>
+<!--        <item name="android:background">@android:color/transparent</item>-->
+    </style>
     <!---->
     <style name="HeaderLayout">
         <item name="android:layout_width">match_parent</item>

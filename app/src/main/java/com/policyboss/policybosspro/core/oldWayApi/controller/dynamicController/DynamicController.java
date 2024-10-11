@@ -3,6 +3,7 @@ package com.policyboss.policybosspro.core.oldWayApi.controller.dynamicController
 import android.content.Context;
 
 import com.policyboss.policybosspro.core.oldWayApi.IResponseSubcriber;
+import com.policyboss.policybosspro.core.response.horizonResponse.horizonSyncDetails.HorizonSyncDetailsWebResponse;
 import com.policyboss.policybosspro.core.response.horizonResponse.horizonSyncDetails.HorizonsyncDetailsResponse;
 import com.policyboss.policybosspro.core.response.othere.syncrazorsucessReponse;
 import com.policyboss.policybosspro.core.response.syncContact.syncContactDetailsResponse.synctransactionDetailReponse;
@@ -113,9 +114,9 @@ public class DynamicController implements IDynamic {
 
         String url = "https://horizon.policyboss.com:5443/posps/dsas/view/" + ss_id;
 
-        genericUrlNetworkService.getsyncDetailshorizondetail(url).enqueue(new Callback<HorizonsyncDetailsResponse>() {
+        genericUrlNetworkService.getsyncDetailshorizondetail(url).enqueue(new Callback<HorizonSyncDetailsWebResponse>() {
             @Override
-            public void onResponse(Call<HorizonsyncDetailsResponse> call, Response<HorizonsyncDetailsResponse> response) {
+            public void onResponse(Call<HorizonSyncDetailsWebResponse> call, Response<HorizonSyncDetailsWebResponse> response) {
                 if (response.body() != null) {
                     iResponseSubcriber.OnSuccess(response.body(), "response.body().getMessage()");
 
@@ -125,7 +126,7 @@ public class DynamicController implements IDynamic {
             }
 
             @Override
-            public void onFailure(Call<HorizonsyncDetailsResponse> call, Throwable t) {
+            public void onFailure(Call<HorizonSyncDetailsWebResponse> call, Throwable t) {
 
                 if (t instanceof ConnectException) {
                     iResponseSubcriber.OnFailure(t);

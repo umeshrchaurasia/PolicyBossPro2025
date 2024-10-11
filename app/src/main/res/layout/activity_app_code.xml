@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/lyParent"
+    android:background="@null"
+    tools:context=".view.appCode.AppCodeActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+
+        android:paddingTop="@dimen/eight">
+
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginHorizontal="@dimen/twelve"
+            android:background="@color/bg_dashboard"
+            android:paddingBottom="@dimen/twelve"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <TextView
+                android:id="@+id/textOath"
+                style="@style/TextViewStyle.Large"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+
+
+                android:background="@color/colorPrimaryDark"
+                android:fontFamily="@font/muli"
+                android:gravity="center"
+                android:padding="@dimen/twelve"
+                android:text="App Code"
+                android:textColor="@color/white"
+                android:textSize="20sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/imgClose"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginRight="2dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_close" />
+
+            <TextView
+                android:id="@+id/txtDes"
+                android:layout_marginTop="@dimen/twelve"
+                android:text="Enter this code to login to PolicyBoss.com Web"
+                style="@style/TextViewStyle.BannerLarge"
+                android:textStyle="bold"
+                android:layout_marginHorizontal="@dimen/twelve"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+
+                app:layout_constraintTop_toBottomOf="@+id/imgClose"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </TextView>
+            <View
+                android:id="@+id/view1"
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="@dimen/twelve"
+                android:layout_marginTop="@dimen/eight"
+                android:background="@color/blue_descent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txtDes" />
+
+
+            <!--            android:textColor="@color/lightBlue"-->
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtOauthData"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/twelve"
+                android:layout_marginTop="12dp"
+
+                android:background="@drawable/bg_gradient"
+                android:fontFamily="@font/bungee"
+                android:gravity="center"
+                android:text=""
+                android:textColor="@color/white"
+                android:textSize="52sp"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+
+                app:layout_constraintTop_toBottomOf="@+id/view1" />
+
+            <ProgressBar
+                android:id="@+id/imgLoader"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:layout_marginTop="@dimen/twenty_four"
+                android:indeterminate="true"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+
+                app:layout_constraintTop_toBottomOf="@+id/view1" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtNote"
+                style="@style/TextViewStyle.Medium"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/fab_margin"
+                android:layout_marginTop="12dp"
+                android:layout_marginBottom="@dimen/eight"
+                android:gravity="left"
+
+                android:text="@string/oauth_note"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txtOauthData">
+
+            </androidx.appcompat.widget.AppCompatTextView>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtError"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textColor="@color/red_button"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/txtNote">
+
+            </androidx.appcompat.widget.AppCompatTextView>
+
+            <TextView
+                android:id="@+id/txtTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/eight"
+                android:layout_marginRight="@dimen/eight"
+                android:text=""
+
+                android:textColor="@color/black"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/view1" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</RelativeLayout>

@@ -89,6 +89,8 @@
     <string name="NinetyNine">Lite Membership(\u20B9 99)</string>
 
     <string name="FM_Contact">Hello, Welcome to Finmart Whatsapp chat.\nyou can use this to communicate with us,\nto allow press Add to Contact</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

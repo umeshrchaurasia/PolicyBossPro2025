@@ -29,7 +29,8 @@ class DashboardItemAdapter(
     private val context: Context,
     private val listInsur: List<DashboardMultiLangEntity>,
     private val onShareClick: (DashboardMultiLangEntity) -> Unit,
-    private val onInfoClick: (DashboardMultiLangEntity) -> Unit
+    private val onInfoClick: (DashboardMultiLangEntity) -> Unit,
+    private val onDashBoardClick: (DashboardMultiLangEntity) -> Unit
 
 
 ) : RecyclerView.Adapter<DashboardItemAdapter.DashboardItemHolder>(){
@@ -61,14 +62,16 @@ class DashboardItemAdapter(
             txtProductName.text = item.menuName
             txtProductDesc.text = item.description
 
-            // Set share and info visibility
+            //region Set share and info visibility
             imgShare.visibility = if (item.isSharable == "Y") View.VISIBLE else View.GONE
             imgInfo.visibility = if (item.info.isNotEmpty()) View.VISIBLE else View.GONE
+            //endregion
 
-            // Set background and font colors
+            //region Set background and font colors
             lyParent.setBackgroundColor(item.productBackgroundColor.takeIf { it.isNotEmpty() }?.let {
                 Color.parseColor("#$it")
             } ?: ContextCompat.getColor(context, R.color.white))
+
 
             txtProductName.setTextColor(item.productNameFontColor.takeIf { it.isNotEmpty() }?.let {
                 Color.parseColor("#$it")
@@ -77,14 +80,18 @@ class DashboardItemAdapter(
             txtProductDesc.setTextColor(item.productDetailsFontColor.takeIf { it.isNotEmpty() }?.let {
                 Color.parseColor("#$it")
             } ?: ContextCompat.getColor(context, R.color.header_text_color))
+            //endregion
 
             // Show "New" icon if exclusive
+
+            // region for Sharing Insurance Prod
             if (item.isExclusive == "Y") {
                 imgNew.visibility = View.VISIBLE
                 Glide.with(context).asGif().load(R.drawable.newicon).into(imgNew)
             } else {
                 imgNew.visibility = View.GONE
             }
+            //endregion
 
 
             imgShare.setOnClickListener{
@@ -107,6 +114,20 @@ class DashboardItemAdapter(
                 }
 
             }
+
+            lyParent.setOnClickListener{
+
+                if (!NetworkUtils.isNetworkAvailable(context)) {
+
+                    context.showSnackbar(imgShare,context.getString(R.string.noInternet))
+                }
+                else{
+                    onDashBoardClick(item)
+                }
+
+            }
+
+
         }
     }
 

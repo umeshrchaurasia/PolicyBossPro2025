@@ -94,15 +94,36 @@
 
     <application
         android:name=".PolicyBossProApplication"
-        android:allowBackup="true"
-        android:dataExtractionRules="@xml/data_extraction_rules"
-        android:fullBackupContent="@xml/backup_rules"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_policyboss"
         android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_policyboss_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Policybossprov34"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
+        <activity
+            android:name=".view.appCode.AppCodeActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.TranslucentDark">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".view.myAccount.MyAccountActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.syncContact.ui.WelcomeSyncContactActivityKotlin"
+            android:exported="false" />
+        <activity
+            android:name=".view.syncContact.ui.SyncContactActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.changePwd.ChangePaswordActivity"
+            android:exported="false" />
         <activity
             android:name=".view.incomePotential.IncomePotentialActivity"
             android:exported="false" />
@@ -117,9 +138,6 @@
             android:exported="false" />
         <activity
             android:name=".webview.ShareQuoteActivity"
-            android:exported="false" />
-        <activity
-            android:name=".view.syncContact.welcome.WelcomeSyncContactActivityKotlin"
             android:exported="false" />
         <activity
             android:name=".webview.CommonWebViewActivity"
@@ -216,6 +234,10 @@
         <!-- <action android:name="com.google.firebase.MESSAGING_EVENT" /> -->
         <!-- </intent-filter> -->
         <!-- </service> -->
+        <!-- Note: For ForegroundService WorkManger Android ver 13 and above -->
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:foregroundServiceType="dataSync" />
         <service
             android:name="com.google.android.gms.analytics.AnalyticsService"
             android:enabled="true"

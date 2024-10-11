@@ -4,6 +4,231 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.syncContact.welcome.WelcomeSyncContactActivityKotlin">
+    tools:context=".view.syncContact.ui.WelcomeSyncContactActivityKotlin">
+
+    <LinearLayout
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/lyFooter"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="0dp"
+        android:orientation="vertical">
+
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:contentDescription="display viewpager"
+            android:layout_weight="1" />
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:alpha=".5"
+            android:background="@android:color/white" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-5dp"
+            android:layout_marginLeft="10dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtsetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="8dp"
+
+                android:text="@string/settings"
+                android:textAppearance="@style/TextStyle.TextMedium" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="10dp"
+            android:orientation="vertical"
+            android:id="@+id/ll_term"
+            android:visibility="visible">
+
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_gravity="center"
+                android:padding="10dp"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <TextView
+                    android:id="@+id/txtterm"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+
+                    android:text="@string/term"
+                    android:textAppearance="@style/TextViewStyle.Large"
+                    android:textColor="@color/blue" />
+
+                <TextView
+                    android:id="@+id/txttermspace"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="0dp"
+                    android:contentDescription="terms space"
+                    android:text="  "
+                    android:textAppearance="@style/TextViewStyle.Large"
+                    android:textColor="@color/blue" />
+                <TextView
+                    android:id="@+id/txtprivacy"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+
+                    android:textAppearance="@style/TextViewStyle.Large"
+                    android:textColor="@color/blue"
+                    android:text="@string/privacy"
+                    />
+            </LinearLayout>
+
+            <!--        <TextView-->
+            <!--            android:id="@+id/txtterm"-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:layout_marginTop="0dp"-->
+
+            <!--            android:text="@string/term"-->
+            <!--            android:textAppearance="@style/TextViewStyle.Large"-->
+            <!--            android:textColor="@color/blue" />-->
+
+
+            <!--        <TextView-->
+            <!--            android:id="@+id/txtprivacy"-->
+            <!--            android:layout_width="match_parent"-->
+            <!--            android:layout_height="wrap_content"-->
+            <!--            android:layout_marginTop="4dp"-->
+            <!--            android:textAppearance="@style/TextViewStyle.Large"-->
+            <!--            android:textColor="@color/blue"-->
+            <!--            android:text="@string/privacy"-->
+            <!--             />-->
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:layout_marginTop="1dp"
+                style="@style/MaterialCheckBoxStyle"
+                android:id="@+id/chkcommunication_sms"
+                android:gravity="top"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="I would like to avail of communication support (SMS/Email/Whatsapp/Other Comm. modes) for my Sync Contact Leads"
+                android:checked="false"/>
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/chktele_call"
+                style="@style/MaterialCheckBoxStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="5dp"
+                android:checked="false"
+                android:gravity="top"
+                android:minHeight="48dp"
+                android:text="I would like to avail of tele-calling support for my Sync Contact Leads" />
+
+            <com.google.android.material.checkbox.MaterialCheckBox
+                android:id="@+id/chkagree"
+                style="@style/MaterialCheckBoxStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:layout_marginTop="5dp"
+                android:checked="false"
+                android:gravity="top"
+                android:minHeight="48dp"
+                android:text="I hereby agree to the terms &amp; conditions for using Sync Contacts" />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/lyFooter"
+        android:layout_width="408dp"
+        android:layout_height="87dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
+
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_next"
+
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:background="@drawable/custome_curveborder_blue"
+            app:backgroundTint="@null"
+            android:padding="@dimen/twelve"
+            android:text="Next"
+            android:textColor="@color/button_color" />
+
+        <LinearLayout
+            android:id="@+id/layoutDots"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:padding="12dp">
+
+            <ImageView
+                android:id="@+id/dot1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:src="@drawable/indicator_active" />
+
+            <ImageView
+                android:id="@+id/dot2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:src="@drawable/unselected_dot" />
+
+            <ImageView
+                android:id="@+id/dot3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"
+                android:src="@drawable/unselected_dot" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/btn_skip"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layoutDots"
+            android:background="@null"
+            android:gravity="center"
+            android:padding="4dp"
+            android:text="@string/skin_walkthrogh"
+            android:visibility="gone" />
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

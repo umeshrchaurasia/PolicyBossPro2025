@@ -89,6 +89,7 @@
                     android:id="@+id/nav_addposp"
                     android:icon="@drawable/posp_enrollment"
                     android:orderInCategory="230"
+                    android:visible="false"
                     android:title="Add Sub User" />
 
                 <item
@@ -221,6 +222,7 @@
                     android:id="@+id/nav_generateLead"
                     android:icon="@drawable/vehicledetail"
                     android:orderInCategory="420"
+                    android:visible="false"
                     android:title="Generate Motor Leads" />
 
                 <item

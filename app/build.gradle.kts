@@ -17,8 +17,8 @@ android {
         applicationId = "com.policyboss.policybosspro"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = 44
+        versionName = "1.4.0.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -66,6 +66,7 @@ dependencies {
     implementation("androidx.paging:paging-runtime:3.3.2")
     implementation("io.github.chaosleung:pinview:1.4.4")
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
+
     ksp ("androidx.room:room-compiler:2.6.1")
 
     // Coroutines
@@ -89,6 +90,12 @@ dependencies {
     // Hilt Components
     implementation("com.google.dagger:hilt-android:2.52")
     ksp ("com.google.dagger:hilt-compiler:2.52")
+
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
+
+    // Hilt with WorkManager
+    implementation("androidx.hilt:hilt-work:1.2.0")
+    ksp("androidx.hilt:hilt-compiler:1.2.0")
 
     // For Image Proceesing
     implementation ("io.coil-kt:coil:2.7.0")

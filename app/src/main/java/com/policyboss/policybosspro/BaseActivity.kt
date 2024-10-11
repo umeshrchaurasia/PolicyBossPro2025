@@ -22,13 +22,14 @@ import com.policyboss.policybosspro.databinding.ProgressdialogLoadingBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utility.Utility
 import com.policyboss.policybosspro.view.incomePotential.IncomePotentialActivity
-import com.policyboss.policybosspro.view.syncContact.welcome.WelcomeSyncContactActivityKotlin
+
 import com.policyboss.policybosspro.webview.CommonWebViewActivity
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.regex.Pattern
 import javax.inject.Inject
 
 import com.policyboss.policybosspro.BuildConfig
+import com.policyboss.policybosspro.view.syncContact.ui.WelcomeSyncContactActivityKotlin
 
 open class BaseActivity() : AppCompatActivity() {
 

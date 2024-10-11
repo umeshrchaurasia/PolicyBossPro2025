@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.graphics.Region
+import android.os.Bundle
 import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.analytics.HitBuilders
 import com.google.android.gms.analytics.Tracker
@@ -23,6 +24,7 @@ import com.webengage.sdk.android.callbacks.PushNotificationCallbacks
 import com.xiaomi.mipush.sdk.MiPushClient
 
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
 @HiltAndroidApp
 class PolicyBossProApplication : Application() {
@@ -34,8 +36,10 @@ class PolicyBossProApplication : Application() {
             private set
     }
 
-    private var firebaseAnalytics: FirebaseAnalytics? = null
 
+
+    @Inject
+    lateinit var mFirebaseAnalytics: FirebaseAnalytics
 
     override fun onCreate() {
         super.onCreate()
@@ -44,7 +48,7 @@ class PolicyBossProApplication : Application() {
 
         instance = this
 
-        firebaseAnalytics = FirebaseAnalytics.getInstance(this)
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this)
 
         val webengageKey = "in~aa13173a"
         val webEngageConfig = WebEngageConfig.Builder()
@@ -88,6 +92,20 @@ class PolicyBossProApplication : Application() {
         tracker.send(HitBuilders.ScreenViewBuilder().build())
         GoogleAnalytics.getInstance(this).dispatchLocalHits()
     }
+
+    fun trackEvent(category: String, action: String, label: String) {
+        var fbaId = 0
+
+        val bundle = Bundle().apply {
+            putString(FirebaseAnalytics.Param.ITEM_NAME, category)
+            putString(FirebaseAnalytics.Param.CONTENT_TYPE, action)
+            putString(FirebaseAnalytics.Param.CREATIVE_NAME, label)
+            putString(FirebaseAnalytics.Param.TRANSACTION_ID, fbaId.toString())
+        }
+
+        mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle)
+    }
+
 
     private inner class PushNotificationCallbacksImpl : PushNotificationCallbacks {
         override fun onPushNotificationReceived(

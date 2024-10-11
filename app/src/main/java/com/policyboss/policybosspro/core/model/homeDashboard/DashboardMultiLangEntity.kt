@@ -29,6 +29,7 @@ class DashboardMultiLangEntity(
     var popupmsg: String = ""
     var title: String = ""
     var info: String = ""
+    var IsNewprdClickable : String = ""
 }
 
 

@@ -54,7 +54,8 @@ import com.policyboss.policybosspro.facade.PolicyBossPrefsManager;
 import com.policyboss.policybosspro.utility.Utility;
 import com.policyboss.policybosspro.utils.DBPersistanceController;
 import com.policyboss.policybosspro.view.login.LoginActivity;
-import com.policyboss.policybosspro.view.syncContact.welcome.WelcomeSyncContactActivityKotlin;
+
+import com.policyboss.policybosspro.view.syncContact.ui.WelcomeSyncContactActivityKotlin;
 import com.policyboss.policybosspro.webview.CommonWebViewActivity;
 
 import org.json.JSONObject;

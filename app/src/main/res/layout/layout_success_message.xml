@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:card_view="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+
+    >
+
+
+
+        <LinearLayout
+            android:id="@+id/lyParent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="70dp"
+            android:orientation="vertical"
+            android:background="@drawable/custom_grey"
+            android:padding="10dp">
+
+
+            <TextView
+                android:id="@+id/txtHdr"
+                android:layout_marginTop="@dimen/twenty_four"
+                style="@style/TextViewStyle.Large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="0dp"
+                android:text="Congrats! Sync Done!"
+                android:fontFamily="@font/poppinsmedium"
+                android:textColor="@color/black"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.6dp"
+                android:layout_marginBottom="8dp"
+                android:background="@color/search_gray"
+                />
+
+            <TextView
+                android:id="@+id/txtMessage"
+                style="@style/TextViewStyle.Large"
+                android:fontFamily="@font/muli"
+                android:layout_marginTop="4dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="you are one step away from unlocking sales potential of your phone book."
+                />
+
+           <LinearLayout
+               android:visibility="gone"
+               android:id="@+id/lyReceipt"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_marginTop="5dp"
+               android:padding="5dp"
+               android:gravity="center_vertical"
+               android:orientation="horizontal">
+               <TextView
+                   style="@style/TextViewStyle.Medium"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_marginTop="5dp"
+                   android:text="Receipt:" />
+
+               <ImageView
+                   android:id="@+id/ivReceipt"
+                   android:layout_width="25dp"
+                   android:layout_height="25dp"
+                   android:layout_marginLeft="8dp"
+                   android:layout_marginTop="5dp"
+                   android:scaleType="centerInside"
+
+                   android:src="@drawable/checky" />
+           </LinearLayout>
+
+
+            <TextView
+                android:id="@+id/txtMessage_ssid"
+                android:fontFamily="@font/muli"
+                android:padding="@dimen/eight"
+                android:layout_marginTop="4dp"
+                style="@style/TextViewStyle.Large"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:text="ssid"
+                />
+
+            <Button
+                android:id="@+id/btnClose"
+                style="@style/ButtonStyle"
+                android:layout_width="match_parent"
+                android:textAllCaps="false"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+
+                android:text="View Sync Summary" />
+
+
+        </LinearLayout>
+
+
+    <ImageView
+        android:id="@+id/ivClose"
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:adjustViewBounds="true"
+        android:scaleType="centerInside"
+        android:src="@drawable/checky" />
+
+
+</RelativeLayout>
