@@ -104,6 +104,12 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".view.salesMaterial.SalesMaterialActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.notification.NotificationActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.appCode.AppCodeActivity"
             android:exported="false"
             android:screenOrientation="portrait"

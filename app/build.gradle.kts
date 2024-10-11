@@ -67,6 +67,10 @@ dependencies {
     implementation("io.github.chaosleung:pinview:1.4.4")
     implementation("androidx.coordinatorlayout:coordinatorlayout:1.2.0")
 
+//05 temp
+//    implementation("com.google.android.play:review-ktx:2.0.1")
+//    implementation("com.google.android.play:core-ktx:1.8.1")
+
     ksp ("androidx.room:room-compiler:2.6.1")
 
     // Coroutines

@@ -1,16 +1,21 @@
 package com.policyboss.policybosspro.view.home
 
+import android.app.ActivityOptions
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.graphics.drawable.Icon
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
+import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.Lifecycle
@@ -18,7 +23,9 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import com.google.android.material.snackbar.Snackbar
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.navigation.NavigationView
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.BuildConfig
 import com.policyboss.policybosspro.PolicyBossProApplication
@@ -29,19 +36,28 @@ import com.policyboss.policybosspro.core.model.homeDashboard.DashboardMultiLangE
 import com.policyboss.policybosspro.core.model.sysncContact.SyncContactEntity
 import com.policyboss.policybosspro.core.viewModel.homeVM.HomeViewModel
 import com.policyboss.policybosspro.databinding.ActivityHomeBinding
+import com.policyboss.policybosspro.databinding.DrawerHeaderBinding
 import com.policyboss.policybosspro.databinding.LayoutMysyncPopupBinding
 import com.policyboss.policybosspro.databinding.LayoutSharePopupBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utility.Utility
 import com.policyboss.policybosspro.utils.Constant
+import com.policyboss.policybosspro.utils.FeedbackHelper
 import com.policyboss.policybosspro.utils.NetworkUtils
 import com.policyboss.policybosspro.utils.hideKeyboard
 import com.policyboss.policybosspro.utils.showSnackbar
+import com.policyboss.policybosspro.view.appCode.AppCodeActivity
 import com.policyboss.policybosspro.view.changePwd.ChangePaswordActivity
 import com.policyboss.policybosspro.view.home.adapter.DashboardRowAdapter
+import com.policyboss.policybosspro.view.login.LoginActivity
+import com.policyboss.policybosspro.view.myAccount.MyAccountActivity
+import com.policyboss.policybosspro.view.notification.NotificationActivity
+import com.policyboss.policybosspro.view.salesMaterial.SalesMaterialActivity
 import com.policyboss.policybosspro.view.syncContact.ui.WelcomeSyncContactActivityKotlin
-
 import com.policyboss.policybosspro.webview.CommonWebViewActivity
+import com.webengage.sdk.android.Channel
+import com.webengage.sdk.android.User
+import com.webengage.sdk.android.WebEngage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -62,13 +78,20 @@ class HomeActivity : BaseActivity() {
     private val viewModel by viewModels<HomeViewModel>()
     @Inject
     lateinit var prefsManager: PolicyBossPrefsManager
-
+    lateinit var weUser: User
 
     @Inject
    lateinit var myApplication: PolicyBossProApplication
 
 
     private lateinit var toggle: ActionBarDrawerToggle
+
+    private lateinit var navigationView : NavigationView     //layout navigation_view
+    private lateinit var headerBinding: DrawerHeaderBinding // layout name drawer_header in activity_xml
+
+    var shortcutManager: ShortcutManager? = null
+    var deeplink_value = ""
+    var Title = ""
 
     //endregion
 
@@ -95,8 +118,21 @@ class HomeActivity : BaseActivity() {
         toggle.syncState()
 
         binding.swipeRefreshLayout.isEnabled = false
+
+
         //endregion
 
+        weUser = WebEngage.get().user()
+
+        // Initialize the navigation view
+        navigationView = binding.navigationView
+
+        //Initialize headerView
+        headerBinding = DrawerHeaderBinding.bind(navigationView.getHeaderView(0))
+
+        initHeaderLayout()
+
+        setupHeaderLayoutListeners()
 
         //region Handle OnBackPressed()
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -196,11 +232,51 @@ class HomeActivity : BaseActivity() {
 
 
             when (menuItem.itemId) {
-                R.id.nav_finbox -> {
-                    // Handle nav item 1 click
+
+                R.id.nav_home ->{
+
+                    viewModel.getMasterData()
                 }
+
+                R.id.nav_finbox -> {
+                    startActivity(
+                        Intent(
+                            this@HomeActivity,
+                            CommonWebViewActivity::class.java
+                        ).putExtra(Constant.URL, prefsManager.getFinboxurl())
+                            .putExtra("NAME", "MY FINBOX").putExtra("TITLE", "MY FINBOX")
+                    )
+
+                }
+
+                R.id.nav_finperk -> {
+                    startActivity(
+                        Intent(
+                            this@HomeActivity,
+                            CommonWebViewActivity::class.java
+                        ).putExtra(Constant.URL, prefsManager.getFinperkurl())
+                            .putExtra("NAME", "FINPERKS").putExtra("TITLE", "FINPERKS")
+                    )
+
+                }
+
+                R.id.nav_festivelink -> {
+                    startActivity(
+                        Intent(
+                            this@HomeActivity,
+                            CommonWebViewActivity::class.java
+                        ).putExtra(Constant.URL, prefsManager.getFinperkurl())
+                            .putExtra("NAME", "FESTIVE LINKS").putExtra("TITLE", "FESTIVE LINKS")
+                    )
+
+                }
+
                 R.id.nav_AppointmentLetter -> {
                     // Handle nav item 2 click
+                }
+                R.id.nav_REQUEST -> {
+
+                    startActivity(Intent(this@HomeActivity, AppCodeActivity::class.java))
                 }
 
                 R.id.nav_changepassword -> {
@@ -246,10 +322,6 @@ class HomeActivity : BaseActivity() {
 
                 }
 
-                R.id.nav_whatsnew -> {
-                    //05 temp My Account
-                    startActivity(Intent(this@HomeActivity, ChangePaswordActivity::class.java))
-                }
 
                 R.id.nav_raiseTicket -> {
                     val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
@@ -263,6 +335,10 @@ class HomeActivity : BaseActivity() {
                     startActivity(intent)
 
                 }
+                R.id.nav_logout -> {
+
+                    dialogLogout()
+                }
 
 
                 // Add more cases as needed
@@ -274,6 +350,106 @@ class HomeActivity : BaseActivity() {
         //endregion
 
 
+    }
+
+
+    private fun initHeaderLayout() {
+
+
+        with(headerBinding) {
+
+            txtEntityName.text = "Ver.${Utility.getVersionName(this@HomeActivity)}"
+
+            if (prefsManager.getEmpData() != null) {
+                txtDetails.text = prefsManager.getEmpData()?.Emp_Name ?: ""
+                txtFbaID.text = "Fba Id - ${prefsManager.getFBAID()}"
+                txtReferalCode.text = "Referral Code -"
+
+                weUser.login(prefsManager.getEmpData()?.Email_Id ?: "")
+                weUser.setOptIn(Channel.WHATSAPP, true)
+
+                weUser.setAttribute("Is Agent",
+                    when (prefsManager.getUserType()) {
+                    "POSP", "FOS" -> true
+                    else -> false
+                   }
+                )
+
+
+            } else {
+                txtDetails.text = ""
+                txtFbaID.text = "Fba Id - "
+                txtReferalCode.text = "Referral Code - "
+            }
+
+            prefsManager.getUserConstantEntity()?.let {
+                try {
+                    txtPospNo.text = "Posp No - ${prefsManager.getSSID()}"
+                    txtErpID.text = "Erp Id - ${prefsManager.getERPID()}"
+
+                    val fullname = prefsManager.getName().split("\\s+".toRegex())
+                    weUser.setFirstName(fullname[0])
+                    weUser.setLastName(fullname.getOrNull(1) ?: "")
+
+                    weUser.setAttribute("POSP No.", prefsManager.getSSID().toIntOrNull() ?: 0)
+                    weUser.setPhoneNumber(prefsManager.getEmpData()?.Mobile_Number ?: "" )
+                    weUser.setEmail(prefsManager.getEmpData()?.Email_Id ?: "")
+
+                    Glide.with(this@HomeActivity)
+                        .load(prefsManager.getUserConstantEntity()?.loansendphoto)
+                        .placeholder(R.drawable.circle_placeholder)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(true)
+                        .override(64, 64)
+                       // .transform(CircleTransform(this@HomeActivity)) // applying image transformer
+                        .into(ivProfile)
+
+                } catch (e: Exception) {
+                    // Handle exception
+                }
+
+            } ?: run {
+                try {
+                    txtPospNo.text = ""
+                    txtErpID.text = ""
+
+                    Glide.with(this@HomeActivity)
+                        .load(R.drawable.finmart_user_icon)
+                        .placeholder(R.drawable.circle_placeholder)
+                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                        .skipMemoryCache(true)
+                        .override(64, 64)
+                       // .transform(CircleTransform(this@HomeActivity))
+                        .into(ivProfile)
+
+                } catch (e: Exception) {
+                    // Handle exception
+                }
+            }
+
+        }
+    }
+
+    private fun setupHeaderLayoutListeners() {
+        with(headerBinding) {
+            txtknwyour.setOnClickListener {
+                val url = "${prefsManager.getNotif_popupurl_elite()}&app_version=${prefsManager.getAppVersion()}" +
+                        "&device_code=${prefsManager.getDeviceID()}&ssid=${prefsManager.getDeviceID()}&fbaid=${prefsManager.getFBAID()}"
+                openWebViewPopUp(txtFbaID, url, true, "")
+            }
+
+            ivProfile.setOnClickListener {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    val shareIntent = Intent(this@HomeActivity, MyAccountActivity::class.java)
+                    val pairs = arrayOf(android.util.Pair(ivProfile as View, "profileTransition"))
+                    val options = ActivityOptions.makeSceneTransitionAnimation(this@HomeActivity, *pairs)
+                    startActivity(shareIntent, options.toBundle())
+                } else {
+                    startActivity(Intent(this@HomeActivity, MyAccountActivity::class.java))
+                }
+            }
+
+        }
     }
 
 
@@ -302,61 +478,6 @@ class HomeActivity : BaseActivity() {
 
     //endregion
 
-    private fun setNavigationMenu(language: String) {
-
-        val menu = binding.navigationView.menu
-
-        // Create a list of MenuItem pairs for better handling
-        val menuItems = mapOf(
-            "MenuHome" to menu.findItem(R.id.nav_home),
-            "Switch Language" to menu.findItem(R.id.nav_language),
-            "MenuMyFinbox" to menu.findItem(R.id.nav_finbox),
-            "MenuFinperks" to menu.findItem(R.id.nav_finperk),
-            "FESTIVE LINKS" to menu.findItem(R.id.nav_festivelink),
-            "Finmart Business Contact" to menu.findItem(R.id.nav_insert_contact),
-            "MenuMyAccount" to menu.findItem(R.id.nav_myaccount_pro),
-            "MenuMyProfile" to menu.findItem(R.id.nav_myaccount),
-            "Enrol as POSP" to menu.findItem(R.id.nav_pospenrollment),
-            "" to menu.findItem(R.id.nav_addposp),
-            "MenuRaiseTicket" to menu.findItem(R.id.nav_raiseTicket),
-            "MenuChangePwd" to menu.findItem(R.id.nav_changepassword),
-
-            "MenuMyDocs" to menu.findItem(R.id.nav_Doc),
-
-            "MenuPospAppLtr" to menu.findItem(R.id.nav_AppointmentLetter),
-            "MenuPospAppForm" to menu.findItem(R.id.nav_Certificate),
-            "MenuMyTranTitle" to menu.findItem(R.id.nav_TRANSACTIONS),
-            "MenuInsBus" to menu.findItem(R.id.nav_mybusiness_insurance),
-            "MenuMyTransItm" to menu.findItem(R.id.nav_transactionhistory),
-            "MenuMyMsgs" to menu.findItem(R.id.nav_MessageCentre),
-            "MenuPolicyByCRN" to menu.findItem(R.id.nav_crnpolicy),
-            "MenuMyLeads" to menu.findItem(R.id.nav_LEADS),
-            "MenuLeadfromCont" to menu.findItem(R.id.nav_contact),
-            "MenuMotLeads" to menu.findItem(R.id.nav_generateLead),
-            "" to menu.findItem(R.id.nav_scan_vehicle),
-
-            "MenuLeadDash" to menu.findItem(R.id.nav_leaddetail),
-            "MenuSms" to menu.findItem(R.id.nav_sendSmsTemplate),
-
-            "MenuMorServ" to menu.findItem(R.id.nav_REQUEST),
-            "MenuMorServ" to menu.findItem(R.id.nav_QA),
-            "MenuUtil" to menu.findItem(R.id.nav_MYUtilities),
-            "Menuwtsnew" to menu.findItem(R.id.nav_whatsnew),
-            "" to menu.findItem(R.id.nav_cobrowser),
-            "MenuLogOut" to menu.findItem(R.id.nav_logout)
-        )
-
-        // Set titles and fonts for menu items based on the selected language
-        if (language.isNotEmpty()) {
-//            for ((key, item) in menuItems) {
-//                val title = db.getLangData(language, key)
-//                if (title.isNotEmpty()) {
-//                    item.title = title
-//                    setLanguageFont(this, language, item)
-//                }
-//            }
-        }
-    }
 
 
     //region Adapter Callback
@@ -752,6 +873,36 @@ class HomeActivity : BaseActivity() {
 
     //endregion
 
+    fun dialogLogout() {
+        // Use MaterialAlertDialogBuilder instead of AlertDialog.Builder
+        val builder = MaterialAlertDialogBuilder(this@HomeActivity)
+
+        builder.setTitle("")
+            .setMessage("Do you really want to logout?")
+            .setCancelable(false)
+            .setPositiveButton("LOGOUT") { dialog, _ ->
+                dialog.dismiss()
+
+                // Use the singleton instance of PolicyBossPrefsManager
+                prefsManager.clearAll()
+
+                removeShortcuts()
+                weUser.logout()
+                // Navigate to LoginActivity
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                startActivity(intent)
+                finish()
+            }
+            .setNegativeButton("CANCEL") { dialog, _ ->
+                dialog.dismiss()
+            }
+
+        // Create and show the dialog
+        builder.show()
+    }
+
+
     // region webEnagage Event
     private fun trackMainMenuEvent(strOption: String) {
         // Create event attributes
@@ -764,12 +915,14 @@ class HomeActivity : BaseActivity() {
 
     //endregion
 
+
+
     // region ShortcutMenu
-    private fun shortcutAppMenu() {
+    fun shortcutAppMenu() {
         try {
             if (prefsManager.getEmpData() != null && prefsManager.getUserConstantEntity() != null) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-                    val shortcutManager = getSystemService(ShortcutManager::class.java)
+                    shortcutManager = getSystemService(ShortcutManager::class.java)
 
                     shortcutManager?.let {
 
@@ -805,7 +958,7 @@ class HomeActivity : BaseActivity() {
                             createShortcut("ID4", "Two Wheeler", R.drawable.two_wheeler_sm, intentBike, 3)
                         )
 
-                        shortcutManager.dynamicShortcuts = shortcuts
+                        shortcutManager?.dynamicShortcuts = shortcuts
                     }
                 }
             }
@@ -814,6 +967,25 @@ class HomeActivity : BaseActivity() {
             Log.d(Constant.TAG, ex.toString())
         }
     }
+
+    fun removeShortcuts() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+            try {
+                val shortcutManager = getSystemService(ShortcutManager::class.java)
+
+                shortcutManager?.let {
+                    it.disableShortcuts(listOf("ID1"))
+                    it.disableShortcuts(listOf("ID2"))
+                    it.disableShortcuts(listOf("ID3"))
+                    it.disableShortcuts(listOf("ID4"))
+                    it.removeAllDynamicShortcuts()
+                }
+            } catch (ex: Exception) {
+                Log.d("SHORTCUTMENU", ex.toString())
+            }
+        }
+    }
+
 
 
     private fun createWebIntent(url: String, title: String): Intent {
@@ -836,6 +1008,7 @@ class HomeActivity : BaseActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.N_MR1)
     private fun createShortcut(id: String, label: String, iconRes: Int, intent: Intent, rank: Int): ShortcutInfo {
         return ShortcutInfo.Builder(this, id)
             .setShortLabel(label)
@@ -846,6 +1019,73 @@ class HomeActivity : BaseActivity() {
             .build()
     }
     //endregion
+
+    private fun deeplinkHandle() {
+        val deeplinkValue = prefsManager.getDeepLink()
+
+        if (deeplinkValue != null && deeplinkValue.isNotEmpty()) {
+
+            try {
+                val myUri = Uri.parse(deeplinkValue)
+
+                val prdID = myUri.getQueryParameter("product_id")
+                val titleValue = myUri.getQueryParameter("title") ?: ""
+
+                Title = titleValue
+
+                when (prdID) {
+                    "41" -> startActivity(Intent(this, WelcomeSyncContactActivityKotlin::class.java))
+                    "501" -> startActivity(Intent(this, MyAccountActivity::class.java))
+                    "502" -> {
+                        val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+                            putExtra("URL", prefsManager.getEnableProPOSPurl() +
+                                    "&app_version=" + prefsManager.getAppVersion() +
+                                    "&device_code=" + Utility.getDeviceID(this@HomeActivity) +
+                                    "&ssid=" + prefsManager.getSSID() +
+                                    "&fbaid=" + prefsManager.getFBAID())
+                            putExtra("NAME", "PospEnrollment")
+                            putExtra("TITLE", "Posp Enrollment")
+                        }
+                        startActivity(intent)
+                    }
+                    "503" -> startActivity(Intent(this, NotificationActivity::class.java))
+                    "504" -> startActivity(Intent(this, SalesMaterialActivity::class.java))
+                    "505" -> FeedbackHelper.showFeedbackDialog(this)
+                    else -> {
+                        val ipAddress = try {
+                            ""  // Replace with actual logic to get IP address
+                        } catch (e: Exception) {
+                            "0.0.0.0"
+                        }
+
+                        val append = "&ss_id=${prefsManager.getSSID()}&fba_id=${prefsManager.getFBAID()}" +
+                                "&sub_fba_id=&ip_address=$ipAddress&mac_address=$ipAddress" +
+                                "&app_version=policyboss-${BuildConfig.VERSION_NAME}&device_id=${Utility.getDeviceID(this)}" +
+                                "&login_ssid="
+
+                        // Update deeplinkValue with appended parameters
+                        val updatedDeeplinkValue = deeplinkValue + append
+
+                        // Delayed execution using Coroutine
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            startActivity(Intent(this, CommonWebViewActivity::class.java).apply {
+                                putExtra("URL", updatedDeeplinkValue)
+                                putExtra("NAME", Title)
+                                putExtra("TITLE", Title)
+                            })
+                        }, 100)
+                    }
+                }
+            } catch (ex: Exception) {
+                Log.d("Deeplink", ex.toString())
+            } finally {
+                prefsManager.clearDeeplink() // Clear deeplink at the end
+            }
+        }
+    }
+
+
+
 
 
     //region Observer
@@ -876,15 +1116,10 @@ class HomeActivity : BaseActivity() {
 
                                 hideLoading()
 
-                                setupDashBoardData()
 
-//                                state.data?.horizonDetail?.SYNC_CONTACT?.let { syncContactEntity ->
-//
-//                                    if( syncContactEntity.ACTION_NEEDED.equals("NO_ACTION")){
-//                                        showMySyncPopUpAlert(syncContactEntity)
-//                                    }
-//
-//                                }
+                                setupDashBoardData()
+                                deeplinkHandle()
+                                shortcutAppMenu()
 
                                 state.data?.horizonDetail?.SYNC_CONTACT?.takeIf { it.ACTION_NEEDED == "NO_ACTION"}
                                     ?.let { syncContactEntity->

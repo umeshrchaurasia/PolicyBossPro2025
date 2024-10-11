@@ -24,6 +24,8 @@ object Constant {
     //public static String URL = "https://uat.mgfm.in";
 
 
+    val URL : String = "URL"
+
     val ErrorMessage : String = "Error occurred,Please try Again!"
     val Fail : String = "Failed"
     var DEMO_MESSAGE = "demo_message"

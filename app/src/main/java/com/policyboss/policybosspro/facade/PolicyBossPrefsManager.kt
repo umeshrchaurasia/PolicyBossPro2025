@@ -2,10 +2,8 @@ package com.policyboss.policybosspro.facade
 
 import android.content.Context
 import android.content.SharedPreferences
-
 import android.util.Log
 import com.google.gson.Gson
-import com.policyboss.policybosspro.core.APIState
 import com.policyboss.policybosspro.core.response.login.EMP
 import com.policyboss.policybosspro.core.response.login.LoginNewResponse_DSAS_Horizon
 import com.policyboss.policybosspro.core.response.login.OtpLoginMsg
@@ -26,9 +24,7 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
 
     private val editor: SharedPreferences.Editor = pref.edit()
 
-    private fun getEditor(): SharedPreferences.Editor {
-        return pref.edit()
-    }
+
 
     private  val gson = Gson()
 
@@ -66,7 +62,8 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         const val SHARED_KEY_PUSH_BODY = "shared_notify_Title"
         const val SHARED_KEY_PUSH_TITLE = "shared_notify_Body"
         const val PUSH_NOTIFICATION = "push_notifyication_data"
-        private const val DEEP_LINK = "DeepLink"
+
+        private const val DeepLink = "DeepLink"
         const val MPS_DATA = "mps_data"
         private const val MENU_DASHBOARD = "menu_dashboard"
         private const val CONTACT_COUNT = "contact_count"
@@ -90,10 +87,7 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
 
 
 
-    fun clearData(){
 
-        getEditor().clear().apply()
-    }
 
     fun setLanguage(language: String) {
         editor.putString(IS_LANGUAGE, language).apply()
@@ -251,6 +245,24 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
     fun getEnableProPOSPurl(): String {
         return pref.getString(IS_ENABLE_PRO_POSPURL, "") ?: ""
     }
+
+
+    //region Deeplink
+    fun setDeeplink(strDeepLink: String): Boolean {
+        editor.remove(DeepLink).apply()
+        return editor.putString(DeepLink, strDeepLink).commit()
+    }
+
+    fun getDeepLink(): String? {
+        return pref.getString(DeepLink, "")
+    }
+
+    fun clearDeeplink() {
+        pref.edit().remove(DeepLink)
+            .commit()
+    }
+
+    //endregion
 
 
     //region Important all API data  //05
@@ -559,11 +571,7 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         return response?.DEVICE?.Device_Identifier?:""
     }
 
-    fun clear() {
-        val strToken = getToken()
-        pref.edit().clear().apply()
-        setToken(strToken)
-    }
+
 
     fun saveLoginOTPResponse(  loginOTP : OtpLoginMsg?){
 
@@ -721,6 +729,24 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
 
         return   getUserConstantResponse()?.MasterData?.InvestmentUrl?:""
     }
+
+    fun getFinboxurl(): String {
+
+        return   getUserConstantResponse()?.MasterData?.finboxurl?:""
+    }
+
+    fun getFinperkurl(): String {
+
+        return   getUserConstantResponse()?.MasterData?.finperkurl?:""
+    }
+
+    fun getNotif_popupurl_elite(): String {
+
+        return   getUserConstantResponse()?.MasterData?.notif_popupurl_elite?:""
+    }
+
+
+
     //endregion
 
 
@@ -754,6 +780,15 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
 
     //endregion
 
+    //Not in Used
+    fun clear() {
+        val strToken = getToken()
+        pref.edit().clear().apply()
+        setToken(strToken)
+    }
+
+
+    //Mark : get Token and getContactMsgFirst before clear data and set it again
     fun clearAll() {
         val strToken = getToken()
         val strContact = getContactMsgFirst()
@@ -763,13 +798,6 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         setToken(strToken)
         updateContactMsgFirst(strContact)
 
-        // Uncomment if needed
-        /* getEditor().remove(POSP_INFO)
-            .remove(SHARED_KEY_PUSH_NOTIFY)
-            .remove(SHARED_KEY_PUSH_WEB_URL)
-            .remove(MENU_DASHBOARD)
-            .remove(SHARED_KEY_PUSH_WEB_TITLE)
-            .apply() */
     }
 
     // Example of getToken()
