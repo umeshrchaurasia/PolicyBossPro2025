@@ -12,6 +12,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
@@ -24,7 +25,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.BuildConfig
@@ -37,10 +37,12 @@ import com.policyboss.policybosspro.core.model.sysncContact.SyncContactEntity
 import com.policyboss.policybosspro.core.viewModel.homeVM.HomeViewModel
 import com.policyboss.policybosspro.databinding.ActivityHomeBinding
 import com.policyboss.policybosspro.databinding.DrawerHeaderBinding
+import com.policyboss.policybosspro.databinding.LayoutMenuDashboard3Binding
 import com.policyboss.policybosspro.databinding.LayoutMysyncPopupBinding
 import com.policyboss.policybosspro.databinding.LayoutSharePopupBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utility.Utility
+import com.policyboss.policybosspro.utility.UtilityNew
 import com.policyboss.policybosspro.utils.Constant
 import com.policyboss.policybosspro.utils.FeedbackHelper
 import com.policyboss.policybosspro.utils.NetworkUtils
@@ -49,9 +51,11 @@ import com.policyboss.policybosspro.utils.showSnackbar
 import com.policyboss.policybosspro.view.appCode.AppCodeActivity
 import com.policyboss.policybosspro.view.changePwd.ChangePaswordActivity
 import com.policyboss.policybosspro.view.home.adapter.DashboardRowAdapter
+import com.policyboss.policybosspro.view.others.incomePotential.IncomePotentialActivity
 import com.policyboss.policybosspro.view.login.LoginActivity
 import com.policyboss.policybosspro.view.myAccount.MyAccountActivity
 import com.policyboss.policybosspro.view.notification.NotificationActivity
+import com.policyboss.policybosspro.view.others.feedback.HelpFeedBackActivity
 import com.policyboss.policybosspro.view.salesMaterial.SalesMaterialActivity
 import com.policyboss.policybosspro.view.syncContact.ui.WelcomeSyncContactActivityKotlin
 import com.policyboss.policybosspro.webview.CommonWebViewActivity
@@ -72,6 +76,7 @@ class HomeActivity : BaseActivity() {
     private lateinit var dashboardAdapter: DashboardRowAdapter
     private lateinit var shareProdDialog: AlertDialog
     private var mySyncPopUpAlert: AlertDialog? = null
+    private var myUtilitiesDialog: AlertDialog? = null
 
     private var isSwipeRefresh = false
 
@@ -106,11 +111,28 @@ class HomeActivity : BaseActivity() {
         setSupportActionBar(binding.toolbar)
 
         // Initialize ActionBarDrawerToggle
-        toggle = ActionBarDrawerToggle(
+        toggle = object : ActionBarDrawerToggle(
             this, binding.drawer, binding.toolbar,
             R.string.navigation_drawer_open,
             R.string.navigation_drawer_close
-        )
+        ) {
+
+            override fun onDrawerClosed(drawerView: View) {
+                super.onDrawerClosed(drawerView)
+                // Handle the action when the drawer is closed
+                // You can leave this blank if no action is needed
+            }
+
+            override fun onDrawerOpened(drawerView: View) {
+                super.onDrawerOpened(drawerView)
+                // Handle the action when the drawer is opened
+                try {
+                    hideNavigationDrawerItem() // Custom logic to hide navigation items
+                } catch (ex: Exception) {
+                    ex.printStackTrace() // Handle exceptions gracefully
+                }
+            }
+        }
 
        // myApplication = PolicyBossProApplication.instance!!
         // Attach the toggle to the drawer
@@ -179,180 +201,433 @@ class HomeActivity : BaseActivity() {
         //endregion
 
         //region Set up navigation item click listener
-        binding.navigationView.setNavigationItemSelectedListener {  menuItem ->
+//        binding.navigationView.setNavigationItemSelectedListener {  menuItem ->
+//
+//            if (!NetworkUtils.isNetworkAvailable(this@HomeActivity)) {
+//
+//                this.showSnackbar(binding.root,getString(R.string.noInternet))
+//
+//                return@setNavigationItemSelectedListener false
+//            }
+//            // Toggle checked state of the menu item
+//            menuItem.isChecked = !menuItem.isChecked
+//
+//
+//
+//            hideKeyboard(binding.root)
+//
+//
+//            //region Add Dynmaic Drawer Menu
+//            if (prefsManager.getMenuDashBoard() != null) {
+//                prefsManager.getMenuDashBoard()?.MasterData?.Menu?.forEach { menuItemEntity ->
+//                    var sequence = menuItemEntity.sequence?.toInt()
+//                    if (sequence != null) {
+//                        sequence = (sequence * 100) + 1
+//                    }
+//                    if (menuItem.itemId == sequence) {
+//
+//                        val appendMenu = "&ss_id=${prefsManager.getSSID()}" +
+//                                "&fba_id=${prefsManager.getFBAID()}" +
+//                                "&sub_fba_id=" +
+//                                "ip_address=&mac_address=" +
+//                                "&app_version=policyboss-${BuildConfig.VERSION_NAME}" +
+//                                "&device_id=${Utility.getDeviceID(this@HomeActivity)}" +
+//                                "&login_ssid="
+//
+//                        val menuDetail = "${menuItemEntity.link}$appendMenu"
+//
+//                        startActivity(
+//                            Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+//                                putExtra("URL", menuDetail)
+//                                putExtra("NAME", menuItemEntity.menuname)
+//                                putExtra("TITLE", menuItemEntity.menuname)
+//                            }
+//                        )
+//                        return@setNavigationItemSelectedListener true
+//                    }
+//
+//
+//                }
+//            }
+//
+//            //endregion
+//
+//
+//            when (menuItem.itemId) {
+//
+//                R.id.nav_home ->{
+//
+//                    viewModel.getMasterData()
+//                }
+//
+//                R.id.nav_finbox -> {
+//                    startActivity(
+//                        Intent(
+//                            this@HomeActivity,
+//                            CommonWebViewActivity::class.java
+//                        ).putExtra(Constant.URL, prefsManager.getFinboxurl())
+//                            .putExtra("NAME", "MY FINBOX").putExtra("TITLE", "MY FINBOX")
+//                    )
+//
+//                }
+//
+//                R.id.nav_finperk -> {
+//                    startActivity(
+//                        Intent(
+//                            this@HomeActivity,
+//                            CommonWebViewActivity::class.java
+//                        ).putExtra(Constant.URL, prefsManager.getFinperkurl())
+//                            .putExtra("NAME", "FINPERKS").putExtra("TITLE", "FINPERKS")
+//                    )
+//
+//                }
+//
+//                R.id.nav_festivelink -> {
+//                    startActivity(
+//                        Intent(
+//                            this@HomeActivity,
+//                            CommonWebViewActivity::class.java
+//                        ).putExtra(Constant.URL, prefsManager.getFinperkurl())
+//                            .putExtra("NAME", "FESTIVE LINKS").putExtra("TITLE", "FESTIVE LINKS")
+//                    )
+//
+//                }
+//
+//                R.id.nav_AppointmentLetter -> {
+//                    // Handle nav item 2 click
+//                }
+//                R.id.nav_REQUEST -> {
+//
+//                    startActivity(Intent(this@HomeActivity, AppCodeActivity::class.java))
+//                }
+//
+//                R.id.nav_changepassword -> {
+//
+//                    startActivity(Intent(this@HomeActivity, ChangePaswordActivity::class.java))
+//                }
+//
+//                R.id.nav_myaccount -> {
+//                    //05 temp My Account
+//                    startActivity(Intent(this@HomeActivity, ChangePaswordActivity::class.java))
+//                }
+//
+//                R.id.nav_pospenrollment ->{
+//
+//
+//
+//                    Log.d(Constant.URL,"POSPurl(): "+ prefsManager.getEnableProPOSPurl())
+//                    val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+//                        putExtra("URL", prefsManager.getEnableProPOSPurl() +
+//                                "&app_version=" + prefsManager.getAppVersion() +
+//                                "&device_code=" + Utility.getDeviceID(this@HomeActivity) +
+//                                "&ssid=" + prefsManager.getSSID() +
+//                                "&fbaid=" + prefsManager.getFBAID())
+//                        putExtra("NAME", "PospEnrollment")
+//                        putExtra("TITLE", "Posp Enrollment")
+//                    }
+//                    startActivity(intent)
+//
+//                }
+//
+//
+//                R.id.nav_leaddetail -> {
+//
+//                    var leaddetail = ""
+//                    val append_lead = "&ip_address=&mac_address=&app_version=policyboss-" + BuildConfig.VERSION_NAME +
+//                            "&device_id=" + Utility.getDeviceID(this@HomeActivity) + "&login_ssid="
+//                    leaddetail = prefsManager.getLeadDashUrl() + append_lead
+//
+//                    val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+//                        putExtra("URL", leaddetail)
+//                        putExtra("NAME", "Sync Contact DashBoard")
+//                        putExtra("TITLE", "Sync Contact DashBoard")
+//                    }
+//                    startActivity(intent)
+//
+//
+//                }
+//
+//
+//                R.id.nav_raiseTicket -> {
+//                    val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+//                        putExtra("URL", prefsManager.getRaiseTickitUrl() + "&mobile_no=" + prefsManager.getMobileNo() +
+//                                "&UDID=" + prefsManager.getUserId() + "&app_version=" + prefsManager.getAppVersion() +
+//                                "&device_code=" + Utility.getDeviceID(this@HomeActivity) + "&ssid=" + prefsManager.getSSID() +
+//                                "&fbaid=" + prefsManager.getFBAID())
+//                        putExtra("NAME", "RAISE_TICKET")
+//                        putExtra("TITLE", "RAISE TICKET")
+//                    }
+//                    startActivity(intent)
+//
+//                }
+//                R.id.nav_logout -> {
+//
+//                    dialogLogout()
+//                }
+//
+//
+//                // Add more cases as needed
+//            }
+//            // Close the drawer after item selection
+//            binding.drawer.closeDrawer(GravityCompat.START)
+//            true
+//        }
+        //endregion
+
+
+        //region Set up Navigation - Drawer item click listener
+        binding.navigationView.setNavigationItemSelectedListener { menuItem ->
 
             if (!NetworkUtils.isNetworkAvailable(this@HomeActivity)) {
-
-                this.showSnackbar(binding.root,getString(R.string.noInternet))
-
+                showSnackbar(binding.root, getString(R.string.noInternet))
                 return@setNavigationItemSelectedListener false
             }
+
             // Toggle checked state of the menu item
-            menuItem.isChecked = !menuItem.isChecked
+            toggleMenuItemChecked(menuItem)
 
-
-
+            // Hide the keyboard
             hideKeyboard(binding.root)
 
-
-            //region Add Dynmaic Drawer Menu
-            if (prefsManager.getMenuDashBoard() != null) {
-                prefsManager.getMenuDashBoard()?.MasterData?.Menu?.forEach { menuItemEntity ->
-                    var sequence = menuItemEntity.sequence?.toInt()
-                    if (sequence != null) {
-                        sequence = (sequence * 100) + 1
-                    }
-                    if (menuItem.itemId == sequence) {
-
-                        val appendMenu = "&ss_id=${prefsManager.getSSID()}" +
-                                "&fba_id=${prefsManager.getFBAID()}" +
-                                "&sub_fba_id=" +
-                                "ip_address=&mac_address=" +
-                                "&app_version=policyboss-${BuildConfig.VERSION_NAME}" +
-                                "&device_id=${Utility.getDeviceID(this@HomeActivity)}" +
-                                "&login_ssid="
-
-                        val menuDetail = "${menuItemEntity.link}$appendMenu"
-
-                        startActivity(
-                            Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
-                                putExtra("URL", menuDetail)
-                                putExtra("NAME", menuItemEntity.menuname)
-                                putExtra("TITLE", menuItemEntity.menuname)
-                            }
-                        )
-                        return@setNavigationItemSelectedListener true
-                    }
-
-
-                }
+            // Add dynamic drawer menu items
+            if (handleDynamicMenu(menuItem)) {
+                return@setNavigationItemSelectedListener true
             }
 
-            //endregion
+            // Handle specific menu item clicks
+            handleMenuItemClick(menuItem)
 
-
-            when (menuItem.itemId) {
-
-                R.id.nav_home ->{
-
-                    viewModel.getMasterData()
-                }
-
-                R.id.nav_finbox -> {
-                    startActivity(
-                        Intent(
-                            this@HomeActivity,
-                            CommonWebViewActivity::class.java
-                        ).putExtra(Constant.URL, prefsManager.getFinboxurl())
-                            .putExtra("NAME", "MY FINBOX").putExtra("TITLE", "MY FINBOX")
-                    )
-
-                }
-
-                R.id.nav_finperk -> {
-                    startActivity(
-                        Intent(
-                            this@HomeActivity,
-                            CommonWebViewActivity::class.java
-                        ).putExtra(Constant.URL, prefsManager.getFinperkurl())
-                            .putExtra("NAME", "FINPERKS").putExtra("TITLE", "FINPERKS")
-                    )
-
-                }
-
-                R.id.nav_festivelink -> {
-                    startActivity(
-                        Intent(
-                            this@HomeActivity,
-                            CommonWebViewActivity::class.java
-                        ).putExtra(Constant.URL, prefsManager.getFinperkurl())
-                            .putExtra("NAME", "FESTIVE LINKS").putExtra("TITLE", "FESTIVE LINKS")
-                    )
-
-                }
-
-                R.id.nav_AppointmentLetter -> {
-                    // Handle nav item 2 click
-                }
-                R.id.nav_REQUEST -> {
-
-                    startActivity(Intent(this@HomeActivity, AppCodeActivity::class.java))
-                }
-
-                R.id.nav_changepassword -> {
-
-                    startActivity(Intent(this@HomeActivity, ChangePaswordActivity::class.java))
-                }
-
-                R.id.nav_myaccount -> {
-                    //05 temp My Account
-                    startActivity(Intent(this@HomeActivity, ChangePaswordActivity::class.java))
-                }
-
-                R.id.nav_pospenrollment ->{
-
-                    val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
-                        putExtra("URL", prefsManager.getEnableProPOSPurl() +
-                                "&app_version=" + prefsManager.getAppVersion() +
-                                "&device_code=" + Utility.getDeviceID(this@HomeActivity) +
-                                "&ssid=" + prefsManager.getSSID() +
-                                "&fbaid=" + prefsManager.getFBAID())
-                        putExtra("NAME", "PospEnrollment")
-                        putExtra("TITLE", "Posp Enrollment")
-                    }
-                    startActivity(intent)
-
-                }
-
-
-                R.id.nav_leaddetail -> {
-
-                    var leaddetail = ""
-                    val append_lead = "&ip_address=&mac_address=&app_version=policyboss-" + BuildConfig.VERSION_NAME +
-                            "&device_id=" + Utility.getDeviceID(this@HomeActivity) + "&login_ssid="
-                    leaddetail = prefsManager.getLeadDashUrl() + append_lead
-
-                    val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
-                        putExtra("URL", leaddetail)
-                        putExtra("NAME", "Sync Contact DashBoard")
-                        putExtra("TITLE", "Sync Contact DashBoard")
-                    }
-                    startActivity(intent)
-
-
-                }
-
-
-                R.id.nav_raiseTicket -> {
-                    val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
-                        putExtra("URL", prefsManager.getRaiseTickitUrl() + "&mobile_no=" + prefsManager.getMobileNo() +
-                                "&UDID=" + prefsManager.getUserId() + "&app_version=" + prefsManager.getAppVersion() +
-                                "&device_code=" + Utility.getDeviceID(this@HomeActivity) + "&ssid=" + prefsManager.getSSID() +
-                                "&fbaid=" + prefsManager.getFBAID())
-                        putExtra("NAME", "RAISE_TICKET")
-                        putExtra("TITLE", "RAISE TICKET")
-                    }
-                    startActivity(intent)
-
-                }
-                R.id.nav_logout -> {
-
-                    dialogLogout()
-                }
-
-
-                // Add more cases as needed
-            }
             // Close the drawer after item selection
             binding.drawer.closeDrawer(GravityCompat.START)
             true
         }
-        //endregion
+
 
 
     }
 
+    //Mark: Drawer -Menu Click Navigate to Specific Activity / WebView Handling
+    //region Drawer -Menu Methods
 
+    private fun toggleMenuItemChecked(menuItem: MenuItem) {
+        menuItem.isChecked = !menuItem.isChecked
+    }
+
+    private fun handleDynamicMenu(menuItem: MenuItem): Boolean {
+        prefsManager.getMenuDashBoard()?.MasterData?.Menu?.forEach { menuItemEntity ->
+            var sequence = menuItemEntity.sequence?.toInt()
+            if (sequence != null) {
+                sequence = (sequence * 100) + 1
+            }
+            if (menuItem.itemId == sequence) {
+                val appendMenu = "&ss_id=${prefsManager.getSSID()}" +
+                        "&fba_id=${prefsManager.getFBAID()}" +
+                        "&sub_fba_id=" +
+                        "ip_address=&mac_address=" +
+                        "&app_version=policyboss-${BuildConfig.VERSION_NAME}" +
+                        "&device_id=${Utility.getDeviceID(this@HomeActivity)}" +
+                        "&login_ssid="
+
+                val menuDetail = "${menuItemEntity.link}$appendMenu"
+
+                startActivity(
+                    Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+                        putExtra("URL", menuDetail)
+                        putExtra("NAME", menuItemEntity.menuname)
+                        putExtra("TITLE", menuItemEntity.menuname)
+                    }
+                )
+                return true
+            }
+        }
+        return false
+    }
+
+
+    private fun handleMenuItemClick(menuItem: MenuItem) {
+        when (menuItem.itemId) {
+            R.id.nav_home -> viewModel.getMasterData()
+
+            R.id.nav_finbox -> {
+                startCommonWebViewActivity(prefsManager.getFinboxurl(), "MY FINBOX")
+            }
+
+            R.id.nav_finperk -> {
+                startCommonWebViewActivity(prefsManager.getFinperkurl(), "FINPERKS")
+            }
+
+            R.id.nav_festivelink -> {
+                startCommonWebViewActivity(prefsManager.getFinperkurl(), "FESTIVE LINKS")
+            }
+
+            R.id.nav_AppointmentLetter -> {
+                // Handle nav item 2 click
+            }
+
+            R.id.nav_contact -> {
+
+                // startActivity(new Intent(HomeActivity.this, ContactLeadActivity.class));
+                trackSyncContactEvent("Sync Contacts on Side Menu")
+                startActivity(
+                    Intent(
+                        this@HomeActivity,
+                        WelcomeSyncContactActivityKotlin::class.java
+                    )
+                )
+            }
+
+
+
+            R.id.nav_REQUEST -> {
+                startActivity(Intent(this@HomeActivity, AppCodeActivity::class.java))
+            }
+
+            R.id.nav_changepassword -> {
+                startActivity(Intent(this@HomeActivity, ChangePaswordActivity::class.java))
+            }
+
+            R.id.nav_myaccount -> {
+                startActivity(Intent(this@HomeActivity, ChangePaswordActivity::class.java))
+            }
+
+            R.id.nav_pospenrollment -> {
+                startPospEnrollment()
+            }
+
+            R.id.nav_leaddetail -> {
+                startLeadDetailActivity()
+            }
+
+            R.id.nav_raiseTicket -> {
+                startRaiseTicketActivity()
+            }
+
+
+            R.id.nav_disclosure -> {
+                openCommonWebView(
+                    "file:///android_asset/Disclosure.html",
+                    "DISCLOSURE",
+                    "DISCLOSURE",
+                    "" // No dashboard type for disclosure
+                )
+            }
+
+            R.id.nav_policy -> {
+                openCommonWebView(
+                    "https://www.policyboss.com/privacy-policy-policyboss-pro?app_version=${prefsManager.getAppVersion()}&device_code=${prefsManager.getDeviceID()}&ssid=${prefsManager.getSSID()}&fbaid=${prefsManager.getFBAID()}",
+                    "PRIVACY POLICY",
+                    "PRIVACY POLICY",
+                    "" // No dashboard type for policy
+                )
+            }
+
+            R.id.nav_delete -> {
+                openCommonWebView(
+                    "https://www.policyboss.com/initiate-account-deletion-elite?ss_id=${prefsManager.getSSID()}&app_version=${prefsManager.getAppVersion()}&device_code=${prefsManager.getDeviceID()}&fbaid=${prefsManager.getFBAID()}",
+                    "ACCOUNT-DELETE",
+                    "ACCOUNT-DELETE",
+                    "" // No dashboard type for account deletion
+                )
+            }
+
+            R.id.nav_logout -> {
+                dialogLogout()
+            }
+        }
+    }
+
+
+    fun hideNavigationDrawerItem() {
+        val navMenu = navigationView.menu
+
+
+        prefsManager.getUserConstantEntity()?.enableenrolasposp?.let {
+            if (it.isNotEmpty()) {
+                if (it.toInt() == 1) {
+                    navMenu.findItem(R.id.nav_pospenrollment)?.isVisible = true
+                } else {
+                    navMenu.findItem(R.id.nav_pospenrollment)?.isVisible = false
+                }
+            }
+        }
+
+        prefsManager.getUserConstantEntity()?.androidproouathEnabled?.let {
+            if (it.isNotEmpty()) {
+                if (it == "0") {
+                    navMenu.findItem(R.id.nav_REQUEST)?.isVisible = false
+                } else {
+                    navMenu.findItem(R.id.nav_REQUEST)?.isVisible = true
+                }
+            }
+
+        }
+
+
+    }
+
+    //endregion
+
+    //Mark Open Specfic Activity/WebView Using below Helper Methods
+    //region  Drawer -Menu Action open Specfic Activity/WebView
+    private fun startCommonWebViewActivity(url: String, title: String) {
+        startActivity(
+            Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+                putExtra(Constant.URL, url)
+                putExtra("NAME", title)
+                putExtra("TITLE", title)
+            }
+        )
+    }
+
+
+    private fun startPospEnrollment() {
+        val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+            putExtra("URL", prefsManager.getEnableProPOSPurl() +
+                    "&app_version=" + prefsManager.getAppVersion() +
+                    "&device_code=" + Utility.getDeviceID(this@HomeActivity) +
+                    "&ssid=" + prefsManager.getSSID() +
+                    "&fbaid=" + prefsManager.getFBAID())
+            putExtra("NAME", "PospEnrollment")
+            putExtra("TITLE", "Posp Enrollment")
+        }
+        startActivity(intent)
+    }
+
+
+    private fun startLeadDetailActivity() {
+        val append_lead = "&ip_address=&mac_address=&app_version=policyboss-" +
+                BuildConfig.VERSION_NAME +
+                "&device_id=" + Utility.getDeviceID(this@HomeActivity) +
+                "&login_ssid="
+        val leaddetail = prefsManager.getLeadDashUrl() + append_lead
+
+        val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+            putExtra("URL", leaddetail)
+            putExtra("NAME", "Sync Contact DashBoard")
+            putExtra("TITLE", "Sync Contact DashBoard")
+        }
+        startActivity(intent)
+    }
+
+
+    private fun startRaiseTicketActivity() {
+        val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+            putExtra("URL", prefsManager.getRaiseTickitUrl() +
+                    "&mobile_no=" + prefsManager.getMobileNo() +
+                    "&UDID=" + prefsManager.getUserId() +
+                    "&app_version=" + prefsManager.getAppVersion() +
+                    "&device_code=" + Utility.getDeviceID(this@HomeActivity) +
+                    "&ssid=" + prefsManager.getSSID() +
+                    "&fbaid=" + prefsManager.getFBAID())
+            putExtra("NAME", "RAISE_TICKET")
+            putExtra("TITLE", "RAISE TICKET")
+        }
+        startActivity(intent)
+    }
+
+    //endregion
+
+    //region  headerView Menu Handling
     private fun initHeaderLayout() {
 
 
@@ -453,8 +728,11 @@ class HomeActivity : BaseActivity() {
     }
 
 
+
+    //endregion
+
     //region SetUpDashboard
-    private fun setupDashBoardData() {
+    private fun setupDashBoard_Adapter() {
 
 
         dashboardAdapter = DashboardRowAdapter(
@@ -477,8 +755,6 @@ class HomeActivity : BaseActivity() {
     }
 
     //endregion
-
-
 
     //region Adapter Callback
     fun onShareListener(entity: DashboardMultiLangEntity){
@@ -680,11 +956,7 @@ class HomeActivity : BaseActivity() {
                             )
                         )
                         trackMainMenuEvent("Sync Contact")
-//                        myApplication.trackEvent(
-//                            Constant.SyncContacts,
-//                            "Clicked",
-//                            "Sync Contact"
-//                        )
+
                     }
 
 
@@ -873,35 +1145,104 @@ class HomeActivity : BaseActivity() {
 
     //endregion
 
-    fun dialogLogout() {
-        // Use MaterialAlertDialogBuilder instead of AlertDialog.Builder
-        val builder = MaterialAlertDialogBuilder(this@HomeActivity)
 
-        builder.setTitle("")
-            .setMessage("Do you really want to logout?")
+    //region Utilities Alert
+    private fun showMyUtilitiesDialog() {
+        if (myUtilitiesDialog?.isShowing == true) return
+
+        val binding = LayoutMenuDashboard3Binding.inflate(layoutInflater)
+
+        val builder = AlertDialog.Builder(this, R.style.CustomDialog)
+            .setView(binding.root)
             .setCancelable(false)
-            .setPositiveButton("LOGOUT") { dialog, _ ->
-                dialog.dismiss()
 
-                // Use the singleton instance of PolicyBossPrefsManager
+        myUtilitiesDialog = builder.create()
+
+        with(binding) {
+
+            cvIncomeCalculator.setOnClickListener {
+                myUtilitiesDialog?.dismiss()
+                startActivity(Intent(this@HomeActivity, IncomePotentialActivity::class.java))
+                trackUtilityIncomeEvent()
+            }
+
+            cvMyTrainingCalender.setOnClickListener {
+
+            }
+
+            cvHelpFeedback.setOnClickListener {
+                myUtilitiesDialog?.dismiss()
+                startActivity(Intent(this@HomeActivity, HelpFeedBackActivity::class.java))
+                //trackFeedbackEvent()
+            }
+
+            ivCross.setOnClickListener {
+                myUtilitiesDialog?.dismiss()
+            }
+        }
+
+        myUtilitiesDialog?.show()
+    }
+
+    //endregion
+
+
+    //region Logout Alert
+    fun dialogLogout() {
+
+        showAlert(msg="Do you really want to logout?",title = "PolicyBossPro",
+            positiveBtn = resources.getString(R.string.logout) ,
+            negativeBtn = resources.getString(R.string.cancel),
+            showNegativeButton = true,
+            onPositiveClick = {
+
+
+                //region Clear All data
                 prefsManager.clearAll()
 
                 removeShortcuts()
                 weUser.logout()
+
+                //endregion
+
                 // Navigate to LoginActivity
                 val intent = Intent(this, LoginActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 startActivity(intent)
-                finish()
-            }
-            .setNegativeButton("CANCEL") { dialog, _ ->
-                dialog.dismiss()
-            }
 
-        // Create and show the dialog
-        builder.show()
+                this@HomeActivity.finish()
+            })
+
+
+        // Use MaterialAlertDialogBuilder instead of AlertDialog.Builder
+//        val builder = MaterialAlertDialogBuilder(this@HomeActivity)
+//
+//        builder.setTitle("")
+//            .setMessage("Do you really want to logout?")
+//            .setCancelable(false)
+//            .setPositiveButton("LOGOUT") { dialog, _ ->
+//                dialog.dismiss()
+//
+//                // Use the singleton instance of PolicyBossPrefsManager
+//                prefsManager.clearAll()
+//
+//                removeShortcuts()
+//                weUser.logout()
+//                // Navigate to LoginActivity
+//                val intent = Intent(this, LoginActivity::class.java)
+//                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+//                startActivity(intent)
+//                finish()
+//            }
+//            .setNegativeButton("CANCEL") { dialog, _ ->
+//                dialog.dismiss()
+//            }
+//
+//        // Create and show the dialog
+//        builder.show()
     }
 
+    //endregion
 
     // region webEnagage Event
     private fun trackMainMenuEvent(strOption: String) {
@@ -913,9 +1254,31 @@ class HomeActivity : BaseActivity() {
         WebEngageAnalytics.getInstance().trackEvent("Main Menu Clicked", eventAttributes)
     }
 
+    private fun trackSyncContactEvent(strEvent: String) {
+        // Create event attributes
+        val eventAttributes = HashMap<String, Any>()
+        // Track the login event using WebEngageHelper
+        WebEngageAnalytics.getInstance().trackEvent(strEvent, eventAttributes)
+    }
+
+
+    private fun trackUtilityContactEvent() {
+        // Create event attributes
+        val eventAttributes = mutableMapOf<String, Any>()
+        // Track the event using WebEngageHelper
+        WebEngageAnalytics.getInstance().trackEvent("Clicked My Utilities on Options Menu", eventAttributes)
+    }
+
+    private fun trackUtilityIncomeEvent() {
+        // Create event attributes
+        val eventAttributes = mutableMapOf<String, Any>()
+        // Track the event using WebEngageHelper
+        WebEngageAnalytics.getInstance().trackEvent("Clicked on Income Calculator in My Utilities", eventAttributes)
+    }
+
+
+
     //endregion
-
-
 
     // region ShortcutMenu
     fun shortcutAppMenu() {
@@ -1020,6 +1383,7 @@ class HomeActivity : BaseActivity() {
     }
     //endregion
 
+    //region Handle DeepLink
     private fun deeplinkHandle() {
         val deeplinkValue = prefsManager.getDeepLink()
 
@@ -1084,9 +1448,22 @@ class HomeActivity : BaseActivity() {
         }
     }
 
+    //endregion
 
+    //region Open App in Play Store
+    private fun openAppMarketPlace() {
+        val appPackageName = packageName // getPackageName() from Context or Activity
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$appPackageName")))
+        } catch (e: android.content.ActivityNotFoundException) {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")))
+        }
 
+        // Tracking logic (if needed)
+        // TrackingController(this).sendData(TrackingRequestEntity(TrackingData("Update: User opened marketplace"), "Update"), null)
+    }
 
+    //endregion
 
     //region Observer
     private fun observeMasterState() {
@@ -1117,16 +1494,49 @@ class HomeActivity : BaseActivity() {
                                 hideLoading()
 
 
-                                setupDashBoardData()
-                                deeplinkHandle()
+                                setupDashBoard_Adapter()
                                 shortcutAppMenu()
+                                deeplinkHandle()
 
-                                state.data?.horizonDetail?.SYNC_CONTACT?.takeIf { it.ACTION_NEEDED == "NO_ACTION"}
-                                    ?.let { syncContactEntity->
+                                //region ForceUpdate
+                                //Mark: get  current version from App
+                                val currentVersion = Utility.getCurrentVersion(this@HomeActivity) // Get the current version of your app
 
-                                        showMySyncPopUpAlert(syncContactEntity)
+                                //Mark: check for new version from Server
+                                val serverVersionCode =
+                                    prefsManager.getAndroidProVersion()
 
-                                    }
+                                //Mark : Force Update Via playStore
+                                if (currentVersion < serverVersionCode) {
+
+                                    UtilityNew.openPopUp(
+                                        context = this@HomeActivity,
+                                        title = "UPDATE",
+                                        desc = "New version available on play store, Please update",
+                                        positiveButtonName = "OK",
+                                        isCancelable = false,
+                                        onPositiveButtonClick = { dialog, view ->
+                                            // Handle positive action
+                                            dialog.dismiss()
+                                            openAppMarketPlace()
+                                        }
+                                    )
+
+                                }
+
+                                //endregion
+
+                                else{
+                                  //Mark :Below code only execute when there is no force Update happend
+
+                                    state.data?.horizonDetail?.SYNC_CONTACT?.takeIf { it.ACTION_NEEDED == "NO_ACTION"}
+                                        ?.let { syncContactEntity->
+
+                                            showMySyncPopUpAlert(syncContactEntity)
+
+                                        }
+                                }
+
                                 // binding.swipeRefreshLayout.isRefreshing = false
 
                             }

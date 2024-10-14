@@ -15,6 +15,7 @@ import android.provider.OpenableColumns
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import com.policyboss.policybosspro.core.model.DeviceDetailEntity
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
@@ -177,6 +178,24 @@ object Utility {
     }
 
     @JvmStatic
+    fun getCurrentVersion(context: Context): Long {
+        return try {
+            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                // For API level 28 and above (Android 9/Pie)
+                packageInfo.longVersionCode
+            } else {
+                // For below API level 28
+                @Suppress("DEPRECATION")
+                packageInfo.versionCode.toLong()
+            }
+        } catch (e: PackageManager.NameNotFoundException) {
+            e.printStackTrace()
+            0L
+        }
+    }
+
+    @JvmStatic
     fun getVersionCode(context: Context): Long {
         return try {
             val pinfo: PackageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
@@ -277,6 +296,8 @@ object Utility {
             "document_type" to fileType
         )
     }
+
+
 
 }
 

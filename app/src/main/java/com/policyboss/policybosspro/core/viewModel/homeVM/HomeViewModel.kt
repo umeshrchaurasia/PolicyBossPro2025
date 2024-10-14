@@ -109,7 +109,7 @@ class HomeViewModel @Inject constructor(
                     horizonDetailResponse.body() != null
                     ) {
 
-                    //for Success stae hold both data // no need actually
+                    //for Success state hold both data // no need actually
                     _masterState.value = APIState.Success(
                         MasterDataCombine(
                             userConstant = userConstantResponse.body(),

@@ -3,6 +3,7 @@ package com.policyboss.policybosspro.view.appCode
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.activity.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -16,13 +17,16 @@ import com.policyboss.policybosspro.utility.Utility
 import com.webengage.sdk.android.WebEngage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AppCodeActivity : AppCompatActivity() {
 
     lateinit var binding : ActivityAppCodeBinding
-    lateinit var viewModel: HomeViewModel
 
+    private val viewModel by viewModels<HomeViewModel>()
+
+    @Inject
     lateinit var prefManager: PolicyBossPrefsManager
 
 

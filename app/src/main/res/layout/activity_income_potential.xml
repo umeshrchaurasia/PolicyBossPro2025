@@ -8,7 +8,7 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
 android:background="@color/white"
 android:orientation="vertical"
 
-tools:context=".view.incomePotential.IncomePotentialActivity">
+tools:context=".view.others.incomePotential.IncomePotentialActivity">
 
 <com.google.android.material.appbar.AppBarLayout
     android:layout_width="match_parent"

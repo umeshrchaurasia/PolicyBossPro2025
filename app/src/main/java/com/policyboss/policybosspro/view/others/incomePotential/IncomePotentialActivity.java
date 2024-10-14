@@ -1,4 +1,4 @@
-package com.policyboss.policybosspro.view.incomePotential;
+package com.policyboss.policybosspro.view.others.incomePotential;
 
 import androidx.appcompat.app.AppCompatActivity;
 

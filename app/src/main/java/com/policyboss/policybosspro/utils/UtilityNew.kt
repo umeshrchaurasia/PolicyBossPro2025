@@ -16,13 +16,16 @@ import android.provider.Settings
 import android.telephony.SmsManager
 import android.util.Base64
 import android.util.Log
-import android.view.LayoutInflater
 import android.app.AlertDialog
+import android.view.View
+import android.view.Window
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import com.policyboss.policybosspro.BuildConfig
 import com.policyboss.policybosspro.R
+import com.policyboss.policybosspro.databinding.LayoutCommonPopupBinding
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -245,6 +248,70 @@ object UtilityNew {
 //            toast("clicked neutral button")
 //        }
         }.create().show()
+    }
+
+
+
+
+    open fun openPopUp(
+        context: Context,
+        title: String,
+        desc: String,
+        positiveButtonName: String,
+        isCancelable: Boolean,
+        onPositiveButtonClick: (dialog: Dialog, view: View) -> Unit,
+        onCancelButtonClick: ((dialog: Dialog, view: View) -> Unit)? = null  // Nullable lambda
+    ) {
+        try {
+            val dialog = Dialog(context).apply {
+                requestWindowFeature(Window.FEATURE_NO_TITLE)
+            }
+
+            // Use View Binding to inflate the layout
+            val binding = LayoutCommonPopupBinding.inflate((context as AppCompatActivity).layoutInflater)
+            dialog.setContentView(binding.root)
+
+            // Set dialog content
+            binding.tvTitle.text = title
+            binding.txtMessage.text = desc
+            binding.tvOk.text = positiveButtonName
+
+            // Set cancelable properties
+            dialog.setCancelable(isCancelable)
+            dialog.setCanceledOnTouchOutside(isCancelable)
+
+            // Set dialog window size
+            val dialogWindow = dialog.window
+            val lp = dialogWindow?.attributes
+            lp?.width = WindowManager.LayoutParams.MATCH_PARENT
+            lp?.height = WindowManager.LayoutParams.WRAP_CONTENT
+            dialogWindow?.attributes = lp
+
+            dialog.show()
+
+            // Handle Positive Button click
+            binding.tvOk.setOnClickListener {
+                onPositiveButtonClick(dialog, binding.root)
+            }
+
+            // Handle Cancel (Cross) button click
+//            binding.ivCross.setOnClickListener {
+//                onCancelButtonClick(dialog, binding.root)
+//            }
+
+            // Handle Cancel (Cross) button click, only if onCancelButtonClick is provided
+            if (onCancelButtonClick != null) {
+                binding.ivCross.setOnClickListener {
+                    onCancelButtonClick(dialog, binding.root)
+                }
+            } else {
+                // Optionally, hide the ivCross if there's no cancel action provided
+                binding.ivCross.visibility = View.GONE
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
 

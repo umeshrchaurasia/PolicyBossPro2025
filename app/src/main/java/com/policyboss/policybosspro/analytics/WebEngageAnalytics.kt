@@ -8,6 +8,8 @@ class WebEngageAnalytics private constructor() {
 
     private val weConstant: WebEngageConstant? = null
 
+
+
     companion object {
         @Volatile
         private var instance: WebEngageAnalytics? = null
@@ -15,6 +17,9 @@ class WebEngageAnalytics private constructor() {
         private val weAnalytics: Analytics = WebEngage.get().analytics()
 
         // Singleton instance of WebEngageAnalytics
+
+
+        @JvmStatic
         @Synchronized
         fun getInstance(): WebEngageAnalytics {
             return instance ?: synchronized(this) {

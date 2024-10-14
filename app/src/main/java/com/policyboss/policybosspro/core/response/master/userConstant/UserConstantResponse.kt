@@ -3,7 +3,7 @@ package com.policyboss.policybosspro.core.response.master.userConstant
 import com.webengage.sdk.android.utils.http.Response
 
 data class UserConstantResponse(
-    val MasterData: UserConstantEntity,
+    val MasterData: UserConstantEntity?,
     val Message: String,
     val Status: String,
     val StatusNo: Int

@@ -3,7 +3,7 @@
     <style name="Base.Theme.Policybossprov34" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
         <!--actionbar color, EditText cursor color-->
-            <item name="colorPrimary">@color/white</item>
+            <item name="colorPrimary">@color/colorAccent</item>
             <!--status bar color-->
             <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
             <item name="colorAccent">@color/colorAccent</item>
@@ -21,6 +21,11 @@
 
         <!--For Material TextInput Styler-->
         <item name="textInputStyle">@style/textInputLayoutStyle</item>
+
+        <!-- Set the cursor and text selection handle color to blue -->
+     <!--    Note :If colorSecondary is not explicitly set, it typically falls back to colorPrimary.-->
+        <item name="colorControlActivated">@color/colorPrimary</item>
+
 
     </style>
 
@@ -182,6 +187,76 @@
         <item name="android:textSize">17sp</item>
 
 
+
+    </style>
+
+
+
+
+    <style name="textInputLayoutStyle2" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+        <!-- General text color -->
+        <item name="android:textColor">@color/black</item>
+
+        <!-- Hint text color when the field is selected -->
+        <item name="hintTextColor">@color/colorPrimary</item>
+
+        <!-- Hint text color when the field is not selected -->
+        <item name="android:textColorHint">@color/text_edit_color</item>
+
+
+        <!-- Error state customization -->
+        <item name="boxStrokeErrorColor">@color/error_red</item>
+
+        <!-- Box dimensions -->
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+
+
+        <!-- Icon colors -->
+        <item name="startIconTint">@color/gray_button</item>
+        <item name="endIconTint">@color/gray_button</item>
+
+        <!-- Outlined box style with a transparent background -->
+
+        <item name="boxBackgroundMode">filled</item>
+        <item name="boxBackgroundColor">@color/transparent</item>
+
+        <!-- Border width when focused and not focused -->
+        <item name="boxStrokeWidthFocused">2dp</item> <!-- After focused width -->
+        <item name="boxStrokeWidth">0.7dp</item> <!-- Before focused width -->
+        <!-- Border color settings -->
+        <item name="boxStrokeColor">@color/colorPrimary</item> <!-- Black color border by default -->
+        <!-- End icon settings (e.g., clear text icon) -->
+        <item name="endIconMode">clear_text</item>
+
+        <!-- EditText input properties -->
+        <item name="android:inputType">text</item>
+        <item name="android:imeOptions">actionNext</item>
+        <item name="android:lines">1</item>
+
+        <!-- Error message handling -->
+        <item name="errorEnabled">false</item>
+
+
+
+    </style>
+
+
+    <style name="TextInputEditText2" parent="Widget.MaterialComponents.TextInputEditText.FilledBox">
+
+        <item name="android:background">@color/transparent</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:paddingTop">2dp</item>
+        <item name="android:textSize">17sp</item>
+        <item name="android:inputType">textCapWords</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:paddingBottom">0dp</item>
+        <!-- Optional: Text colors for hint and focused state -->
+        <item name="hintTextColor">@color/darkGray</item>
+        <item name="android:textColorHint">@color/darkGray</item>
 
     </style>
 

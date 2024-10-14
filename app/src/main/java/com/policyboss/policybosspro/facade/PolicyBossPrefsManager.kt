@@ -691,6 +691,10 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         return   getUserConstantResponse()?.MasterData?.dashboardarray?: emptyList()
     }
 
+    fun getAndroidProVersion(): Long {
+
+        return   (getUserConstantResponse()?.MasterData?.androidproversion?:"0").toLong()
+    }
     fun getLeadDashUrl(): String {
 
      return   getUserConstantResponse()?.MasterData?.LeadDashUrl?:""
