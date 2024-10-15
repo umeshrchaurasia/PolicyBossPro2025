@@ -1,15 +1,16 @@
 package com.policyboss.policybosspro.view.introslider
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.databinding.ActivityWelcomeBinding
+import com.policyboss.policybosspro.utils.CoroutineHelper
 import com.webengage.sdk.android.WebEngage
 
 class WelcomeActivity : AppCompatActivity(), View.OnClickListener {
@@ -32,6 +33,7 @@ class WelcomeActivity : AppCompatActivity(), View.OnClickListener {
 
         initWidgets()
         setListener()
+        CoroutineHelper.saveDeviceDetails(this@WelcomeActivity, "0", "Install")
     }
 
     private fun setListener() {

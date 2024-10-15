@@ -37,6 +37,7 @@ import com.policyboss.policybosspro.core.model.sysncContact.SyncContactEntity
 import com.policyboss.policybosspro.core.viewModel.homeVM.HomeViewModel
 import com.policyboss.policybosspro.databinding.ActivityHomeBinding
 import com.policyboss.policybosspro.databinding.DrawerHeaderBinding
+import com.policyboss.policybosspro.databinding.LayoutFailurePopupBinding
 import com.policyboss.policybosspro.databinding.LayoutMenuDashboard3Binding
 import com.policyboss.policybosspro.databinding.LayoutMysyncPopupBinding
 import com.policyboss.policybosspro.databinding.LayoutSharePopupBinding
@@ -44,6 +45,7 @@ import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utility.Utility
 import com.policyboss.policybosspro.utility.UtilityNew
 import com.policyboss.policybosspro.utils.Constant
+import com.policyboss.policybosspro.utils.CoroutineHelper
 import com.policyboss.policybosspro.utils.FeedbackHelper
 import com.policyboss.policybosspro.utils.NetworkUtils
 import com.policyboss.policybosspro.utils.hideKeyboard
@@ -51,11 +53,11 @@ import com.policyboss.policybosspro.utils.showSnackbar
 import com.policyboss.policybosspro.view.appCode.AppCodeActivity
 import com.policyboss.policybosspro.view.changePwd.ChangePaswordActivity
 import com.policyboss.policybosspro.view.home.adapter.DashboardRowAdapter
-import com.policyboss.policybosspro.view.others.incomePotential.IncomePotentialActivity
 import com.policyboss.policybosspro.view.login.LoginActivity
 import com.policyboss.policybosspro.view.myAccount.MyAccountActivity
 import com.policyboss.policybosspro.view.notification.NotificationActivity
 import com.policyboss.policybosspro.view.others.feedback.HelpFeedBackActivity
+import com.policyboss.policybosspro.view.others.incomePotential.IncomePotentialActivity
 import com.policyboss.policybosspro.view.salesMaterial.SalesMaterialActivity
 import com.policyboss.policybosspro.view.syncContact.ui.WelcomeSyncContactActivityKotlin
 import com.policyboss.policybosspro.webview.CommonWebViewActivity
@@ -177,7 +179,17 @@ class HomeActivity : BaseActivity() {
         })
         //endregion
 
-        observeMasterState()
+        if (prefsManager.getSSID().toInt() != 0) {
+            if (prefsManager.getSSID().toInt() == 5) {
+                verifyPospNo()
+                return
+            }
+            CoroutineHelper.saveDeviceDetails(this@HomeActivity, prefsManager.getSSID(), "Active")
+
+        }
+
+
+            observeMasterState()
 
         //Called Master Data ie UserConstant and Dynamic Dashb oard Parallel
         viewModel.getMasterData()
@@ -373,6 +385,8 @@ class HomeActivity : BaseActivity() {
 //            true
 //        }
         //endregion
+
+
 
 
         //region Set up Navigation - Drawer item click listener
@@ -1146,6 +1160,7 @@ class HomeActivity : BaseActivity() {
     //endregion
 
 
+    //region Mark : All Alert Dialog
     //region Utilities Alert
     private fun showMyUtilitiesDialog() {
         if (myUtilitiesDialog?.isShowing == true) return
@@ -1186,6 +1201,43 @@ class HomeActivity : BaseActivity() {
 
     //endregion
 
+    //region Posp Alert
+    private fun verifyPospNo() {
+        val builder = AlertDialog.Builder(this@HomeActivity, R.style.CustomDialog)
+
+        // Using ViewBinding for the dialog view
+        val dialogBinding = LayoutFailurePopupBinding.inflate(layoutInflater)
+
+        builder.setView(dialogBinding.root)
+        val verifyDialog = builder.create()
+
+        // set the custom dialog components using ViewBinding
+        dialogBinding.txtTitle.text = "Authorization"
+        dialogBinding.txtMessage.text = getString(R.string.verify_SSID)
+
+        dialogBinding.btnClose.setOnClickListener {
+            verifyDialog.dismiss()
+            val intent = Intent(this@HomeActivity, LoginActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            }
+            startActivity(intent)
+            finish()
+        }
+
+        dialogBinding.ivCross.setOnClickListener {
+            verifyDialog.dismiss()
+            val intent = Intent(this@HomeActivity, LoginActivity::class.java).apply {
+                addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            }
+            startActivity(intent)
+            finish()
+        }
+
+        verifyDialog.setCancelable(false)
+        verifyDialog.show()
+    }
+
+    //endregion
 
     //region Logout Alert
     fun dialogLogout() {
@@ -1241,6 +1293,8 @@ class HomeActivity : BaseActivity() {
 //        // Create and show the dialog
 //        builder.show()
     }
+
+    //endregion
 
     //endregion
 

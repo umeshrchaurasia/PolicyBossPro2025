@@ -84,7 +84,7 @@ class ChangePaswordActivity : BaseActivity(), OnClickListener {
                         return
                     }
 
-                    binding.etNewPassword.text?.length!! < 6 -> {
+                    binding.etNewPassword.text!!.length < 6 -> {
                         binding.etNewPassword.error = "Minimum 6 characters required"
                         binding.etNewPassword.requestFocus() // Set focus to the EditText
                         return
