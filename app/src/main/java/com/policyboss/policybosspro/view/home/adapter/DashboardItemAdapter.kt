@@ -68,16 +68,16 @@ class DashboardItemAdapter(
             //endregion
 
             //region Set background and font colors
-            lyParent.setBackgroundColor(item.productBackgroundColor.takeIf { it.isNotEmpty() }?.let {
+            lyParent.setBackgroundColor(item.productBackgroundColor?.takeIf { it.isNotEmpty() }?.let {
                 Color.parseColor("#$it")
             } ?: ContextCompat.getColor(context, R.color.white))
 
 
-            txtProductName.setTextColor(item.productNameFontColor.takeIf { it.isNotEmpty() }?.let {
+            txtProductName.setTextColor(item.productNameFontColor?.takeIf { it.isNotEmpty() }?.let {
                 Color.parseColor("#$it")
             } ?: ContextCompat.getColor(context, R.color.dashboard_title))
 
-            txtProductDesc.setTextColor(item.productDetailsFontColor.takeIf { it.isNotEmpty() }?.let {
+            txtProductDesc.setTextColor(item.productDetailsFontColor?.takeIf { it.isNotEmpty() }?.let {
                 Color.parseColor("#$it")
             } ?: ContextCompat.getColor(context, R.color.header_text_color))
             //endregion

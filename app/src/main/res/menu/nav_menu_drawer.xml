@@ -108,20 +108,9 @@
                     android:id="@+id/nav_changepassword"
                     android:icon="@drawable/change_password"
                     android:orderInCategory="245"
+                    android:visible="false"
                     android:title="Change Password" />
 
-<!--                <item-->
-<!--                    android:id="@+id/nav_rate"-->
-<!--                    android:icon="@drawable/ic_rate"-->
-<!--                    android:orderInCategory="248"-->
-<!--                    android:title="Rate our App"-->
-<!--                    android:visible="false"/>-->
-<!--                <item-->
-<!--                    android:id="@+id/nav_rateweb"-->
-<!--                    android:icon="@drawable/ic_rate"-->
-<!--                    android:orderInCategory="248"-->
-<!--                    android:title="Web Rating"-->
-<!--                    android:visible="false" />-->
 
             </menu>
         </item>
@@ -156,53 +145,6 @@
             </menu>
         </item>
 
-
-        <item
-            android:id="@+id/nav_TRANSACTIONS"
-            android:icon="@drawable/my_account"
-            android:orderInCategory="300"
-            android:visible="false"
-            android:title="MY TRANSACTIONS">
-            <menu>
-
-                <item
-                    android:id="@+id/nav_mybusiness_insurance"
-                    android:icon="@drawable/ic_business_name"
-                    android:orderInCategory="310"
-                    android:title="My Insurance Business"
-                    android:visible="true" />
-
-                <item
-                    android:id="@+id/nav_transactionhistory"
-                    android:icon="@drawable/vector_date"
-                    android:orderInCategory="320"
-                    android:title="My Transactions"
-                    android:visible="true" />
-
-                <item
-                    android:id="@+id/nav_MessageCentre"
-                    android:icon="@drawable/sms"
-                    android:orderInCategory="330"
-                    android:title="My Messages"
-                    android:visible="true" />
-
-                <item
-                    android:id="@+id/nav_MyAlert"
-                    android:icon="@drawable/notification_ic"
-                    android:orderInCategory="340"
-                    android:title="My Alerts"
-                    android:visible="false" />
-
-                <item
-                    android:id="@+id/nav_crnpolicy"
-                    android:icon="@drawable/insurance_policy_ic"
-                    android:orderInCategory="350"
-                    android:title="Get Policy by CRN"
-                    android:visible="false" />
-
-
-            </menu>
-        </item>
 
 
         <item

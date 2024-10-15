@@ -318,7 +318,7 @@ Notethis service must be added to version 2.2.5 or later
                 <action android:name="com.xiaomi.mipush.RECEIVE_MESSAGE" />
                 <!-- Add other required actions if necessary -->
             </intent-filter>
-            >
+
         </receiver>
     </application>
 

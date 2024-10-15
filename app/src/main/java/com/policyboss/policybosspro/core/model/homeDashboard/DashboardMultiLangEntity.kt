@@ -2,34 +2,31 @@ package com.policyboss.policybosspro.core.model.homeDashboard
 
 
 
-class DashboardMultiLangEntity(
-    var category: String,
-    var sequence: Int,
-    var productId: Int ,
-    var menuName: String,
-    var description: String,
-    var iconResId: Int,
-    var titleKey: String,
-    var descriptionKey: String
-) {
-    // Optional properties initialized with default values
+ class DashboardMultiLangEntity(
+    val category: String,
+    val sequence: Int,
+    val productId: Int ,
+    val menuName: String,
+    val description: String,
+    val iconResId: Int,
+    val titleKey: String,
+    val descriptionKey: String,
+    val isNewPrdClickable: String,
 
-    var type: String = ""
-    var productName: String = ""
-    var productDetails: String = ""
-    var serverIcon: String = ""
+    var type: String? = null,
+    var productName: String,
+    var productDetails: String? = null,
+    var serverIcon: String? = null,
+    var link: String? = null,
+    var productNameFontColor: String? = null,
+    var productDetailsFontColor: String? = null,
+    var productBackgroundColor: String? = null,
+    var isExclusive: String? = null,
+    var isSharable: String? = null,
+    var popupmsg: String? = null,
+    var title: String? = null,
+    var info: String
 
-    var link: String = ""
-    var productNameFontColor: String = ""
-    var productDetailsFontColor: String = ""
-    var productBackgroundColor: String = ""
-    var isExclusive: String = ""
-    var isNewPrdClickable: String = ""
-    var isSharable: String = ""
-    var popupmsg: String = ""
-    var title: String = ""
-    var info: String = ""
-    var IsNewprdClickable : String = ""
-}
+)
 
 

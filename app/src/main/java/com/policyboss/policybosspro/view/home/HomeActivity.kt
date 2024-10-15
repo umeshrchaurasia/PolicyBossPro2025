@@ -71,7 +71,8 @@ import javax.inject.Inject
 import kotlin.math.roundToInt
 
 @AndroidEntryPoint
-class HomeActivity : BaseActivity() {
+class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
+
 
     //region Declare variables
     private lateinit var binding: ActivityHomeBinding
@@ -141,8 +142,6 @@ class HomeActivity : BaseActivity() {
         binding.drawer.addDrawerListener(toggle)
         toggle.syncState()
 
-        binding.swipeRefreshLayout.isEnabled = false
-
 
         //endregion
 
@@ -189,30 +188,15 @@ class HomeActivity : BaseActivity() {
         }
 
 
-            observeMasterState()
+        observeMasterState()
 
         //Called Master Data ie UserConstant and Dynamic Dashb oard Parallel
         viewModel.getMasterData()
 
 
-        //region Swipe To Regresh not in used
-//        binding.swipeRefreshLayout.setColorSchemeResources(
-//            R.color.white // Progress spinner (circle) color
-//        )
-//
-//        // Set the background color of the progress circle to blue
-//        binding.swipeRefreshLayout.setProgressBackgroundColorSchemeResource(
-//            R.color.colorPrimary // Background color of the progress circle
-//        )
-//        binding.swipeRefreshLayout.setOnRefreshListener {
-//            // Trigger API refresh only on user swipe
-//            isSwipeRefresh = true
-//            vewModel.getMasterData()
-//        }
+        binding.navigationView.setNavigationItemSelectedListener(this)
 
-        //endregion
-
-        //region Set up navigation item click listener
+        //  region Set up navigation item click listener
 //        binding.navigationView.setNavigationItemSelectedListener {  menuItem ->
 //
 //            if (!NetworkUtils.isNetworkAvailable(this@HomeActivity)) {
@@ -384,43 +368,44 @@ class HomeActivity : BaseActivity() {
 //            binding.drawer.closeDrawer(GravityCompat.START)
 //            true
 //        }
-        //endregion
-
-
+      //  endregion
 
 
         //region Set up Navigation - Drawer item click listener
-        binding.navigationView.setNavigationItemSelectedListener { menuItem ->
-
-            if (!NetworkUtils.isNetworkAvailable(this@HomeActivity)) {
-                showSnackbar(binding.root, getString(R.string.noInternet))
-                return@setNavigationItemSelectedListener false
-            }
-
-            // Toggle checked state of the menu item
-            toggleMenuItemChecked(menuItem)
-
-            // Hide the keyboard
-            hideKeyboard(binding.root)
-
-            // Add dynamic drawer menu items
-            if (handleDynamicMenu(menuItem)) {
-                return@setNavigationItemSelectedListener true
-            }
-
-            // Handle specific menu item clicks
-            handleMenuItemClick(menuItem)
-
-            // Close the drawer after item selection
-            binding.drawer.closeDrawer(GravityCompat.START)
-            true
-        }
-
 
 
     }
 
+
+    override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
+
+        Log.d(Constant.TAG,"Product ${ menuItem.itemId}")
+
+        if (!NetworkUtils.isNetworkAvailable(this@HomeActivity)) {
+            showSnackbar(binding.root, getString(R.string.noInternet))
+            return false
+        }
+
+        // Toggle checked state of the menu item
+        toggleMenuItemChecked(menuItem)
+
+        // Hide the keyboard
+        hideKeyboard(binding.root)
+
+        // Add dynamic drawer menu items
+        if (handleDynamicMenu(menuItem)) {
+            return true
+        }
+
+        // Handle specific menu item clicks
+        handleMenuItemClick(menuItem)
+
+        // Close the drawer after item selection
+        binding.drawer.closeDrawer(GravityCompat.START)
+        return true
+    }
     //Mark: Drawer -Menu Click Navigate to Specific Activity / WebView Handling
+
     //region Drawer -Menu Methods
 
     private fun toggleMenuItemChecked(menuItem: MenuItem) {
@@ -977,7 +962,7 @@ class HomeActivity : BaseActivity() {
                     else ->{
 
                         if (entity.productId < 100 && entity.productId != 41) {
-                            entity.IsNewprdClickable?.let { clickable ->
+                            entity.isNewPrdClickable?.let { clickable ->
                                 if (clickable == "Y") {
                                     // Fetch dynamic product URL
                                     var dynamicUrl = ""
@@ -1014,6 +999,7 @@ class HomeActivity : BaseActivity() {
                             }
                         }
                         else if (entity.productId >= 100) {
+
                             trackMainMenuEvent(entity.productName)
 
                             openCommonWebView(
@@ -1532,14 +1518,6 @@ class HomeActivity : BaseActivity() {
 
                             is APIState.Loading -> {
 
-                                //region comment
-                                // displayLoadingWithText()
-//                            if( isSwipeRefresh){
-//                                binding.swipeRefreshLayout.isRefreshing = true
-//                            }else{
-//                                displayLoadingWithText()
-//                            }
-                                //endregion
                                 displayLoadingWithText()
 
                             }
@@ -1591,14 +1569,14 @@ class HomeActivity : BaseActivity() {
                                         }
                                 }
 
-                                // binding.swipeRefreshLayout.isRefreshing = false
+
 
                             }
                             is APIState.Empty -> {
                                 hideLoading()
                             }
                             is APIState.Failure -> {
-                                // binding.swipeRefreshLayout.isRefreshing = false
+
                                 hideLoading()
                             }
                         }
@@ -1656,6 +1634,8 @@ class HomeActivity : BaseActivity() {
 
 
     }
+
+
 
     //endregion
 }

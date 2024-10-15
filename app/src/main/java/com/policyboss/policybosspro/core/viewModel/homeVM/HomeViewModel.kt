@@ -159,27 +159,35 @@ class HomeViewModel @Inject constructor(
                         menuName = dashBoardItemEntity.menuname,
                         description = dashBoardItemEntity.description,
                         iconResId = -1,  // Assuming no local resource, replace if needed
+
+
+                        productName = dashBoardItemEntity.menuname,
+                        productDetails =   dashBoardItemEntity.description,
+
                         titleKey = "Insurance",
-                        descriptionKey = ""
-                    ).apply {
-                        serverIcon = dashBoardItemEntity.iconimage
-                        link = dashBoardItemEntity.link
-                        productNameFontColor = dashBoardItemEntity.ProductNameFontColor
-                        productDetailsFontColor = dashBoardItemEntity.ProductDetailsFontColor
-                        productBackgroundColor = dashBoardItemEntity.ProductBackgroundColor
-                        isExclusive = dashBoardItemEntity.IsExclusive
-                        isNewPrdClickable = dashBoardItemEntity.IsNewprdClickable
-                        isSharable = dashBoardItemEntity.IsSharable
-                        title = dashBoardItemEntity.title
-                        info = dashBoardItemEntity.info
+                        descriptionKey = "",
+                        isNewPrdClickable = dashBoardItemEntity.IsNewprdClickable,
+                        serverIcon = dashBoardItemEntity.iconimage,
+                        link = dashBoardItemEntity.link,
+
+                        productNameFontColor = dashBoardItemEntity.ProductNameFontColor,
+                        productDetailsFontColor = dashBoardItemEntity.ProductDetailsFontColor,
+                        productBackgroundColor = dashBoardItemEntity.ProductBackgroundColor,
+
+                        isExclusive = dashBoardItemEntity.IsExclusive,
+                        isSharable = dashBoardItemEntity.IsSharable,
+                        title = dashBoardItemEntity.title,
+                        info = dashBoardItemEntity.info,
                         popupmsg = dashBoardItemEntity.popupmsg
-                    }
+                    )
                     dashboardEntities.add(dashboardEntity)
                 }
         }
 
         return dashboardEntities
     }
+
+
 
     //endregion
 
