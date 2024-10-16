@@ -14,6 +14,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.view.View.OnClickListener
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
@@ -28,9 +29,11 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.navigation.NavigationView
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.BuildConfig
+import com.policyboss.policybosspro.MyApplication
 import com.policyboss.policybosspro.PolicyBossProApplication
 import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.analytics.WebEngageAnalytics
+import com.policyboss.policybosspro.analytics.WebEngageAnalytics.Companion.getInstance
 import com.policyboss.policybosspro.core.APIState
 import com.policyboss.policybosspro.core.model.homeDashboard.DashboardMultiLangEntity
 import com.policyboss.policybosspro.core.model.sysncContact.SyncContactEntity
@@ -53,6 +56,7 @@ import com.policyboss.policybosspro.utils.showSnackbar
 import com.policyboss.policybosspro.view.appCode.AppCodeActivity
 import com.policyboss.policybosspro.view.changePwd.ChangePaswordActivity
 import com.policyboss.policybosspro.view.home.adapter.DashboardRowAdapter
+import com.policyboss.policybosspro.view.knowledgeGuru.KnowledgeGuruActivity
 import com.policyboss.policybosspro.view.login.LoginActivity
 import com.policyboss.policybosspro.view.myAccount.MyAccountActivity
 import com.policyboss.policybosspro.view.notification.NotificationActivity
@@ -70,8 +74,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
+
 @AndroidEntryPoint
-class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
+class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, OnClickListener {
 
 
     //region Declare variables
@@ -194,7 +199,8 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         viewModel.getMasterData()
 
 
-        binding.navigationView.setNavigationItemSelectedListener(this)
+
+        setonClickListner()
 
         //  region Set up navigation item click listener
 //        binding.navigationView.setNavigationItemSelectedListener {  menuItem ->
@@ -374,6 +380,13 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         //region Set up Navigation - Drawer item click listener
 
 
+    }
+
+    fun setonClickListner(){
+
+        binding.navigationView.setNavigationItemSelectedListener(this)
+        binding.tvKnowledge.setOnClickListener(this)
+        binding.tvSalesMat.setOnClickListener(this)
     }
 
 
@@ -999,7 +1012,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                             }
                         }
                         else if (entity.productId >= 100) {
-
                             trackMainMenuEvent(entity.productName)
 
                             openCommonWebView(
@@ -1316,6 +1328,14 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         WebEngageAnalytics.getInstance().trackEvent("Clicked on Income Calculator in My Utilities", eventAttributes)
     }
 
+    private fun trackTopMenuEvent(strMenu: String) {
+        // Create event attributes
+        val eventAttributes: MutableMap<String, Any> = HashMap()
+        eventAttributes["Menu Clicked"] = strMenu
+
+        // Track the login event using WebEngageHelper
+        getInstance().trackEvent("Top Menu Viewed", eventAttributes)
+    }
 
 
     //endregion
@@ -1505,6 +1525,45 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     //endregion
 
+    override fun onClick(view: View?) {
+
+        when (view?.id) {
+
+            binding.tvKnowledge.id ->{
+
+                if (!NetworkUtils.isNetworkAvailable(this@HomeActivity)) {
+
+                    showSnackbar(view,getString(R.string.noInternet))
+                    return
+                }
+
+                // Redirect to SalesMaterialActivity
+                startActivity(Intent(this@HomeActivity, KnowledgeGuruActivity::class.java))
+
+                // Tracking event
+                trackTopMenuEvent("CUSTOMER COMM")
+
+
+            }
+            binding.tvSalesMat.id ->{
+
+                if (!NetworkUtils.isNetworkAvailable(this@HomeActivity)) {
+
+                    showSnackbar(view,getString(R.string.noInternet))
+                    return
+                }
+
+                // Redirect to SalesMaterialActivity
+                startActivity(Intent(this@HomeActivity, SalesMaterialActivity::class.java))
+
+                // Tracking event
+                trackTopMenuEvent("CUSTOMER COMM")
+
+
+            }
+        }
+    }
+
     //region Observer
     private fun observeMasterState() {
 
@@ -1634,6 +1693,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
 
     }
+
 
 
 

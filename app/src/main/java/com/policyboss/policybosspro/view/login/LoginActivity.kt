@@ -1224,7 +1224,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
 
 
                             hideLoading()
-                            showAlert(it.data?.message?:"Email has been sent on your registered Email address")
+                            showAlert(it.data?.Message?:"Email has been sent on your registered Email address")
                         }
 
                         is APIState.Failure -> {

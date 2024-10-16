@@ -29,7 +29,6 @@ class ChangePaswordActivity : BaseActivity(), OnClickListener {
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
-        setSupportActionBar(binding.toolbar)
         supportActionBar!!.apply {
 
             setDisplayShowHomeEnabled(true)

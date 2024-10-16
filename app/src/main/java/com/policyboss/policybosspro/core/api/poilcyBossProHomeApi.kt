@@ -1,11 +1,13 @@
 package com.policyboss.policybosspro.core.api
 
 import com.policyboss.policybosspro.core.response.authToken.OauthTokenResponse
-import com.policyboss.policybosspro.core.response.changePwd.ChangePasswordResponse
 import com.policyboss.policybosspro.core.response.home.ProductURLShareResponse
 import com.policyboss.policybosspro.core.response.horizonResponse.horizonSyncDetails.HorizonsyncDetailsResponse
 import com.policyboss.policybosspro.core.response.master.dynamicDashboard.MenuMasterResponse
 import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantResponse
+import com.policyboss.policybosspro.core.response.salesMaterial.SalesMaterialProductDetailsResponse
+
+import com.policyboss.policybosspro.core.response.salesMaterial.SalesMaterialResponse
 import com.policyboss.policybosspro.utils.Constant
 import retrofit2.Call
 import retrofit2.Response
@@ -14,6 +16,7 @@ import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Url
 
 interface poilcyBossProHomeApi {
 
@@ -62,13 +65,17 @@ interface poilcyBossProHomeApi {
     suspend fun getOauthToken( @Body body : HashMap<String,String> ): Response<OauthTokenResponse>
 
 
-
     /****************************************************************************************
-     *   App Code API
+     *   Sales Material API
      *************************************************************************************/
+
+    @Headers("token:" +  Constant.token)
+    @POST("/quote/Postfm/sales-material-product-pb")
+    suspend fun getSalesProducts( @Body body: HashMap<String,String>): Response<SalesMaterialResponse>
 
 
     @Headers("token:" +  Constant.token)
-    @POST("/quote/Postfm/change-password")
-    fun changePassword(@Body body:HashMap<String, String>): Response<ChangePasswordResponse?>?
+    @POST("/quote/Postfm/sales-material-product-details-pb")
+    suspend fun getSalesProductDetails( @Body body: HashMap<String,String>): Response<SalesMaterialProductDetailsResponse>
+
 }

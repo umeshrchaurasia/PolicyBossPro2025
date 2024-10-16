@@ -28,7 +28,15 @@ object Constant {
 
     val ErrorMessage : String = "Error occurred,Please try Again!"
     val Fail : String = "Failed"
-    var DEMO_MESSAGE = "demo_message"
+
+    const val   NOData = "No Data Found"
+    const val   MasterData = "Failed to fetch master data"
+    const val   SeverUnavaiable = "Server temporarily unavailable! Please retry again"
+    const val   InValidPass = "Invalid UserId and Password"
+    const val   ServerError = "Service Unavailable : No Data Found"
+    const val   ServerNotFound = "Service Not Found "
+    const val   InValidOTP = "Invalid OTP"
+
 
     const val KEY_result = "op_result"
     const val KEY_Max_Progress_result = "op_Max_Progress_result"
@@ -91,13 +99,7 @@ object Constant {
 
 
 
-    const val   NOData = "No Data Found"
-    const val   MasterData = "Failed to fetch master data"
-    const val   InValidUser = "User Not Found"
-    const val   InValidPass = "Invalid UserId and Password"
-    const val   ServerError = "Service Unavailable : No Data Found"
-    const val   ServerNotFound = "Service Not Found "
-    const val   InValidOTP = "Invalid OTP"
+
 
     const val PERMISSION_CAMERA_STORACGE_CONSTANT = 103
     const val REQUEST_PERMISSION_SETTING = 101

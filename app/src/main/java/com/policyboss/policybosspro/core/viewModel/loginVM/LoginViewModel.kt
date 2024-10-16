@@ -258,12 +258,12 @@ class LoginViewModel @Inject constructor(
                     }
                     else{
 
-                        otpLoginMutuableStateFlow.value = APIState.Failure(errorMessage = Constant.InValidUser)
+                        otpLoginMutuableStateFlow.value = APIState.Failure(errorMessage = Constant.ErrorMessage)
                     }
                 }
                 else
                 {
-                    otpLoginMutuableStateFlow.value = APIState.Failure(errorMessage = Constant.InValidUser)
+                    otpLoginMutuableStateFlow.value = APIState.Failure(errorMessage = Constant.SeverUnavaiable)
                 }
 
             }
@@ -511,7 +511,7 @@ class LoginViewModel @Inject constructor(
             }
             .collect{ data ->
                 if (data?.isSuccessful == true){
-                    if(data.body()?.statusNo?:1 == 0)
+                    if(data.body()?.StatusNo?:1 == 0)
                     {
 
                         forgotPasswordMutuableStateFlow.value = APIState.Success(data = data.body())

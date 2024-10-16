@@ -45,10 +45,7 @@ interface poilcyBossProSyncApi {
     suspend fun saveContactLead(@Url url: String, @Body body : ContactLeadRequestEntity): Response<ContactLeadResponse?>?
 
 
-    // region Save CallLog
-//    @Headers("token:" + Constant.token)
-//    @POST("/sync_contacts/contact_call_history")
-    //endregion
+
 
     //Save CallLog
     @POST()
@@ -90,9 +87,6 @@ interface poilcyBossProSyncApi {
     ): Response<DocumentResponse>
 
     // ***************** *******************************
-
-//    @POST
-//    suspend fun getPBAttendance(@Url strUrl : String, @Body body : pbAttendRequestEntity ): Response<pbAttendResponse>
 
 
     @GET()

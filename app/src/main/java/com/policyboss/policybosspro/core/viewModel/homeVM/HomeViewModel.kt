@@ -9,8 +9,10 @@ import com.policyboss.policybosspro.core.model.homeDashboard.DashboardMultiLangE
 import com.policyboss.policybosspro.core.repository.homeRepository.HomeRepository
 import com.policyboss.policybosspro.core.response.authToken.OauthTokenResponse
 import com.policyboss.policybosspro.core.response.home.ProductURLShareEntity
-import com.policyboss.policybosspro.core.response.home.ProductURLShareResponse
 import com.policyboss.policybosspro.core.response.master.MasterDataCombine
+import com.policyboss.policybosspro.core.response.salesMaterial.SalesMaterialProductDetailsResponse
+
+import com.policyboss.policybosspro.core.response.salesMaterial.SalesMaterialResponse
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utils.Constant
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -52,6 +54,19 @@ class HomeViewModel @Inject constructor(
     // data is collected in OauthStateFlow variable, we have to get from here
     val OauthStateFlow : StateFlow<APIState<OauthTokenResponse>>
         get() = oauthMutuableStateFlow
+
+    //endregion
+
+    //region Declaeration of SalesMaterial State
+    private var salesMaterialStateFlow : MutableStateFlow<Event<APIState<SalesMaterialResponse>>> = MutableStateFlow(Event(APIState.Empty()))
+    val SalesMaterialResponse: StateFlow<Event<APIState<SalesMaterialResponse>>>
+        get() = salesMaterialStateFlow
+
+
+
+    private var salesMaterialDtlStateFlow : MutableStateFlow<Event<APIState<SalesMaterialProductDetailsResponse>>> = MutableStateFlow(Event(APIState.Empty()))
+    val SalesMaterialDtlResponse: StateFlow<Event<APIState<SalesMaterialProductDetailsResponse>>>
+        get() = salesMaterialDtlStateFlow
 
     //endregion
 
@@ -212,12 +227,12 @@ class HomeViewModel @Inject constructor(
                 productShareMutableFlow.value =  Event(APIState.Failure(it.message ?: Constant.Fail))
             }.collect{
                 if (it.isSuccessful) {
-                    if (it.body() != null && it.body()?.statusNo == 0) {
+                    if (it.body() != null && it.body()?.StatusNo == 0) {
 
                         productShareMutableFlow.value =  Event(APIState.Success(it.body()?.MasterData))
                     } else {
                         productShareMutableFlow.value =
-                            Event(APIState.Failure(it.body()?.message?: Constant.ErrorMessage ))
+                            Event(APIState.Failure(it.body()?.Message?: Constant.ErrorMessage ))
                     }
                 } else {
                     productShareMutableFlow.value =
@@ -320,13 +335,95 @@ class HomeViewModel @Inject constructor(
                         }
 
                     }else{
-                        oauthMutuableStateFlow.value = APIState.Failure(errorMessage = Constant.ErrorMessage)
+                        oauthMutuableStateFlow.value = APIState.Failure(errorMessage = Constant.SeverUnavaiable)
                     }
 
                 }
 
 
     }
+
+
+
+
+    fun getSalesProducts() = viewModelScope.launch {
+
+
+        var body = HashMap<String,String>()
+        body.put("app_version",prefManager.getAppVersion())
+        body.put("device_code",prefManager.getDeviceID())
+        body.put("ssid",prefManager.getSSID())
+        body.put("fbaid",prefManager.getFBAID())
+        body.put("product_id", "")
+
+
+        salesMaterialStateFlow.value =  Event(APIState.Loading())
+
+
+        homeRepository.getSalesProducts(body)
+            .catch {
+                salesMaterialStateFlow.value = Event(APIState.Failure(it.message ?: Constant.Fail))
+
+            }.collect{ data ->
+
+                if(data.isSuccessful){
+
+                    if(data.body()?.StatusNo?:1 == 0){
+                        salesMaterialStateFlow.value =Event( APIState.Success(data = data.body()))
+                    }else{
+                        salesMaterialStateFlow.value = Event(APIState.Failure(errorMessage = data.body()?.Message ?: Constant.ErrorMessage))
+                    }
+
+                }else{
+                    salesMaterialStateFlow.value = Event(APIState.Failure(errorMessage = Constant.SeverUnavaiable))
+                }
+
+            }
+
+
+    }
+
+    ///getSalesProductDetail
+
+
+    fun getSalesProductDetail() = viewModelScope.launch {
+
+
+        var body = HashMap<String,String>()
+        body.put("app_version",prefManager.getAppVersion())
+        body.put("device_code",prefManager.getDeviceID())
+        body.put("ssid",prefManager.getSSID())
+        body.put("fbaid",prefManager.getFBAID())
+        body.put("product_id", "")
+
+
+        salesMaterialDtlStateFlow.value =  Event(APIState.Loading())
+
+
+        homeRepository.getSalesProductDetail(body)
+            .catch {
+                salesMaterialStateFlow.value = Event(APIState.Failure(it.message ?: Constant.Fail))
+
+            }.collect{ data ->
+
+                if(data.isSuccessful){
+
+                    if(data.body()?.StatusNo?:1 == 0){
+                        salesMaterialDtlStateFlow.value = Event( APIState.Success(data = data.body()))
+                    }else{
+                        salesMaterialDtlStateFlow.value = Event(APIState.Failure(errorMessage = data.body()?.Message ?: Constant.ErrorMessage))
+                    }
+
+                }else{
+                    salesMaterialDtlStateFlow.value = Event(APIState.Failure(errorMessage = Constant.SeverUnavaiable))
+                }
+
+            }
+
+
+    }
+
+
 
 
 }
