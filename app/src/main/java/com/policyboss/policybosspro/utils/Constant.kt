@@ -82,6 +82,7 @@ object Constant {
     const val thisMonth = "This Month"
     const val lastMonth = "Last Month"
     const val SHARE_WHATSAPP = "sharewhatsapp"
+    const val  PRODUCT_ID = "salesProductID"
 
 
 

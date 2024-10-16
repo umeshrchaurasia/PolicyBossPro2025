@@ -1,6 +1,6 @@
 package com.policyboss.policybosspro.view.salesMaterial
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -11,18 +11,17 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.policyboss.policybosspro.BaseActivity
-import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.core.APIState
 import com.policyboss.policybosspro.core.response.salesMaterial.CompanyEntity
+import com.policyboss.policybosspro.core.response.salesMaterial.SalesMateriaProdEntity
 import com.policyboss.policybosspro.core.viewModel.homeVM.HomeViewModel
 
 import com.policyboss.policybosspro.databinding.ActivitySalesMaterialBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utils.Constant
-import com.policyboss.policybosspro.utils.showSnackbar
+import com.policyboss.policybosspro.view.salesMaterial.adapter.SalesMaterialAdapter
 import com.webengage.sdk.android.WebEngage
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -30,6 +29,7 @@ import javax.inject.Inject
 class SalesMaterialActivity : BaseActivity() {
 
     private lateinit var binding: ActivitySalesMaterialBinding
+    private lateinit var salesMaterialAdapter: SalesMaterialAdapter
 
     @Inject
     lateinit var prefsManager: PolicyBossPrefsManager
@@ -86,6 +86,34 @@ class SalesMaterialActivity : BaseActivity() {
 //       }
    }
 
+    private fun setupSalesMaterialAdapter(salesProductList : List<SalesMateriaProdEntity>) {
+
+
+        salesMaterialAdapter = SalesMaterialAdapter(
+            context = this,
+
+            salesProductList =  salesProductList,
+            prefsManager = prefsManager,
+            onItemClick = ::onSalesProductListener,
+
+        )
+        binding.rvSalesMaterial.apply {
+            layoutManager = LinearLayoutManager(this@SalesMaterialActivity)
+            adapter = salesMaterialAdapter
+            setHasFixedSize(true)
+            setItemViewCacheSize(20)
+        }
+    }
+
+    fun onSalesProductListener(entity: SalesMateriaProdEntity, pos : Int){
+        val intent = Intent(this@SalesMaterialActivity, SalesDetailActivity::class.java)
+            .apply {
+            putExtra(Constant.PRODUCT_ID, entity)
+        }
+        startActivity(intent)
+
+    }
+
     private fun observeResponse() {
 
         lifecycleScope.launch {
@@ -104,7 +132,8 @@ class SalesMaterialActivity : BaseActivity() {
                                }
                                is APIState.Failure -> {
                                    hideLoading()
-                                   this@SalesMaterialActivity.showSnackbar(binding.root, it.errorMessage)
+
+
                                    Log.d(Constant.TAG,it.errorMessage.toString())
                                }
                                is APIState.Loading -> {
@@ -114,7 +143,11 @@ class SalesMaterialActivity : BaseActivity() {
 
                                    hideLoading()
 
-                                   showAlert("Success")
+                                   it.data?.MasterData?.let { lstSalesProdEntity ->
+
+                                       setupSalesMaterialAdapter(lstSalesProdEntity)
+
+                                   }
                                }
                            }
 

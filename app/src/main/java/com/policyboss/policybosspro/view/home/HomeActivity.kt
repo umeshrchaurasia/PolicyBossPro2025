@@ -29,7 +29,6 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.google.android.material.navigation.NavigationView
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.BuildConfig
-import com.policyboss.policybosspro.MyApplication
 import com.policyboss.policybosspro.PolicyBossProApplication
 import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.analytics.WebEngageAnalytics
@@ -381,6 +380,236 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
 
     }
+
+//*************** DashBoard List Adapter Main Menu Action *****************************************
+// Action :  Move To diff page Using Home - DashBoard List
+    // region Dashboard Menu
+    private fun dashBoardMenusList(dashboardEntity: DashboardMultiLangEntity?) {
+
+        dashboardEntity?.let { entity ->
+            try {
+
+                var ipaddress = "0.0.0.0"
+                val parent_ssid = ""
+                val deviceId = Utility.getDeviceID(this@HomeActivity)
+                val appVersion = "policyboss-${BuildConfig.VERSION_NAME}"
+
+                when (entity.productId) {
+                    1 -> {
+                        // Car
+                        var motorUrl = prefsManager.getFourWheelerUrl()
+
+
+
+                        motorUrl += buildUrlAppend(ipaddress, deviceId, appVersion, entity.productId, parent_ssid)
+
+                        openCommonWebView(
+                            motorUrl,
+                            "Motor Insurance",
+                            "Motor Insurance",
+                            Constant.INSURANCE_TYPE
+                        )
+
+
+
+                        trackMainMenuEvent("Motor Insurance")
+
+                    }
+
+                    23 -> {
+
+                        // Kotak
+                        var kotakUrl = prefsManager.getUserConstantResponse()?.MasterData?.EliteKotakUrl ?: ""
+                        kotakUrl += buildUrlAppend(ipaddress, deviceId, appVersion, entity.productId, parent_ssid)
+
+                        openCommonWebView(
+                            kotakUrl,
+                            "Kotak Group health Care",
+                            "Kotak Group health Care",
+                            Constant.INSURANCE_TYPE
+                        )
+
+                        trackMainMenuEvent("Kotak Group health Care")
+
+
+                    }
+
+                    2 ->  {
+
+                        // health
+                        var healthUrl = prefsManager.getHealthurl()
+                        healthUrl += buildUrlAppend(ipaddress, deviceId, appVersion, entity.productId, parent_ssid)
+
+                        openCommonWebView(
+                            healthUrl,
+                            "Health Insurance",
+                            "Health Insurance",
+                            Constant.INSURANCE_TYPE
+                        )
+
+                        trackMainMenuEvent("Health Insurance")
+
+
+                    }
+
+                    10 -> {
+
+                        //bike
+                        var bikeUrl = prefsManager.getTwoWheelerUrl()
+                        bikeUrl += buildUrlAppend(ipaddress, deviceId, appVersion, entity.productId, parent_ssid)
+
+                        openCommonWebView(
+                            bikeUrl,
+                            "Two Wheeler Insurance",
+                            "Two Wheeler Insurance",
+                            Constant.INSURANCE_TYPE
+                        )
+
+                        trackMainMenuEvent("Two Wheeler Insurance")
+
+
+                    }
+
+                    12 -> {
+
+                        //bike
+                        var cvUrl = prefsManager.getCVUrl()
+                        cvUrl += buildUrlAppend(ipaddress, deviceId, appVersion, entity.productId, parent_ssid)
+
+                        openCommonWebView(
+                            cvUrl,
+                            "Commercial Vehicle Insurance",
+                            "Commercial Vehicle Insurance",
+                            Constant.INSURANCE_TYPE
+                        )
+
+                        trackMainMenuEvent("Commercial Vehicle Insurance")
+
+                    }
+
+                    5 -> {
+
+                        //INVESTMENT PLANS
+                        if(prefsManager.getInvestmentEnabled() == "1" ){
+
+                            var  invUrl = prefsManager.getInvestmentUrl()
+
+                            val append = "&ip_address=$ipaddress" +
+                                    appVersion +
+                                    "&device_id=${Utility.getDeviceID(this@HomeActivity)}" +
+                                    "&login_ssid=$parent_ssid"
+                            invUrl = invUrl + append
+
+                            openCommonWebView(
+                                invUrl,
+                                "INVESTMENT PLANS",
+                                "INVESTMENT PLANS",
+                                Constant.INSURANCE_TYPE
+                            )
+
+                            trackMainMenuEvent("INVESTMENT PLANS")
+
+
+                        }
+
+
+                    }
+
+                    41 -> {
+                        //Synch Contact
+                        startActivity(
+                            Intent(
+                                this@HomeActivity,
+                                WelcomeSyncContactActivityKotlin::class.java
+                            )
+                        )
+                        trackMainMenuEvent("Sync Contact")
+
+                    }
+
+
+                    else ->{
+
+                        if (entity.productId < 100 && entity.productId != 41) {
+                            entity.isNewPrdClickable?.let { clickable ->
+                                if (clickable == "Y") {
+                                    // Fetch dynamic product URL
+                                    var dynamicUrl = ""
+                                    val userConstantsData = prefsManager.getDashboardarray()
+                                    for (dashboardItem in userConstantsData) {
+                                        if (dashboardItem.ProdId?.toInt() == entity.productId) {
+                                            dynamicUrl = dashboardItem.url ?: ""
+                                            break
+                                        }
+                                    }
+
+                                    if (dynamicUrl.isNotEmpty()) {
+                                        ipaddress = try {
+                                            "" // Add logic for fetching ip address here
+                                        } catch (e: Exception) {
+                                            "0.0.0.0"
+                                        }
+
+                                        trackMainMenuEvent(entity.productName)
+
+                                        val append = "&ip_address=$ipaddress&mac_address=$ipaddress" +
+                                                "&app_version=$appVersion&device_id=$deviceId&product_id=${entity.productId}&login_ssid=$parent_ssid"
+                                        dynamicUrl += append
+
+
+                                        openCommonWebView(
+                                            dynamicUrl,
+                                            entity.productName,
+                                            entity.productName,
+                                            Constant.INSURANCE_TYPE
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        else if (entity.productId >= 100) {
+                            trackMainMenuEvent(entity.productName)
+
+                            openCommonWebView(
+                                entity.link ?: "",
+                                entity.productName,
+                                entity.productName,
+                                Constant.INSURANCE_TYPE
+                            )
+                        }
+                    }
+
+
+                }
+
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+    private fun buildUrlAppend(ipaddress: String, deviceId: String, appVersion: String, productId: Int, parentSsid: String): String {
+        return "&ip_address=$ipaddress&mac_address=$ipaddress" +
+                "&app_version=$appVersion" +
+                "&device_id=$deviceId" +
+                "&product_id=$productId&login_ssid=$parentSsid"
+    }
+
+    // Helper method to open CommonWebViewActivity
+    private fun openCommonWebView(url: String, name: String, title: String, dashboardType: String) {
+        startActivity(
+            Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+                putExtra("URL", url)
+                putExtra("dashBoardtype", dashboardType)
+                putExtra("NAME", name)
+                putExtra("TITLE", title)
+            }
+        )
+    }
+
+
+    //endregion
+ // ******************************End ************************************************************
 
     fun setonClickListner(){
 
@@ -780,279 +1009,12 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
     fun onDashBoardListener(entity: DashboardMultiLangEntity){
 
-        switchDashBoardMenus(dashboardEntity = entity)
+        dashBoardMenusList(dashboardEntity = entity)
     }
 
     //endregion
 
-    // region Dashboard Menu
 
-    private fun switchDashBoardMenus(dashboardEntity: DashboardMultiLangEntity?) {
-
-        dashboardEntity?.let { entity ->
-            try {
-
-                var ipaddress = "0.0.0.0"
-                val parent_ssid = ""
-                val deviceId = Utility.getDeviceID(this@HomeActivity)
-                val appVersion = "policyboss-${BuildConfig.VERSION_NAME}"
-
-                when (entity.productId) {
-                    1 -> {
-                        // Car
-                        var motorUrl = prefsManager.getFourWheelerUrl()
-
-                        //region comment
-
-//                        val append = "&ip_address=$ipaddress&mac_address=$ipaddress" +
-//                                "&app_version=policyboss-${BuildConfig.VERSION_NAME}" +
-//                                "&device_id=${Utility.getDeviceID(this@HomeActivity)}" +
-//                                "&product_id=1&login_ssid=$parent_ssid"
-                        // motorUrl += append
-
-                        //                        startActivity(
-//                            Intent(this@HomeActivity, CommonWebViewActivity::class.java)
-//                                .putExtra("URL", motorUrl)
-//                                .putExtra("dashBoardtype", "INSURANCE")
-//                                .putExtra("NAME", "Motor Insurance")
-//                                .putExtra("TITLE", "Motor Insurance")
-//                        )
-
-                        //endregion
-
-                        motorUrl += buildUrlAppend(ipaddress, deviceId, appVersion, entity.productId, parent_ssid)
-
-                        openCommonWebView(
-                            motorUrl,
-                            "Motor Insurance",
-                            "Motor Insurance",
-                            Constant.INSURANCE_TYPE
-                        )
-
-
-
-                        trackMainMenuEvent("Motor Insurance")
-//                        myApplication.trackEvent(
-//                            Constant.PRIVATE_CAR,
-//                            "Clicked",
-//                            "Motor insurance tab on home page"
-//                        )
-                    }
-
-                    23 -> {
-
-                        // Kotak
-                        var kotakUrl = prefsManager.getUserConstantResponse()?.MasterData?.EliteKotakUrl ?: ""
-                        kotakUrl += buildUrlAppend(ipaddress, deviceId, appVersion, entity.productId, parent_ssid)
-
-                        openCommonWebView(
-                            kotakUrl,
-                            "Kotak Group health Care",
-                            "Kotak Group health Care",
-                            Constant.INSURANCE_TYPE
-                        )
-
-                        trackMainMenuEvent("Kotak Group health Care")
-//                        myApplication.trackEvent(
-//                            Constant.PRIVATE_CAR,
-//                            "Clicked",
-//                            "Kotak Group health Care tab on home page"
-//                        )
-
-                    }
-
-                    2 ->  {
-
-                        // health
-                        var healthUrl = prefsManager.getHealthurl()
-                        healthUrl += buildUrlAppend(ipaddress, deviceId, appVersion, entity.productId, parent_ssid)
-
-                        openCommonWebView(
-                            healthUrl,
-                            "Health Insurance",
-                            "Health Insurance",
-                            Constant.INSURANCE_TYPE
-                        )
-
-                        trackMainMenuEvent("Health Insurance")
-//                        myApplication.trackEvent(
-//                            Constant.HEALTH_INS,
-//                            "Clicked",
-//                            "Health insurance tab on home page"
-//                        )
-
-                    }
-
-                    10 -> {
-
-                        //bike
-                        var bikeUrl = prefsManager.getTwoWheelerUrl()
-                        bikeUrl += buildUrlAppend(ipaddress, deviceId, appVersion, entity.productId, parent_ssid)
-
-                        openCommonWebView(
-                            bikeUrl,
-                            "Two Wheeler Insurance",
-                            "Two Wheeler Insurance",
-                            Constant.INSURANCE_TYPE
-                        )
-
-                        trackMainMenuEvent("Two Wheeler Insurance")
-//                        myApplication.trackEvent(
-//                            Constant.TWO_WHEELER,
-//                            "Clicked",
-//                            "Two Wheeler tab on home page"
-//                        )
-
-                    }
-
-                    12 -> {
-
-                        //bike
-                        var cvUrl = prefsManager.getCVUrl()
-                        cvUrl += buildUrlAppend(ipaddress, deviceId, appVersion, entity.productId, parent_ssid)
-
-                        openCommonWebView(
-                            cvUrl,
-                            "Commercial Vehicle Insurance",
-                            "Commercial Vehicle Insurance",
-                            Constant.INSURANCE_TYPE
-                        )
-
-                        trackMainMenuEvent("Commercial Vehicle Insurance")
-//                        myApplication.trackEvent(
-//                            Constant.CV,
-//                            "Clicked",
-//                            "Health CheckUp tab on home page"
-//                        )
-
-                    }
-
-                    5 -> {
-
-                        //INVESTMENT PLANS
-                        if(prefsManager.getInvestmentEnabled() == "1" ){
-
-                            var  invUrl = prefsManager.getInvestmentUrl()
-
-                            val append = "&ip_address=$ipaddress" +
-                                    appVersion +
-                                    "&device_id=${Utility.getDeviceID(this@HomeActivity)}" +
-                                    "&login_ssid=$parent_ssid"
-                            invUrl = invUrl + append
-
-                            openCommonWebView(
-                                invUrl,
-                                "INVESTMENT PLANS",
-                                "INVESTMENT PLANS",
-                                Constant.INSURANCE_TYPE
-                            )
-
-                            trackMainMenuEvent("INVESTMENT PLANS")
-//                            myApplication.trackEvent(
-//                                "INVESTMENT PLANS",
-//                                "Clicked",
-//                                "INVESTMENT PLANS"
-//                            )
-
-                        }
-
-
-                    }
-
-                    41 -> {
-                        //Synch Contact
-                        startActivity(
-                            Intent(
-                                this@HomeActivity,
-                                WelcomeSyncContactActivityKotlin::class.java
-                            )
-                        )
-                        trackMainMenuEvent("Sync Contact")
-
-                    }
-
-
-                    else ->{
-
-                        if (entity.productId < 100 && entity.productId != 41) {
-                            entity.isNewPrdClickable?.let { clickable ->
-                                if (clickable == "Y") {
-                                    // Fetch dynamic product URL
-                                    var dynamicUrl = ""
-                                    val userConstantsData = prefsManager.getDashboardarray()
-                                    for (dashboardItem in userConstantsData) {
-                                        if (dashboardItem.ProdId?.toInt() == entity.productId) {
-                                            dynamicUrl = dashboardItem.url ?: ""
-                                            break
-                                        }
-                                    }
-
-                                    if (dynamicUrl.isNotEmpty()) {
-                                        ipaddress = try {
-                                            "" // Add logic for fetching ip address here
-                                        } catch (e: Exception) {
-                                            "0.0.0.0"
-                                        }
-
-                                        trackMainMenuEvent(entity.productName)
-
-                                        val append = "&ip_address=$ipaddress&mac_address=$ipaddress" +
-                                                "&app_version=$appVersion&device_id=$deviceId&product_id=${entity.productId}&login_ssid=$parent_ssid"
-                                        dynamicUrl += append
-
-
-                                        openCommonWebView(
-                                            dynamicUrl,
-                                            entity.productName,
-                                            entity.productName,
-                                            Constant.INSURANCE_TYPE
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                        else if (entity.productId >= 100) {
-                            trackMainMenuEvent(entity.productName)
-
-                            openCommonWebView(
-                                entity.link ?: "",
-                                entity.productName,
-                                entity.productName,
-                                Constant.INSURANCE_TYPE
-                            )
-                        }
-                    }
-
-
-                }
-
-
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-    }
-    private fun buildUrlAppend(ipaddress: String, deviceId: String, appVersion: String, productId: Int, parentSsid: String): String {
-        return "&ip_address=$ipaddress&mac_address=$ipaddress" +
-                "&app_version=$appVersion" +
-                "&device_id=$deviceId" +
-                "&product_id=$productId&login_ssid=$parentSsid"
-    }
-
-    // Helper method to open CommonWebViewActivity
-    private fun openCommonWebView(url: String, name: String, title: String, dashboardType: String) {
-        startActivity(
-            Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
-                putExtra("URL", url)
-                putExtra("dashBoardtype", dashboardType)
-                putExtra("NAME", name)
-                putExtra("TITLE", title)
-            }
-        )
-    }
-
-
-    //endregion
 
     // region Share Product and Forece Sync Dialog
 
@@ -1297,14 +1259,13 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     //endregion
 
     // region webEnagage Event
-    private fun trackMainMenuEvent(strOption: String) {
-        // Create event attributes
-        val eventAttributes = mutableMapOf<String, Any>()
-        eventAttributes["Option Clicked"] = strOption
 
-        // Track the login event using WebEngageHelper
+
+    private fun trackMainMenuEvent(optionClicked: String) {
+        val eventAttributes = mapOf("Option Clicked" to optionClicked)
         WebEngageAnalytics.getInstance().trackEvent("Main Menu Clicked", eventAttributes)
     }
+
 
     private fun trackSyncContactEvent(strEvent: String) {
         // Create event attributes

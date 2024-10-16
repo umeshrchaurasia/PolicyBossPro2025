@@ -133,14 +133,4 @@ class DashboardItemAdapter(
 
     override fun getItemCount(): Int = listInsur.size
 
-
-
-    private fun switchMenus(entity: DashboardMultiLangEntity) {
-        // Your implementation of switchMenus
-    }
-
-    private fun trackMainMenuEvent(option: String) {
-        val eventAttributes = mapOf("Option Clicked" to option)
-        WebEngageAnalytics.getInstance().trackEvent("Main Menu Clicked", eventAttributes)
-    }
 }
