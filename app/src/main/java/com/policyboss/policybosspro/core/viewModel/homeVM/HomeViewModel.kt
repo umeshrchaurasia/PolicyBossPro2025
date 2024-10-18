@@ -49,7 +49,7 @@ class HomeViewModel @Inject constructor(
 
 
     //region Declaeration of AuthToken State
-    private var oauthMutuableStateFlow : MutableStateFlow<APIState<OauthTokenResponse>> = MutableStateFlow(APIState.Empty())
+    private val oauthMutuableStateFlow : MutableStateFlow<APIState<OauthTokenResponse>> = MutableStateFlow(APIState.Empty())
 
     // data is collected in OauthStateFlow variable, we have to get from here
     val OauthStateFlow : StateFlow<APIState<OauthTokenResponse>>
@@ -58,13 +58,13 @@ class HomeViewModel @Inject constructor(
     //endregion
 
     //region Declaeration of SalesMaterial State
-    private var salesMaterialStateFlow : MutableStateFlow<Event<APIState<SalesMaterialResponse>>> = MutableStateFlow(Event(APIState.Empty()))
+    private val salesMaterialStateFlow : MutableStateFlow<Event<APIState<SalesMaterialResponse>>> = MutableStateFlow(Event(APIState.Empty()))
     val SalesMaterialResponse: StateFlow<Event<APIState<SalesMaterialResponse>>>
         get() = salesMaterialStateFlow
 
 
 
-    private var salesMaterialDtlStateFlow : MutableStateFlow<Event<APIState<SalesMaterialProductDetailsResponse>>> = MutableStateFlow(Event(APIState.Empty()))
+    private val salesMaterialDtlStateFlow : MutableStateFlow<Event<APIState<SalesMaterialProductDetailsResponse>>> = MutableStateFlow(Event(APIState.Empty()))
     val SalesMaterialDtlResponse: StateFlow<Event<APIState<SalesMaterialProductDetailsResponse>>>
         get() = salesMaterialDtlStateFlow
 
@@ -246,6 +246,46 @@ class HomeViewModel @Inject constructor(
     //endregion
 
 
+    //region AuthToken
+    fun getAuthToken(ss_id : String, deviceID : String,app_version : String,fbaid : String) = viewModelScope.launch {
+
+
+        var body = HashMap<String,String>()
+        body.put("ss_id",ss_id)
+        body.put("device_id",deviceID)
+        body.put("user_agent","")
+        body.put("app_version",app_version)
+        body.put("fbaid",fbaid)
+
+        oauthMutuableStateFlow.value = APIState.Loading()
+
+
+        homeRepository.getAuthToken(body)
+            .catch {
+                oauthMutuableStateFlow.value =  APIState.Failure(it.message ?: Constant.Fail)
+
+            }.collect{ data ->
+
+                if(data.isSuccessful){
+
+                    if(data.body()?.Status?.uppercase().equals("SUCCESS")){
+                        oauthMutuableStateFlow.value = APIState.Success(data = data.body())
+                    }else{
+                        oauthMutuableStateFlow.value = APIState.Failure(errorMessage = data.body()?.Msg ?: Constant.ErrorMessage)
+                    }
+
+                }else{
+                    oauthMutuableStateFlow.value = APIState.Failure(errorMessage = Constant.SeverUnavaiable)
+                }
+
+            }
+
+
+    }
+
+    //endregion
+
+
     //region Not in Used
     fun getUserConstant(appVersion: String, deviceCode: String) = viewModelScope.launch {
 
@@ -306,123 +346,6 @@ class HomeViewModel @Inject constructor(
     }
 
     //endregion
-
-    fun getAuthToken(ss_id : String, deviceID : String,app_version : String,fbaid : String) = viewModelScope.launch {
-
-
-        var body = HashMap<String,String>()
-        body.put("ss_id",ss_id)
-        body.put("device_id",deviceID)
-        body.put("user_agent","")
-        body.put("app_version",app_version)
-        body.put("fbaid",fbaid)
-
-        oauthMutuableStateFlow.value = APIState.Loading()
-        // delay(8000)
-
-            homeRepository.getAuthToken(body)
-                .catch {
-                    oauthMutuableStateFlow.value =  APIState.Failure(it.message ?: Constant.Fail)
-
-                }.collect{ data ->
-
-                    if(data.isSuccessful){
-
-                        if(data.body()?.Status?.uppercase().equals("SUCCESS")){
-                            oauthMutuableStateFlow.value = APIState.Success(data = data.body())
-                        }else{
-                            oauthMutuableStateFlow.value = APIState.Failure(errorMessage = data.body()?.Msg ?: Constant.ErrorMessage)
-                        }
-
-                    }else{
-                        oauthMutuableStateFlow.value = APIState.Failure(errorMessage = Constant.SeverUnavaiable)
-                    }
-
-                }
-
-
-    }
-
-
-
-
-    fun getSalesProducts() = viewModelScope.launch {
-
-
-        var body = HashMap<String,String>()
-        body.put("app_version",prefManager.getAppVersion())
-        body.put("device_code",prefManager.getDeviceID())
-        body.put("ssid",prefManager.getSSID())
-        body.put("fbaid",prefManager.getFBAID())
-        body.put("product_id", "")
-
-
-        salesMaterialStateFlow.value =  Event(APIState.Loading())
-
-
-        homeRepository.getSalesProducts(body)
-            .catch {
-                salesMaterialStateFlow.value = Event(APIState.Failure(it.message ?: Constant.Fail))
-
-            }.collect{ data ->
-
-                if(data.isSuccessful){
-
-                    if(data.body()?.StatusNo?:1 == 0){
-                        salesMaterialStateFlow.value =Event( APIState.Success(data = data.body()))
-                    }else{
-                        salesMaterialStateFlow.value = Event(APIState.Failure(errorMessage = data.body()?.Message ?: Constant.ErrorMessage))
-                    }
-
-                }else{
-                    salesMaterialStateFlow.value = Event(APIState.Failure(errorMessage = Constant.SeverUnavaiable))
-                }
-
-            }
-
-
-    }
-
-    ///getSalesProductDetail
-
-
-    fun getSalesProductDetail() = viewModelScope.launch {
-
-
-        var body = HashMap<String,String>()
-        body.put("app_version",prefManager.getAppVersion())
-        body.put("device_code",prefManager.getDeviceID())
-        body.put("ssid",prefManager.getSSID())
-        body.put("fbaid",prefManager.getFBAID())
-        body.put("product_id", "")
-
-
-        salesMaterialDtlStateFlow.value =  Event(APIState.Loading())
-
-
-        homeRepository.getSalesProductDetail(body)
-            .catch {
-                salesMaterialStateFlow.value = Event(APIState.Failure(it.message ?: Constant.Fail))
-
-            }.collect{ data ->
-
-                if(data.isSuccessful){
-
-                    if(data.body()?.StatusNo?:1 == 0){
-                        salesMaterialDtlStateFlow.value = Event( APIState.Success(data = data.body()))
-                    }else{
-                        salesMaterialDtlStateFlow.value = Event(APIState.Failure(errorMessage = data.body()?.Message ?: Constant.ErrorMessage))
-                    }
-
-                }else{
-                    salesMaterialDtlStateFlow.value = Event(APIState.Failure(errorMessage = Constant.SeverUnavaiable))
-                }
-
-            }
-
-
-    }
-
 
 
 

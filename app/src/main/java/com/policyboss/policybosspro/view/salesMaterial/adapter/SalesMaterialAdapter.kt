@@ -56,8 +56,8 @@ class SalesMaterialAdapter(
                 Glide.with(context).load(entity.Product_image).into(imgProduct)
 
                 lyParent.setOnClickListener {
-
-                    onItemClick(entity, position)
+                    //Lembda call back here
+                    onItemClick(entity, pos)
                 }
             }
         }

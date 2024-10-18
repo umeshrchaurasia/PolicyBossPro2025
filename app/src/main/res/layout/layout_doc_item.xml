@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/lyParent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:background="@color/bg1"
+    android:orientation="horizontal">
+
+    <!-- Custom attribute for aspect ratio -->
+    <com.policyboss.policybosspro.utils.CustomImageView
+        android:layout_margin="8dp"
+        android:id="@+id/ivProduct"
+        android:minHeight="200dp"
+        android:scaleType="fitXY"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:aspectRatio="1.5"
+        >
+
+    </com.policyboss.policybosspro.utils.CustomImageView>
+
+
+</LinearLayout>

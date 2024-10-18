@@ -74,32 +74,5 @@ class HomeRepository @Inject constructor(
     //endregion
 
 
-    //region Sales Material API
-    /****************************************************************************************
-     *   Sales Material
-     *************************************************************************************/
-
-    suspend fun getSalesProducts(  body : HashMap<String,String>) = flow {
-
-
-        val response = apiService.getSalesProducts(body)
-        emit(response)
-
-    }.flowOn(Dispatchers.IO)
-
-
-    //getSalesProducts
-
-    suspend fun getSalesProductDetail(  body : HashMap<String,String>) = flow {
-
-
-        val response = apiService.getSalesProductDetails(body)
-        emit(response)
-
-    }.flowOn(Dispatchers.IO)
-
-    //endregion
-
-
 
 }

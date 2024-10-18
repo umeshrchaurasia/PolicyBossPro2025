@@ -4,6 +4,9 @@ import android.graphics.Rect
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 
+//val spacingInPixels = resources.getDimensionPixelSize(R.dimen.grid_spacing)
+//includedBinding.rvProduct.addItemDecoration(GridSpacingItemDecoration(2, spacingInPixels, true))
+
 class GridSpacingItemDecoration(
     private val spanCount: Int,
     private val spacing: Int,

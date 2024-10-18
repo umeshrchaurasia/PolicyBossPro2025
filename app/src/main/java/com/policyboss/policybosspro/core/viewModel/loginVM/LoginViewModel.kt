@@ -54,21 +54,21 @@ class LoginViewModel @Inject constructor(
 
 
     //region get isUserSignUp or Not ?
-    private  var getsignUpMutuableStateFlow : MutableStateFlow<APIState<UserNewSignUpResponse>> = MutableStateFlow(APIState.Empty())
+    private  val getsignUpMutuableStateFlow : MutableStateFlow<APIState<UserNewSignUpResponse>> = MutableStateFlow(APIState.Empty())
 
     val getsignUpStateFlow : StateFlow<APIState<UserNewSignUpResponse>>
         get() = getsignUpMutuableStateFlow
 
     //endregion
 
-    private var insertTokenMutuableStateFlow : MutableStateFlow<APIState<DevicetokenResponse>> = MutableStateFlow(APIState.Empty())
+    private val insertTokenMutuableStateFlow : MutableStateFlow<APIState<DevicetokenResponse>> = MutableStateFlow(APIState.Empty())
 
     val insertTokenStateFlow : StateFlow<APIState<DevicetokenResponse>>
         get() = insertTokenMutuableStateFlow
 
     //.........
     //region DSAS Login
-    private  var loginMutuableStateFlow : MutableStateFlow<APIState<LoginNewResponse_DSAS_Horizon>> = MutableStateFlow(APIState.Empty())
+    private  val loginMutuableStateFlow : MutableStateFlow<APIState<LoginNewResponse_DSAS_Horizon>> = MutableStateFlow(APIState.Empty())
 
     val LoginStateFlow : StateFlow<APIState<LoginNewResponse_DSAS_Horizon>>
         get() = loginMutuableStateFlow
@@ -78,7 +78,7 @@ class LoginViewModel @Inject constructor(
     //region OTP via Login
 
     //region otp  Initialization
-    private  var otpLoginMutuableStateFlow : MutableStateFlow<APIState<OtpLoginResponse>> = MutableStateFlow(APIState.Empty())
+    private  val otpLoginMutuableStateFlow : MutableStateFlow<APIState<OtpLoginResponse>> = MutableStateFlow(APIState.Empty())
 
     val otpLoginStateFlow : StateFlow<APIState<OtpLoginResponse>>
         get() = otpLoginMutuableStateFlow
@@ -90,7 +90,7 @@ class LoginViewModel @Inject constructor(
 
 
     //region OTP Verification via Login
-    private  var otpVerificationMutuableStateFlow : MutableStateFlow<APIState<OtpVerifyResponse>> = MutableStateFlow(APIState.Empty())
+    private  val otpVerificationMutuableStateFlow : MutableStateFlow<APIState<OtpVerifyResponse>> = MutableStateFlow(APIState.Empty())
 
     val otpVerificationStateFlow : StateFlow<APIState<OtpVerifyResponse>>
         get() = otpVerificationMutuableStateFlow
@@ -99,7 +99,7 @@ class LoginViewModel @Inject constructor(
 
 
     //region OTP  Resend
-    private  var otpResendMutuableStateFlow : MutableStateFlow<APIState<OtpVerifyResponse>> = MutableStateFlow(APIState.Empty())
+    private  val otpResendMutuableStateFlow : MutableStateFlow<APIState<OtpVerifyResponse>> = MutableStateFlow(APIState.Empty())
 
     val otpResendStateFlow : StateFlow<APIState<OtpVerifyResponse>>
         get() = otpVerificationMutuableStateFlow
@@ -107,7 +107,7 @@ class LoginViewModel @Inject constructor(
     //endregion
 
     //region Password via Login
-    private  var authLoginMutuableStateFlow : MutableStateFlow<APIState<AuthLoginResponse>> = MutableStateFlow(APIState.Empty())
+    private  val authLoginMutuableStateFlow : MutableStateFlow<APIState<AuthLoginResponse>> = MutableStateFlow(APIState.Empty())
 
     val authLoginStateFlow : StateFlow<APIState<AuthLoginResponse>>
         get() = authLoginMutuableStateFlow
@@ -115,7 +115,7 @@ class LoginViewModel @Inject constructor(
     //endregion
 
     //region forgotPassword ?
-    private  var forgotPasswordMutuableStateFlow : MutableStateFlow<APIState<ForgotResponse>> = MutableStateFlow(APIState.Empty())
+    private  val forgotPasswordMutuableStateFlow : MutableStateFlow<APIState<ForgotResponse>> = MutableStateFlow(APIState.Empty())
 
     val forgotPasswordStateFlow : StateFlow<APIState<ForgotResponse>>
         get() = forgotPasswordMutuableStateFlow

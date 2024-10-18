@@ -65,17 +65,5 @@ interface poilcyBossProHomeApi {
     suspend fun getOauthToken( @Body body : HashMap<String,String> ): Response<OauthTokenResponse>
 
 
-    /****************************************************************************************
-     *   Sales Material API
-     *************************************************************************************/
-
-    @Headers("token:" +  Constant.token)
-    @POST("/quote/Postfm/sales-material-product-pb")
-    suspend fun getSalesProducts( @Body body: HashMap<String,String>): Response<SalesMaterialResponse>
-
-
-    @Headers("token:" +  Constant.token)
-    @POST("/quote/Postfm/sales-material-product-details-pb")
-    suspend fun getSalesProductDetails( @Body body: HashMap<String,String>): Response<SalesMaterialProductDetailsResponse>
 
 }

@@ -2,13 +2,18 @@ package com.policyboss.policybosspro
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
+import android.os.Build
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.view.Window
@@ -17,6 +22,7 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import androidx.core.content.FileProvider
 import com.policyboss.policybosspro.databinding.LayoutCommonWebviewPopupBinding
 import com.policyboss.policybosspro.databinding.ProgressdialogLoadingBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
@@ -28,6 +34,9 @@ import java.util.regex.Pattern
 import javax.inject.Inject
 
 import com.policyboss.policybosspro.view.syncContact.ui.WelcomeSyncContactActivityKotlin
+import java.io.File
+import java.io.FileOutputStream
+import java.io.OutputStream
 
 open class BaseActivity() : AppCompatActivity() {
 
@@ -165,6 +174,68 @@ open class BaseActivity() : AppCompatActivity() {
         context.startActivity(Intent.createChooser(shareIntent, "Share Via"))
     }
     //endregion
+
+    fun datashareList(context: Context, bitmap: Bitmap?, prdSubject: String, prdDetail: String) {
+        var fos: OutputStream? = null
+        var screenshotUri: Uri? = null
+
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // Scoped storage approach for Android Q and above
+                val resolver = context.contentResolver
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.Images.Media.DISPLAY_NAME, Utility.getNewFileName("Finmart_product"))
+                    put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg")
+                    put(MediaStore.Images.Media.RELATIVE_PATH, Utility.getImageDirectoryPath())
+                }
+
+                screenshotUri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+                fos = resolver.openOutputStream(screenshotUri!!)
+            } else {
+                // Legacy approach for older versions (below Q)
+                val imagesDir = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString() + File.separator + "PolicyBossPro")
+                if (!imagesDir.exists()) {
+                    imagesDir.mkdir()
+                }
+
+                val file = File(imagesDir, "PolicyBossPro_product.jpg")
+                fos = FileOutputStream(file)
+
+                screenshotUri = FileProvider.getUriForFile(
+                    context,
+                    context.getString(R.string.file_provider_authority),
+                    file
+                )
+            }
+
+            // Save bitmap to the output stream
+            bitmap?.compress(Bitmap.CompressFormat.JPEG, 90, fos ?: return)
+            fos?.close()
+
+            // Share the saved image
+            openNativeShare(context, screenshotUri, prdSubject, prdDetail)
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            // Always close the output stream
+            fos?.close()
+        }
+    }
+
+    private fun openNativeShare(context: Context, screenshotUri: Uri?, prdSubject: String, prdDetail: String) {
+        screenshotUri?.let {
+            val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                putExtra(Intent.EXTRA_SUBJECT, prdSubject)
+                putExtra(Intent.EXTRA_TEXT, prdDetail)
+                putExtra(Intent.EXTRA_STREAM, screenshotUri)
+                type = "image/*"
+            }
+            context.startActivity(Intent.createChooser(shareIntent, "Share Via"))
+        }
+    }
+
+
 
     //region Method for marketing web view pop-up
     fun openWebViewPopUp(view: View, url: String, isCancelable: Boolean, strHdr: String) {

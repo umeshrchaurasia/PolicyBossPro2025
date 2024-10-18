@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.work.WorkManager
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.policyboss.policybosspro.PolicyBossProApplication
+import com.policyboss.policybosspro.core.api.poilcyBossProAppApi
 import com.policyboss.policybosspro.core.api.poilcyBossProHomeApi
 import com.policyboss.policybosspro.core.api.poilcyBossProLoginApi
 import com.policyboss.policybosspro.core.api.poilcyBossProSyncApi
@@ -72,11 +73,18 @@ class NetworkModule {
 
     @Singleton
     @Provides
+    fun providePolicyBossProAppAPI(retrofitBuilder: Retrofit.Builder, okHttpClient : OkHttpClient) : poilcyBossProAppApi {
+
+        return  retrofitBuilder.client(okHttpClient).build().create(poilcyBossProAppApi::class.java)
+    }
+
+
+    @Singleton
+    @Provides
     fun providePolicyBossProSyncAPI(retrofitBuilder: Retrofit.Builder, okHttpClient : OkHttpClient) : poilcyBossProSyncApi {
 
         return  retrofitBuilder.client(okHttpClient).build().create(poilcyBossProSyncApi::class.java)
     }
-
 
 
 

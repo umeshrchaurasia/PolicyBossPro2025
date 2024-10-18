@@ -7,6 +7,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -17,14 +19,21 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.policyboss.policybosspro.core.model.DeviceDetailEntity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.asRequestBody
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.net.HttpURLConnection
+import java.net.URL
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -299,5 +308,52 @@ object Utility {
 
 
 
+    //Mark : byteArray to Bitmap
+    @JvmStatic
+     fun decodeBitmap(byteArray: ByteArray): Bitmap? {
+        return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+    }
+
+    suspend fun urlToBitmap(imageUrl: String): Bitmap? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val url = URL(imageUrl)
+                val connection: HttpURLConnection = url.openConnection() as HttpURLConnection
+                connection.doInput = true
+                connection.connect()
+                val inputStream: InputStream = connection.inputStream
+                return@withContext BitmapFactory.decodeStream(inputStream)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                return@withContext null
+            }
+        }
+    }
+
+
+    suspend fun downloadBitmapFromUrl(url: URL?): Bitmap? {
+        return withContext(Dispatchers.IO) {
+            if (url == null) return@withContext null // Early return for null URL
+
+            try {
+                val connection = url.openConnection()
+                connection.doInput = true
+                connection.connect()
+
+                connection.getInputStream().use { inputStream ->
+                    return@withContext BitmapFactory.decodeStream(inputStream)
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()  // Log the exception if needed
+                return@withContext null
+            }
+        }
+    }
+
+    fun bitmapToByteArray(bitmap: Bitmap, format: Bitmap.CompressFormat = Bitmap.CompressFormat.PNG, quality: Int = 100): ByteArray {
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(format, quality, stream)
+        return stream.toByteArray()
+    }
 }
 

@@ -82,8 +82,14 @@ object Constant {
     const val thisMonth = "This Month"
     const val lastMonth = "Last Month"
     const val SHARE_WHATSAPP = "sharewhatsapp"
-    const val  PRODUCT_ID = "salesProductID"
 
+    const val  PRODUCT_ID = "salesProductID"
+    const val DOC_DATA = "docData"
+    const val POSP_IMAGE = "POSPIMAGE"
+    const val FBA_IMAGE = "FBAIMAGE"
+
+    const val SalesLangEnglish = "English"
+    const val SalesLangHindi = "Hindi"
 
 
     const val   NOTIFICATION_EXTRA = "NOTIFICATION_EXTRA"
@@ -103,6 +109,7 @@ object Constant {
 
 
     const val PERMISSION_CAMERA_STORACGE_CONSTANT = 103
+    const val PERMISSION_STORACGE_CONSTANT = 103
     const val REQUEST_PERMISSION_SETTING = 101
 
 

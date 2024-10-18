@@ -15,6 +15,7 @@ import com.policyboss.policybosspro.core.APIState
 import com.policyboss.policybosspro.core.response.salesMaterial.CompanyEntity
 import com.policyboss.policybosspro.core.response.salesMaterial.SalesMateriaProdEntity
 import com.policyboss.policybosspro.core.viewModel.homeVM.HomeViewModel
+import com.policyboss.policybosspro.core.viewModel.salesMaterialVM.SalesMaterialViewNodel
 
 import com.policyboss.policybosspro.databinding.ActivitySalesMaterialBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
@@ -36,7 +37,7 @@ class SalesMaterialActivity : BaseActivity() {
 
     lateinit var companyLst: ArrayList<CompanyEntity>
 
-    private val viewModel by viewModels<HomeViewModel>()
+    private val viewModel by viewModels<SalesMaterialViewNodel>()
 
 
     override fun onStart() {
@@ -51,7 +52,6 @@ class SalesMaterialActivity : BaseActivity() {
         setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
-        setSupportActionBar(binding.toolbar)
         supportActionBar!!.apply {
 
             setDisplayShowHomeEnabled(true)
@@ -61,9 +61,10 @@ class SalesMaterialActivity : BaseActivity() {
 
         initialize()
 
+        //Mark :-- call Api for Sales Material Main Page
         viewModel.getSalesProducts()
-//
-//
+
+        //Mark :- Observing Api, get Api Response
        observeResponse()
 
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -78,12 +79,7 @@ class SalesMaterialActivity : BaseActivity() {
 
        companyLst = ArrayList()
 
-//       binding.rvSalesMaterial.apply {
-//           layoutManager = LinearLayoutManager(this@SalesMaterialActivity)
-//           adapter = dashboardAdapter
-//           setHasFixedSize(true)
-//           setItemViewCacheSize(20)
-//       }
+
    }
 
     private fun setupSalesMaterialAdapter(salesProductList : List<SalesMateriaProdEntity>) {
@@ -91,7 +87,6 @@ class SalesMaterialActivity : BaseActivity() {
 
         salesMaterialAdapter = SalesMaterialAdapter(
             context = this,
-
             salesProductList =  salesProductList,
             prefsManager = prefsManager,
             onItemClick = ::onSalesProductListener,
@@ -162,7 +157,7 @@ class SalesMaterialActivity : BaseActivity() {
     }
 
 
-            override fun onOptionsItemSelected(item: MenuItem): Boolean {
+      override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             android.R.id.home -> {
                 // Finish the activity when the Up button is pressed
@@ -172,8 +167,6 @@ class SalesMaterialActivity : BaseActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
-
 
 
 
