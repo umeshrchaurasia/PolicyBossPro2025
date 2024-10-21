@@ -397,23 +397,23 @@ open class BaseActivity() : AppCompatActivity() {
 
         // region Raise Ticket
         @JavascriptInterface
-        fun uploadDoc(randomID: String) {
+        fun Upload_doc(randomID: String) {
             (mContext as? CommonWebViewActivity)?.galleryCamPopUp(randomID)
         }
 
         @JavascriptInterface
-        fun uploadDocView(randomID: String) {
+        fun Upload_doc_view(randomID: String) {
             (mContext as? CommonWebViewActivity)?.galleryCamPopUp(randomID)
         }
 
         @JavascriptInterface
-        fun syncContacts() {
+        fun synccontacts() {
             // Sync contacts and navigate to WelcomeSyncContactActivity
             mContext.startActivity(Intent(mContext, WelcomeSyncContactActivityKotlin::class.java))
         }
 
         @JavascriptInterface
-        fun syncSummary() {
+        fun syncsummary() {
             // Fetch UserConstantEntity and navigate to CommonWebViewActivity with lead dashboard URL
 
             val intent = Intent(mContext, CommonWebViewActivity::class.java).apply {
@@ -455,7 +455,7 @@ open class BaseActivity() : AppCompatActivity() {
         }
 
         @JavascriptInterface
-        fun callPDFCredit(url: String) {
+        fun callPDFCREDIT(url: String) {
             // Load a PDF in CommonWebViewActivity for free credit report
             val intent = Intent(mContext, CommonWebViewActivity::class.java).apply {
                 putExtra("URL", url)
@@ -466,7 +466,7 @@ open class BaseActivity() : AppCompatActivity() {
         }
 
         @JavascriptInterface
-        fun showCar() {
+        fun showcar() {
             dismissWebviewDialog()
             val motorUrl = buildMotorUrl(productId = 1)
             openWebView(motorUrl, "Motor Insurance", "Motor Insurance")
@@ -480,14 +480,23 @@ open class BaseActivity() : AppCompatActivity() {
         }
 
         @JavascriptInterface
-        fun showCV() {
+        fun showtw() {
+            dismissWebviewDialog()
+            val motorUrl = buildMotorUrl(productId = 10)
+            openWebView(motorUrl, "Two Wheeler Insurance", "Two Wheeler Insurance")
+        }
+
+
+
+        @JavascriptInterface
+        fun showcv() {
             dismissWebviewDialog()
             val cvUrl = buildMotorUrl(productId = 12)
             openWebView(cvUrl, "Commercial Vehicle Insurance", "Commercial Vehicle Insurance")
         }
 
         @JavascriptInterface
-        fun showHealth() {
+        fun showhealth() {
             dismissWebviewDialog()
             val healthUrl = buildMotorUrlWithVersion()
             openWebView(healthUrl, "Health Insurance", "Health Insurance")
@@ -495,7 +504,7 @@ open class BaseActivity() : AppCompatActivity() {
 
 
         @JavascriptInterface
-        fun userDefUrl(url: String, title: String) {
+        fun userdefurl(url: String, title: String) {
             dismissWebviewDialog()
             openWebView(url, title, title)
         }
@@ -507,7 +516,7 @@ open class BaseActivity() : AppCompatActivity() {
         private fun buildMotorUrl(productId: Int): String {
             val motorUrl =  prefsManager.getFourWheelerUrl()
             val ipaddress = "0.0.0.0"
-           // val parentSsid = (mContext as? BaseActivity)?.loadMap()?.get("Parent_POSPNo") ?: ""
+            // val parentSsid = (mContext as? BaseActivity)?.loadMap()?.get("Parent_POSPNo") ?: ""
             val parentSsid =  ""
             return "$motorUrl&ip_address=$ipaddress&mac_address=$ipaddress" +
                     "&app_version=policyboss-${BuildConfig.VERSION_NAME}" +

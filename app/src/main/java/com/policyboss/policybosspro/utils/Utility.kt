@@ -3,12 +3,20 @@ package com.policyboss.policybosspro.utility
 import android.annotation.SuppressLint
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.ContentResolver
+import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.BitmapShader
+import android.graphics.Canvas
+import android.graphics.Matrix
+import android.graphics.Paint
+import android.graphics.Shader
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -18,6 +26,7 @@ import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.core.content.FileProvider
 import com.policyboss.policybosspro.core.model.DeviceDetailEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -35,6 +44,7 @@ import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -221,7 +231,7 @@ object Utility {
     }
 
     @JvmStatic
-    fun createDirIfNotExists(): File? {
+    fun createDirIfNotExists(context: Context): File? {
         val file = File(Environment.getExternalStorageDirectory(), "/PolicyBossPro")
         if (!file.exists()) {
             if (!file.mkdirs()) {
@@ -231,6 +241,39 @@ object Utility {
         }
         return file
     }
+
+    @JvmStatic
+    fun createDirIfNotExistsNew(context: Context): File {
+        val file = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "PolicyBossPro")
+        if (!file.exists()) {
+            if (!file.mkdirs()) {
+                Log.e("File Log", "Directory not created")
+            }
+        }
+        return file
+    }
+
+    @JvmStatic
+    fun saveImageToStorage(bitmap: Bitmap, name: String, context: Context): File {
+        val dir = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            createDirIfNotExists(context)
+        } else {
+            createDirIfNotExistsNew(context)
+        }
+
+        val fileName = "$name.jpg".replace("\\s+".toRegex(), "")
+        val file = File(dir, fileName)
+
+        FileOutputStream(file).use { outStream ->
+            bitmap.compress(Bitmap.CompressFormat.PNG, 70, outStream)
+            outStream.flush()
+        }
+
+        return file
+    }
+
+
+
 
     @JvmStatic
     fun createShareDirIfNotExists(): File? {
@@ -262,6 +305,9 @@ object Utility {
     }
 
 
+
+
+
     @JvmStatic
     fun getCurrentMobileDateTime(): String {
         val sdf = SimpleDateFormat("ddMMyyyy_HHmmss", Locale.getDefault())
@@ -284,6 +330,18 @@ object Utility {
         val mediaType = "image/*".toMediaTypeOrNull()
         val imgBody = file.asRequestBody(mediaType)
         return MultipartBody.Part.createFormData(serverKey, file.name, imgBody)
+    }
+
+    @JvmStatic
+    fun getBody( FbaID: String, DocType: String, DocName: String, ssid: String, appVersion: String, deviceCode: String): HashMap<String, String> {
+        return hashMapOf(
+            "FBAID" to FbaID,
+            "DocType" to DocType,
+            "DocName" to DocName,
+            "app_version" to appVersion,
+            "ssid" to ssid,
+            "device_code" to deviceCode
+        )
     }
 
     @JvmStatic
@@ -331,6 +389,15 @@ object Utility {
     }
 
 
+    fun getBitmapFromUri(contentResolver: ContentResolver, uri: Uri): Bitmap? {
+        val inputStream: InputStream? = contentResolver.openInputStream(uri)
+        return inputStream?.use {
+            BitmapFactory.decodeStream(it)
+        }
+    }
+
+
+
     suspend fun downloadBitmapFromUrl(url: URL?): Bitmap? {
         return withContext(Dispatchers.IO) {
             if (url == null) return@withContext null // Early return for null URL
@@ -355,5 +422,149 @@ object Utility {
         bitmap.compress(format, quality, stream)
         return stream.toByteArray()
     }
+
+
+    fun getDateFromAge(age: Int): String {
+        val cal = Calendar.getInstance()
+        cal.add(Calendar.YEAR, -age)
+        return SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(cal.time)
+    }
+
+    fun getDateFromWeb(birthdate: String): String {
+        val outputDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val inputDateFormat = SimpleDateFormat("dd-MMM-yyyy", Locale.getDefault())
+        return try {
+            // Parse the input date string to a Date object
+            val date = inputDateFormat.parse(birthdate)
+
+            // Format the Date object to the desired output format
+            outputDateFormat.format(date ?: Date())
+        } catch (e: Exception) {
+            e.printStackTrace()
+            // Handle the parse exception if the input date format is incorrect
+            ""
+        }
+    }
+
+    fun getAgeFromDate(birthdate: String): Int {
+        val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+        return try {
+            val birthDate = Calendar.getInstance()
+            birthDate.time = dateFormat.parse(birthdate) ?: Date()
+
+            val today = Calendar.getInstance()
+            val curYear = today.get(Calendar.YEAR)
+            val dobYear = birthDate.get(Calendar.YEAR)
+
+            curYear - dobYear
+        } catch (e: Exception) {
+            e.printStackTrace()
+            0
+        }
+    }
+
+
+
+    // Function for creating a unique image file path
+    @JvmStatic
+    fun createImageFile(context: Context): File {
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss").format(Date())
+        val imageFileName = "JPEG_" + timeStamp + "_"
+        val storageDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(imageFileName, ".jpg", storageDir)
+    }
+
+
+    // Function to create an image URI
+    @JvmStatic
+    fun createImageUri(context: Context): Uri? {
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val fileName = "IMG_$timeStamp.jpg"
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val contentValues = ContentValues().apply {
+                put(MediaStore.MediaColumns.DISPLAY_NAME, fileName)
+                put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+                put(MediaStore.MediaColumns.RELATIVE_PATH, "Pictures/CameraApp")
+            }
+            context.contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+        } else {
+            // For Android 9 and below, save in external storage
+            val imageFile = createImageFile(context)
+            FileProvider.getUriForFile(
+                context,
+                "com.policyboss.policybosspro.fileprovider",
+                imageFile
+            )
+        }
+    }
+
+
+
+    @JvmStatic
+    fun createImageUri1(context: Context) : Uri {
+
+        // val image = File(context.filesDir,"camera_photo.png")
+        val imageFile = createImageFile(context)
+
+        return FileProvider.getUriForFile(context.applicationContext,
+            "com.policyboss.policybosspro.fileprovider",
+            imageFile
+        )
+
+
+    }
+
+
+
+   //camera image Rotation
+    fun handleImageOrientation(uri: Uri, context: Context): Bitmap? {
+        val inputStream = context.contentResolver.openInputStream(uri)
+        val exifInterface = inputStream?.let { ExifInterface(it) }
+        val orientation = exifInterface?.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+
+        val bitmap = BitmapFactory.decodeStream(inputStream)
+
+        return when (orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> rotateImage(bitmap, 90f)
+            ExifInterface.ORIENTATION_ROTATE_180 -> rotateImage(bitmap, 180f)
+            ExifInterface.ORIENTATION_ROTATE_270 -> rotateImage(bitmap, 270f)
+            else -> bitmap
+        }
+    }
+
+    fun rotateImage(bitmap: Bitmap, degrees: Float): Bitmap {
+        val matrix = Matrix()
+        matrix.postRotate(degrees)
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+
+
+
+    fun getCircularBitmap(bitmap: Bitmap): Bitmap {
+        val size = Math.min(bitmap.width, bitmap.height)
+
+        val output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(output)
+
+        val paint = Paint()
+        paint.isAntiAlias = true
+
+        val shader = BitmapShader(bitmap, Shader.TileMode.CLAMP, Shader.TileMode.CLAMP)
+        paint.shader = shader
+
+        val radius = size / 2f
+        canvas.drawCircle(radius, radius, radius, paint)
+
+        return output
+    }
+
+
+
+
+
+
+
+
 }
 

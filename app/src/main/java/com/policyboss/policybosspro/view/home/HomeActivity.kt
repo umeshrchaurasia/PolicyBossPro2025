@@ -728,7 +728,8 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
 
             R.id.nav_myaccount -> {
-                startActivity(Intent(this@HomeActivity, ChangePaswordActivity::class.java))
+
+                startActivity(Intent(this@HomeActivity, MyAccountActivity::class.java))
             }
 
             R.id.nav_pospenrollment -> {

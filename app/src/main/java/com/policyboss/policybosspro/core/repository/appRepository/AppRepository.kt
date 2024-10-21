@@ -10,6 +10,7 @@ import com.policyboss.policybosspro.utils.Constant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.Headers
@@ -60,5 +61,24 @@ class AppRepository  @Inject constructor(
 
 
     //endregion
+
+
+    //region Profile
+    suspend fun getProfileDetail(  body : HashMap<String,String>) = flow {
+
+
+        val response = apiService.getProfileDetail(body)
+        emit(response)
+
+    }.flowOn(Dispatchers.IO)
+
+
+    suspend fun uploadDocument(document: MultipartBody.Part, body: HashMap<String, String>) = flow {
+        val response = apiService.uploadDocument(document, body)
+        emit(response)
+    }.flowOn(Dispatchers.IO)
+
+    //endregion
+
 
 }

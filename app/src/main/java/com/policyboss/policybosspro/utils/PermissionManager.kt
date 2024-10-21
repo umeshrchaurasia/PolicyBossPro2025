@@ -13,7 +13,7 @@ import com.policyboss.policybosspro.utils.Permission
 
 import java.lang.ref.WeakReference
 
-
+//Fragment Base desiogn
 class PermissionManager private constructor(private val fragment: WeakReference<Fragment>) {
     private val requiredPermissions = mutableListOf<Permission>()
     private var rationale: String? = null

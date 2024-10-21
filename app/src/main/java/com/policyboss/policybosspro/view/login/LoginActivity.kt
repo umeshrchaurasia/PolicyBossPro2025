@@ -45,7 +45,6 @@ import com.policyboss.policybosspro.utils.Constant
 import com.policyboss.policybosspro.utils.NetworkUtils.Companion.isNetworkAvailable
 import com.policyboss.policybosspro.utils.ValidationUtil
 import com.policyboss.policybosspro.utils.hideKeyboard
-import com.policyboss.policybosspro.utils.showAlert
 import com.policyboss.policybosspro.utils.showKeyboard
 import com.policyboss.policybosspro.utils.showToast
 import com.policyboss.policybosspro.view.home.HomeActivity
@@ -1316,7 +1315,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         ActivityCompat.requestPermissions(
             this,
             perms,
-            Constant.PERMISSION_CAMERA_STORACGE_CONSTANT
+            Constant.PERMISSION_CAMERA_STORAGE_CONSTANT
         )
     }
 

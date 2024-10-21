@@ -84,6 +84,14 @@
     <string name="popup1_HighestEdu"> RECENT HIGHEST EDU. PROOF </string>
 
 
+    <string name="ok"> OK</string>
+    <string name="cam_permission">Required Camera and Storage Permssion to open the camera</string>
+    <string name="camera_permission_available">Camera permission is available. Starting preview.</string>
+    <string name="camera_permission_denied">Camera  Permssion was denied.we need camera permission!!</string>
+    <string name="camera_permission_not_available">Permission is not available. Requesting camera permission.</string>
+
+
+
     <string name="Emp_detail">Employment &amp; Income Details</string>
 
     <string name="RM_Calling">Do you want to call/mail to your: </string>

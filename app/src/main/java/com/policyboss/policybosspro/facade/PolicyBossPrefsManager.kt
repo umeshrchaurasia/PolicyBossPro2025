@@ -294,14 +294,16 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         return response?.EMP
     }
 
-
-
+  // 16333
     fun getSSID() : String {
 
         val response = getLoginHorizonResponse()
 
         return response?.Ss_Id?:"0"
+
     }
+
+
 
     fun getPOSPNo() : String {
 
@@ -309,6 +311,7 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
 
         return response?.Ss_Id?:"0"
     }
+
 
 
 

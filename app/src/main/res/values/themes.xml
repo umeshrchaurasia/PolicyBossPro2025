@@ -212,6 +212,18 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
 
+        <item name="hintTextAppearance">@style/CustomHintText</item>  <!-- NEW: Custom hint appearance -->
+
+
+        <!-- Increase space between the floating hint and the input text -->
+<!--        <item name="boxCollapsedPaddingTop">40dp</item> &lt;!&ndash; Adjust this value as needed &ndash;&gt;-->
+
+        <!-- Density-related properties -->
+        <item name="android:minHeight">@dimen/_48dp</item>      <!-- NEW: Reduced from default 48dp -->
+        <item name="android:paddingTop">2dp</item>      <!-- NEW: Remove extra padding -->
+        <item name="android:paddingBottom">0dp</item>   <!-- NEW: Remove extra padding -->
+
+
 
         <!-- Icon colors -->
         <item name="startIconTint">@color/gray_button</item>
@@ -249,15 +261,34 @@
         <item name="android:textColor">@color/black</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_width">match_parent</item>
-        <item name="android:paddingTop">2dp</item>
+        <item name="android:enabled">false</item>
+
+<!--        <item name="android:paddingTop">2dp</item>-->
+<!--        <item name="android:paddingBottom">0dp</item>-->
+<!--        <item name="android:layout_marginTop">8dp</item>-->
+
+        <item name="android:minHeight">36dp</item>      <!-- NEW: Set minimum height -->
+        <item name="android:paddingTop">8dp</item>      <!-- MODIFIED: Reduced from original -->
+        <item name="android:paddingBottom">0dp</item>   <!-- NEW: Added for balance -->
+        <item name="android:layout_marginTop">8dp</item> <!-- MODIFIED: Reduced from 8dp -->
+
+
+
         <item name="android:textSize">17sp</item>
         <item name="android:inputType">textCapWords</item>
-        <item name="android:layout_marginTop">8dp</item>
-        <item name="android:paddingBottom">0dp</item>
+
+
         <!-- Optional: Text colors for hint and focused state -->
         <item name="hintTextColor">@color/darkGray</item>
         <item name="android:textColorHint">@color/darkGray</item>
 
+    </style>
+
+    <style name="CustomHintText" parent="TextAppearance.Design.Hint">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle"> bold</item>
+        <item name="android:layout_marginBottom">8dp</item>
+        <item name="android:paddingBottom">4dp</item>
     </style>
 
 

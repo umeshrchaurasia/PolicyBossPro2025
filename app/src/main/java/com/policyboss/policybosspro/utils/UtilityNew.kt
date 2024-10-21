@@ -25,6 +25,7 @@ import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import com.policyboss.policybosspro.BuildConfig
 import com.policyboss.policybosspro.R
+import com.policyboss.policybosspro.databinding.LayoutCamGalleryBinding
 import com.policyboss.policybosspro.databinding.LayoutCommonPopupBinding
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -251,8 +252,6 @@ object UtilityNew {
     }
 
 
-
-
     open fun openPopUp(
         context: Context,
         title: String,
@@ -263,12 +262,18 @@ object UtilityNew {
         onCancelButtonClick: ((dialog: Dialog, view: View) -> Unit)? = null  // Nullable lambda
     ) {
         try {
+
+            // Safely cast context to AppCompatActivity
+            val activity = context as? AppCompatActivity ?: return // Return early if not AppCompatActivity
+
             val dialog = Dialog(context).apply {
                 requestWindowFeature(Window.FEATURE_NO_TITLE)
             }
 
             // Use View Binding to inflate the layout
-            val binding = LayoutCommonPopupBinding.inflate((context as AppCompatActivity).layoutInflater)
+            //val binding = LayoutCommonPopupBinding.inflate((context as AppCompatActivity).layoutInflater)
+
+            val binding = LayoutCommonPopupBinding.inflate(activity.layoutInflater)
             dialog.setContentView(binding.root)
 
             // Set dialog content
@@ -313,6 +318,53 @@ object UtilityNew {
             e.printStackTrace()
         }
     }
+
+
+
+    fun showCameraGalleryPopUp(
+        context: Context,
+        strHeader: String,
+        onCameraClick: (() -> Unit)? = null,   // Nullable lambda for camera action
+        onGalleryClick: (() -> Unit)? = null   // Nullable lambda for gallery action
+    ) {
+        try {
+            // Create AlertDialog builder
+            val builder = AlertDialog.Builder(context, R.style.CustomDialog)
+
+            // Inflate the layout using ViewBinding
+            val binding = LayoutCamGalleryBinding.inflate((context as? AppCompatActivity)?.layoutInflater ?: return)
+
+            // Set the view for the dialog
+            builder.setView(binding.root)
+            val alertDialog = builder.create()
+
+            // Set the header text
+            binding.txtHeader.text = "SELECT PHOTO FOR $strHeader"
+
+            // Handle Camera click using ViewBinding
+            binding.lyCamera.setOnClickListener {
+                onCameraClick?.invoke() // Invoke the lambda if not null
+                alertDialog.dismiss()
+            }
+
+            // Handle Gallery click using ViewBinding
+            binding.lyGallery.setOnClickListener {
+                onGalleryClick?.invoke() // Invoke the lambda if not null
+                alertDialog.dismiss()
+            }
+
+            // Show the dialog
+            alertDialog.setCancelable(true)
+            alertDialog.show()
+
+            // Optionally, set the size of the dialog if needed (uncomment if required)
+            // alertDialog.window?.setLayout(900, 600)
+
+        } catch (e: Exception) {
+            e.printStackTrace() // Log the exception
+        }
+    }
+
 
 
     open fun noInternetDialog(context: Context) {

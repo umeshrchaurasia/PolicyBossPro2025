@@ -60,7 +60,6 @@ import com.policyboss.policybosspro.core.oldWayApi.controller.dynamicController.
 import com.policyboss.policybosspro.core.oldWayApi.controller.zoho.ZohoController;
 import com.policyboss.policybosspro.core.response.APIResponse;
 import com.policyboss.policybosspro.core.response.horizonResponse.horizonSyncDetails.HorizonSyncDetailsWebResponse;
-import com.policyboss.policybosspro.core.response.horizonResponse.horizonSyncDetails.HorizonsyncDetailsResponse;
 import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantEntity;
 import com.policyboss.policybosspro.core.response.raiseTicket.RaiseTicketWebDocResponse;
 import com.policyboss.policybosspro.core.response.syncContact.syncContactDetailsResponse.synctransactionDetailEntity;
@@ -853,7 +852,7 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
     }
 
     private void requestPermission() {
-        ActivityCompat.requestPermissions(this, perms, Constant.PERMISSION_CAMERA_STORACGE_CONSTANT);
+        ActivityCompat.requestPermissions(this, perms, Constant.PERMISSION_CAMERA_STORAGE_CONSTANT);
     }
 
     @Override
@@ -861,7 +860,7 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode) {
-            case Constant.PERMISSION_CAMERA_STORACGE_CONSTANT:
+            case Constant.PERMISSION_CAMERA_STORAGE_CONSTANT:
                 if (grantResults.length > 0) {
 
                     //boolean writeExternal = grantResults[0] == PackageManager.PERMISSION_GRANTED;

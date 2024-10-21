@@ -108,8 +108,9 @@ object Constant {
 
 
 
-    const val PERMISSION_CAMERA_STORACGE_CONSTANT = 103
-    const val PERMISSION_STORACGE_CONSTANT = 103
+    const val PERMISSION_CAMERA_STORAGE_CONSTANT = 103
+    const val PERMISSION_STORAGE_CONSTANT = 104
+
     const val REQUEST_PERMISSION_SETTING = 101
 
 
@@ -117,6 +118,8 @@ object Constant {
     const val   TAG_SAVING_CONTACT_LOG = "SAVING_CONTACT_LOG"
     const val   TAG_SAVING_CONTACT_PHOTO_LOG = "SAVING_CONTACT_PHOTO_LOG"
 
+    const val  ProfileSaving = "SAVING"
+    const val  ProfileCurrent = "CURRENT"
 
     const val ULTRA_LAKSHA = "ULTRA_LAKSHA"
 

@@ -108,7 +108,7 @@
                     android:id="@+id/nav_changepassword"
                     android:icon="@drawable/change_password"
                     android:orderInCategory="245"
-                    android:visible="false"
+                    android:visible="true"
                     android:title="Change Password" />
 
 

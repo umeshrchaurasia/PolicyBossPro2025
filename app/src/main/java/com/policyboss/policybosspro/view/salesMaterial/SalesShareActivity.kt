@@ -26,7 +26,6 @@ import com.policyboss.policybosspro.databinding.ActivitySalesShareBinding
 import com.policyboss.policybosspro.databinding.ContentSalesShareBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utils.Constant
-import com.policyboss.policybosspro.utils.showAlert
 import com.policyboss.policybosspro.view.home.HomeActivity
 import com.webengage.sdk.android.WebEngage
 import dagger.hilt.android.AndroidEntryPoint
@@ -247,7 +246,7 @@ class SalesShareActivity :BaseActivity() {
         ActivityCompat.requestPermissions(
             this,
             perms,
-            Constant.PERMISSION_STORACGE_CONSTANT
+            Constant.PERMISSION_STORAGE_CONSTANT
         )
     }
 

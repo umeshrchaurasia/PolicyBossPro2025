@@ -12,7 +12,7 @@ buildscript {
 
         mavenCentral()
         // Added For Image Crop : Required in yalantis:ucrop library
-      //  maven { url = uri("https://jitpack.io") }   // for Crop Library
+       maven { url = uri("https://jitpack.io") }   // for Crop Library
         // maven { url "https://jitpack.io" }
 
         flatDir {

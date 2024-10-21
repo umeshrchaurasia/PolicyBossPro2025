@@ -103,6 +103,7 @@ dependencies {
 
     // For Image Proceesing
     implementation ("io.coil-kt:coil:2.7.0")
+//    implementation("io.coil-kt:coil-transformations:2.7.0")
 
     implementation ("com.google.android.gms:play-services-vision:20.1.3")
     implementation ("com.google.android.gms:play-services-location:21.3.0")
@@ -132,6 +133,8 @@ dependencies {
 
     // Image Cropper
 //    implementation("com.github.yalantis:ucrop:2.2.8-native")
+
+    implementation("com.vanniktech:android-image-cropper:4.6.0")
 //
     implementation ("io.github.chaosleung:pinview:1.4.4")
 
