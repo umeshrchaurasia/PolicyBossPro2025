@@ -9,6 +9,7 @@ import com.policyboss.policybosspro.core.model.homeDashboard.DashboardMultiLangE
 import com.policyboss.policybosspro.core.repository.homeRepository.HomeRepository
 import com.policyboss.policybosspro.core.response.authToken.OauthTokenResponse
 import com.policyboss.policybosspro.core.response.home.ProductURLShareEntity
+import com.policyboss.policybosspro.core.response.home.UserCallingResponse
 import com.policyboss.policybosspro.core.response.master.MasterDataCombine
 import com.policyboss.policybosspro.core.response.salesMaterial.SalesMaterialProductDetailsResponse
 
@@ -44,6 +45,15 @@ class HomeViewModel @Inject constructor(
 
     val productShareResponse: StateFlow<Event<APIState<ProductURLShareEntity>>>
         get() = productShareMutableFlow
+
+    //endregion
+
+    //region Decleration OF User Team Details and Custom care
+    private val userCallingDtlMutableFlow: MutableStateFlow<Event<APIState<UserCallingResponse>>> =
+        MutableStateFlow(Event(APIState.Empty()))
+
+    val userCallingDtlResponse: StateFlow<Event<APIState<UserCallingResponse>>>
+        get() = userCallingDtlMutableFlow
 
     //endregion
 
@@ -101,7 +111,7 @@ class HomeViewModel @Inject constructor(
 
 
         _masterState.value = APIState.Loading()
-        delay(3000)
+
         try {
             coroutineScope {
                 // Run both API calls concurrently
@@ -236,6 +246,45 @@ class HomeViewModel @Inject constructor(
                     }
                 } else {
                     productShareMutableFlow.value =
+                        Event(APIState.Failure(it.message()))
+                }
+            }
+
+
+    }
+
+    //endregion
+
+
+    //region  User Team Details and Custom care
+    fun getUserCallingDetail() = viewModelScope.launch {
+
+
+        val body = hashMapOf(
+
+            "fbaid" to prefManager.getFBAID(),
+            "ssid" to prefManager.getSSID(),
+            "device_code" to prefManager.getDeviceID(),
+            "app_version" to prefManager.getAppVersion(),
+
+            )
+
+        userCallingDtlMutableFlow.value = Event(APIState.Loading())
+
+        homeRepository.getUserCallingDetail(body)
+            .catch {
+                userCallingDtlMutableFlow.value =  Event(APIState.Failure(it.message ?: Constant.Fail))
+            }.collect{
+                if (it.isSuccessful) {
+                    if (it.body() != null && it.body()?.StatusNo == 0) {
+
+                        userCallingDtlMutableFlow.value =  Event(APIState.Success(it.body()))
+                    } else {
+                        userCallingDtlMutableFlow.value =
+                            Event(APIState.Failure(it.body()?.Message?: Constant.ErrorMessage ))
+                    }
+                } else {
+                    userCallingDtlMutableFlow.value =
                         Event(APIState.Failure(it.message()))
                 }
             }

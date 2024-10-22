@@ -58,6 +58,18 @@ class HomeRepository @Inject constructor(
 
     //endregion
 
+    //region User Team Details
+    suspend fun getUserCallingDetail(body : HashMap<String,String> ) = flow {
+        val response = apiService.getUserCallingDetail(body)
+
+        emit(response)
+
+    }.flowOn(Dispatchers.IO)
+
+    //endregion
+
+
+
     //region  App Code API
     /****************************************************************************************
      *   App Code

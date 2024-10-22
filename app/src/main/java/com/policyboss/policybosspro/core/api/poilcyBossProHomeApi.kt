@@ -2,6 +2,7 @@ package com.policyboss.policybosspro.core.api
 
 import com.policyboss.policybosspro.core.response.authToken.OauthTokenResponse
 import com.policyboss.policybosspro.core.response.home.ProductURLShareResponse
+import com.policyboss.policybosspro.core.response.home.UserCallingResponse
 import com.policyboss.policybosspro.core.response.horizonResponse.horizonSyncDetails.HorizonsyncDetailsResponse
 import com.policyboss.policybosspro.core.response.master.dynamicDashboard.MenuMasterResponse
 import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantResponse
@@ -54,6 +55,11 @@ interface poilcyBossProHomeApi {
     @GET("/posps/dsas/view/{Ss_Id}")
     suspend fun getsyncDetailshorizondetail(@Path("Ss_Id") ssId: Int): Response<HorizonsyncDetailsResponse?>
 
+
+
+    @Headers("token:" + Constant.token)
+    @POST("quote/Postfm/user-calling")
+    suspend fun getUserCallingDetail(@Body body: HashMap<String,String>): Response<UserCallingResponse?>
 
 
     /****************************************************************************************

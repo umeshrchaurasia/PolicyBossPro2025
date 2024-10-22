@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+
+    <LinearLayout
+        android:id="@+id/lyParent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:padding="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextStyle.TextMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left|center_vertical"
+                android:text="Level: "></TextView>
+
+            <TextView
+                android:id="@+id/txtDesig"
+                style="@style/TextStyle.Title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left|center_vertical"
+                android:text=""
+                android:textColor="@color/black_dark"></TextView>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/TextStyle.TextMedium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="left|center_vertical"
+                android:text="Name: "></TextView>
+
+            <TextView
+                android:id="@+id/txtName"
+                style="@style/TextStyle.TextMedium"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="left|center_vertical"
+                android:text=""
+                android:textColor="@color/black"></TextView>
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/lyMobile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TextStyle.TextMedium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="left|center_vertical"
+                        android:text="Mobile: "></TextView>
+
+                    <TextView
+                        android:id="@+id/txtMobile"
+                        style="@style/TextStyle.TextMedium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="left|center_vertical"
+                        android:text=""
+                        android:textColor="@color/black"></TextView>
+
+
+                </LinearLayout>
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivcall"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="5dp"
+
+                    android:src="@drawable/vector_call"
+                    android:tint="@color/green_light" />
+
+            </RelativeLayout>
+
+
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:id="@+id/lyEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:orientation="horizontal">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        style="@style/TextStyle.TextMedium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="left|center_vertical"
+                        android:text="EmailId: "></TextView>
+
+                    <TextView
+                        android:id="@+id/txtEmail"
+                        style="@style/TextStyle.TextMedium"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="left|center_vertical"
+                        android:text=""
+                        android:textColor="@color/black"></TextView>
+
+
+                </LinearLayout>
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/ivManagerEmail"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/vector_email_white"
+                    android:tint="@color/holo_red_dark" />
+
+            </RelativeLayout>
+
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.6dp"
+        android:layout_below="@+id/txtTitle"
+        android:background="@color/lightGrey" />
+
+</LinearLayout>

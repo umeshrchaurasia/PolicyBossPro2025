@@ -231,7 +231,7 @@ object Utility {
     }
 
     @JvmStatic
-    fun createDirIfNotExists(context: Context): File? {
+    fun createDirIfNotExists(): File? {
         val file = File(Environment.getExternalStorageDirectory(), "/PolicyBossPro")
         if (!file.exists()) {
             if (!file.mkdirs()) {
@@ -256,7 +256,7 @@ object Utility {
     @JvmStatic
     fun saveImageToStorage(bitmap: Bitmap, name: String, context: Context): File {
         val dir = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-            createDirIfNotExists(context)
+            createDirIfNotExists()
         } else {
             createDirIfNotExistsNew(context)
         }

@@ -25,12 +25,6 @@ import androidx.lifecycle.repeatOnLifecycle
 import coil.load
 import coil.request.CachePolicy
 import coil.transform.CircleCropTransformation
-import com.canhub.cropper.CropImageContract
-import com.canhub.cropper.CropImageContractOptions
-import com.canhub.cropper.CropImageOptions
-import com.canhub.cropper.CropImageView
-import com.google.android.material.snackbar.Snackbar
-import com.policyboss.demoandroidapp.Utility.ExtensionFun.showSnackbar
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.analytics.WebEngageAnalytics
@@ -143,7 +137,7 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
 
             setDisplayShowHomeEnabled(true)
             setDisplayHomeAsUpEnabled(true)
-            setTitle("My Profile")
+            setTitle("MY PROFILE")
         }
         // Initialize contentBinding for the included layout
         includedBinding = ContentMyaccountBinding.bind(binding.includeMyaccount.root)
@@ -761,6 +755,47 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
 
 
                     }
+                }
+
+
+                viewModel.uploadDocumentResponse.collect { event ->
+
+                    event.contentIfNotHandled?.let {
+
+                        when (it) {
+                            is APIState.Empty -> {
+                                hideLoading()
+                            }
+
+                            is APIState.Failure -> {
+                                hideLoading()
+
+
+                                Log.d(Constant.TAG, it.errorMessage.toString())
+                            }
+
+                            is APIState.Loading -> {
+                                displayLoadingWithText()
+                            }
+
+                            is APIState.Success -> {
+
+                                hideLoading()
+
+                                it.data?.MasterDataEntity?.let { it ->
+
+                                    //setupSalesMaterialAdapter(lstSalesProdEntity)
+
+                                   showAlert("Document Uploaded Successfully!!")
+
+                                }
+                            }
+                        }
+
+
+                    }
+
+
                 }
 
 

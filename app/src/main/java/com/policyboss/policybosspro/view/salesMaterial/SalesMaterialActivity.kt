@@ -56,7 +56,7 @@ class SalesMaterialActivity : BaseActivity() {
 
             setDisplayShowHomeEnabled(true)
             setDisplayHomeAsUpEnabled(true)
-            setTitle("Sales Material")
+            setTitle(Constant.SalesTitle)
         }
 
         initialize()

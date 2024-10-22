@@ -58,7 +58,7 @@ object Constant {
     const val CONTACT_LOG_Data_SIZE = "CONTACT_LOG_Data_SIZE"
     const val CONTACT_LOG_Progress = "CONTACT_LOGGProgress"
     const val CONTACT_LOG_MAXProgress = "CONTACT_LOGMAXProgress"
-
+    const val REQUEST_CODE = 22
 
     const val APP_DATABASE = "atmmgo_database"
     const val USER_TABLE = "user_table"
@@ -90,6 +90,7 @@ object Constant {
 
     const val SalesLangEnglish = "English"
     const val SalesLangHindi = "Hindi"
+    const val  SalesTitle = "SALES MATERIAL"
 
 
     const val   NOTIFICATION_EXTRA = "NOTIFICATION_EXTRA"

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+    <item
+
+        android:id="@+id/action_new"
+        android:orderInCategory="10"
+        android:title="Calll"
+        android:visible="true"
+        app:actionLayout="@layout/new_action_item_layout"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_call"
+        android:orderInCategory="20"
+        android:title="Calll"
+        android:visible="true"
+        android:icon="@drawable/support_ic"
+        app:showAsAction="always" />
+    <item
+        android:id="@+id/action_push_notification"
+        android:orderInCategory="30"
+        android:title="Notificaton"
+        android:visible="true"
+        app:actionLayout="@layout/notification_action_item_layout"
+        app:showAsAction="always" />
+
+
+
+
+</menu>

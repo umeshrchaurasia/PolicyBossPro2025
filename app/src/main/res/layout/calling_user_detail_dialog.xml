@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottom_sheet_dialog"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/bg_dashboard"
+    android:orientation="vertical"
+    android:layout_margin="8dp"
+    app:behavior_hideable="true"
+    app:behavior_peekHeight="0dp"
+    app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+
+
+            <RelativeLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/description_text">
+                <TextView
+                    android:id="@+id/txtHdr"
+                    style="@style/TextViewStyle.Large"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/header_light_text"
+                    android:gravity="left"
+                    android:padding="10dp"
+                    android:text="Manager Support"
+                    android:textColor="@color/white" />
+
+
+
+
+                <ImageView
+                    android:id="@+id/ivCross"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/ic_close"
+                    android:visibility="visible" />
+
+
+            </RelativeLayout>
+
+    <TextView
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginBottom="5dp"
+        android:id="@+id/txtMessage"
+        style="@style/TextStyle.TextMedium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvCalling"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingBottom="5dp"
+                android:visibility="visible">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+
+</LinearLayout>

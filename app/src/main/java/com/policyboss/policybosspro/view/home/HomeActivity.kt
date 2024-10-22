@@ -12,9 +12,12 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.View.OnClickListener
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
@@ -36,8 +39,10 @@ import com.policyboss.policybosspro.analytics.WebEngageAnalytics.Companion.getIn
 import com.policyboss.policybosspro.core.APIState
 import com.policyboss.policybosspro.core.model.homeDashboard.DashboardMultiLangEntity
 import com.policyboss.policybosspro.core.model.sysncContact.SyncContactEntity
+import com.policyboss.policybosspro.core.response.home.UserCallingEntity
 import com.policyboss.policybosspro.core.viewModel.homeVM.HomeViewModel
 import com.policyboss.policybosspro.databinding.ActivityHomeBinding
+import com.policyboss.policybosspro.databinding.CallingUserDetailDialogBinding
 import com.policyboss.policybosspro.databinding.DrawerHeaderBinding
 import com.policyboss.policybosspro.databinding.LayoutFailurePopupBinding
 import com.policyboss.policybosspro.databinding.LayoutMenuDashboard3Binding
@@ -54,6 +59,7 @@ import com.policyboss.policybosspro.utils.hideKeyboard
 import com.policyboss.policybosspro.utils.showSnackbar
 import com.policyboss.policybosspro.view.appCode.AppCodeActivity
 import com.policyboss.policybosspro.view.changePwd.ChangePaswordActivity
+import com.policyboss.policybosspro.view.home.adapter.CallingDetailAdapter
 import com.policyboss.policybosspro.view.home.adapter.DashboardRowAdapter
 import com.policyboss.policybosspro.view.knowledgeGuru.KnowledgeGuruActivity
 import com.policyboss.policybosspro.view.login.LoginActivity
@@ -84,6 +90,9 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private lateinit var shareProdDialog: AlertDialog
     private var mySyncPopUpAlert: AlertDialog? = null
     private var myUtilitiesDialog: AlertDialog? = null
+    private var callingDetailDialog : AlertDialog? = null
+    private lateinit var callingDetailAdapter: CallingDetailAdapter
+
 
     private var isSwipeRefresh = false
 
@@ -192,6 +201,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
 
 
+
         observeMasterState()
 
         //Called Master Data ie UserConstant and Dynamic Dashb oard Parallel
@@ -201,188 +211,16 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         setonClickListner()
 
-        //  region Set up navigation item click listener
-//        binding.navigationView.setNavigationItemSelectedListener {  menuItem ->
-//
-//            if (!NetworkUtils.isNetworkAvailable(this@HomeActivity)) {
-//
-//                this.showSnackbar(binding.root,getString(R.string.noInternet))
-//
-//                return@setNavigationItemSelectedListener false
-//            }
-//            // Toggle checked state of the menu item
-//            menuItem.isChecked = !menuItem.isChecked
-//
-//
-//
-//            hideKeyboard(binding.root)
-//
-//
-//            //region Add Dynmaic Drawer Menu
-//            if (prefsManager.getMenuDashBoard() != null) {
-//                prefsManager.getMenuDashBoard()?.MasterData?.Menu?.forEach { menuItemEntity ->
-//                    var sequence = menuItemEntity.sequence?.toInt()
-//                    if (sequence != null) {
-//                        sequence = (sequence * 100) + 1
-//                    }
-//                    if (menuItem.itemId == sequence) {
-//
-//                        val appendMenu = "&ss_id=${prefsManager.getSSID()}" +
-//                                "&fba_id=${prefsManager.getFBAID()}" +
-//                                "&sub_fba_id=" +
-//                                "ip_address=&mac_address=" +
-//                                "&app_version=policyboss-${BuildConfig.VERSION_NAME}" +
-//                                "&device_id=${Utility.getDeviceID(this@HomeActivity)}" +
-//                                "&login_ssid="
-//
-//                        val menuDetail = "${menuItemEntity.link}$appendMenu"
-//
-//                        startActivity(
-//                            Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
-//                                putExtra("URL", menuDetail)
-//                                putExtra("NAME", menuItemEntity.menuname)
-//                                putExtra("TITLE", menuItemEntity.menuname)
-//                            }
-//                        )
-//                        return@setNavigationItemSelectedListener true
-//                    }
-//
-//
-//                }
-//            }
-//
-//            //endregion
-//
-//
-//            when (menuItem.itemId) {
-//
-//                R.id.nav_home ->{
-//
-//                    viewModel.getMasterData()
-//                }
-//
-//                R.id.nav_finbox -> {
-//                    startActivity(
-//                        Intent(
-//                            this@HomeActivity,
-//                            CommonWebViewActivity::class.java
-//                        ).putExtra(Constant.URL, prefsManager.getFinboxurl())
-//                            .putExtra("NAME", "MY FINBOX").putExtra("TITLE", "MY FINBOX")
-//                    )
-//
-//                }
-//
-//                R.id.nav_finperk -> {
-//                    startActivity(
-//                        Intent(
-//                            this@HomeActivity,
-//                            CommonWebViewActivity::class.java
-//                        ).putExtra(Constant.URL, prefsManager.getFinperkurl())
-//                            .putExtra("NAME", "FINPERKS").putExtra("TITLE", "FINPERKS")
-//                    )
-//
-//                }
-//
-//                R.id.nav_festivelink -> {
-//                    startActivity(
-//                        Intent(
-//                            this@HomeActivity,
-//                            CommonWebViewActivity::class.java
-//                        ).putExtra(Constant.URL, prefsManager.getFinperkurl())
-//                            .putExtra("NAME", "FESTIVE LINKS").putExtra("TITLE", "FESTIVE LINKS")
-//                    )
-//
-//                }
-//
-//                R.id.nav_AppointmentLetter -> {
-//                    // Handle nav item 2 click
-//                }
-//                R.id.nav_REQUEST -> {
-//
-//                    startActivity(Intent(this@HomeActivity, AppCodeActivity::class.java))
-//                }
-//
-//                R.id.nav_changepassword -> {
-//
-//                    startActivity(Intent(this@HomeActivity, ChangePaswordActivity::class.java))
-//                }
-//
-//                R.id.nav_myaccount -> {
-//                    //05 temp My Account
-//                    startActivity(Intent(this@HomeActivity, ChangePaswordActivity::class.java))
-//                }
-//
-//                R.id.nav_pospenrollment ->{
-//
-//
-//
-//                    Log.d(Constant.URL,"POSPurl(): "+ prefsManager.getEnableProPOSPurl())
-//                    val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
-//                        putExtra("URL", prefsManager.getEnableProPOSPurl() +
-//                                "&app_version=" + prefsManager.getAppVersion() +
-//                                "&device_code=" + Utility.getDeviceID(this@HomeActivity) +
-//                                "&ssid=" + prefsManager.getSSID() +
-//                                "&fbaid=" + prefsManager.getFBAID())
-//                        putExtra("NAME", "PospEnrollment")
-//                        putExtra("TITLE", "Posp Enrollment")
-//                    }
-//                    startActivity(intent)
-//
-//                }
-//
-//
-//                R.id.nav_leaddetail -> {
-//
-//                    var leaddetail = ""
-//                    val append_lead = "&ip_address=&mac_address=&app_version=policyboss-" + BuildConfig.VERSION_NAME +
-//                            "&device_id=" + Utility.getDeviceID(this@HomeActivity) + "&login_ssid="
-//                    leaddetail = prefsManager.getLeadDashUrl() + append_lead
-//
-//                    val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
-//                        putExtra("URL", leaddetail)
-//                        putExtra("NAME", "Sync Contact DashBoard")
-//                        putExtra("TITLE", "Sync Contact DashBoard")
-//                    }
-//                    startActivity(intent)
-//
-//
-//                }
-//
-//
-//                R.id.nav_raiseTicket -> {
-//                    val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
-//                        putExtra("URL", prefsManager.getRaiseTickitUrl() + "&mobile_no=" + prefsManager.getMobileNo() +
-//                                "&UDID=" + prefsManager.getUserId() + "&app_version=" + prefsManager.getAppVersion() +
-//                                "&device_code=" + Utility.getDeviceID(this@HomeActivity) + "&ssid=" + prefsManager.getSSID() +
-//                                "&fbaid=" + prefsManager.getFBAID())
-//                        putExtra("NAME", "RAISE_TICKET")
-//                        putExtra("TITLE", "RAISE TICKET")
-//                    }
-//                    startActivity(intent)
-//
-//                }
-//                R.id.nav_logout -> {
-//
-//                    dialogLogout()
-//                }
-//
-//
-//                // Add more cases as needed
-//            }
-//            // Close the drawer after item selection
-//            binding.drawer.closeDrawer(GravityCompat.START)
-//            true
-//        }
-      //  endregion
 
 
-        //region Set up Navigation - Drawer item click listener
+
 
 
     }
 
-//*************** DashBoard List Adapter Main Menu Action *****************************************
-// Action :  Move To diff page Using Home - DashBoard List
+//*************** DashBoard List Adapter Home/Dashboard Menu Action *****************************************
+
+    // Action :  Move To diff page Using Home - DashBoard List
     // region Dashboard Menu
     private fun dashBoardMenusList(dashboardEntity: DashboardMultiLangEntity?) {
 
@@ -611,14 +449,13 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     //endregion
  // ******************************End ************************************************************
 
-    fun setonClickListner(){
-
-        binding.navigationView.setNavigationItemSelectedListener(this)
-        binding.tvKnowledge.setOnClickListener(this)
-        binding.tvSalesMat.setOnClickListener(this)
-    }
 
 
+
+
+
+    //region Drawer Menu handling
+     //Mark : Drawer Menu onNavigationItemSelected Event
     override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
 
         Log.d(Constant.TAG,"Product ${ menuItem.itemId}")
@@ -869,6 +706,8 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     //endregion
 
+    //endregion
+
     //region  headerView Menu Handling
     private fun initHeaderLayout() {
 
@@ -973,6 +812,121 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     //endregion
 
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.dashboard_menu, menu)
+
+        val menuItem = menu.findItem(R.id.action_push_notification)
+        val menuNewItem = menu.findItem(R.id.action_new)
+
+        val actionView = menuItem.actionView
+        val actionViewNew = menuNewItem.actionView
+
+        // Use viewBinding to reference views instead of findViewById
+        val textNotifyItemCount = actionView?.findViewById<TextView>(R.id.notify_badge)?.apply {
+            visibility = View.GONE
+        }
+
+        val imgNew = actionViewNew?.findViewById<ImageView>(R.id.imgNew)
+
+        if (imgNew != null) {
+            Glide.with(this)
+                .asGif()
+                .load(R.drawable.newicon)
+                .into(imgNew)
+        }
+
+        val pushCount = prefsManager.getNotificationCounter()
+
+        if (pushCount == 0) {
+            textNotifyItemCount?.visibility = View.GONE
+        } else {
+            textNotifyItemCount?.visibility = View.VISIBLE
+            textNotifyItemCount?.text = pushCount.toString()
+        }
+
+        actionViewNew?.setOnClickListener {
+            openWebViewPopUp(
+                binding.root,
+                "${prefsManager.getUserConstantEntity()?.notif_popupurl_elite}&app_version=${prefsManager.getAppVersion()}" +
+                        "&device_code=${prefsManager.getDeviceID()}&ssid=${prefsManager.getSSID()}&fbaid=${prefsManager.getFBAID()}",
+                true,
+                ""
+            )
+        }
+
+        actionView?.setOnClickListener {
+            try {
+                onOptionsItemSelected(menuItem)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+        return true
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_call -> {
+                if (!NetworkUtils.isNetworkAvailable(this)) {
+                    this.showSnackbar(binding.root,getString(R.string.noInternet))
+                    return false
+                }
+                prefsManager.getUserConstantEntity()?.let { user ->
+                    if (user.MangMobile != null && user.ManagName != null) {
+                        if (callingDetailDialog?.isShowing == true) {
+                            return false
+                        } else {
+                            //************* call User Details Api //*************
+                              viewModel.getUserCallingDetail()
+                        }
+                    }
+                }
+            }
+
+            R.id.action_push_notification -> {
+                if (!NetworkUtils.isNetworkAvailable(this)) {
+
+                    this.showSnackbar(binding.root,getString(R.string.noInternet))
+                    return false
+                }
+
+                val intent = Intent(this, NotificationActivity::class.java)
+                startActivity(intent)
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
+
+    fun shareCallingData(userCallingEntity: UserCallingEntity) {
+        val intentCalling = Intent(Intent.ACTION_DIAL).apply {
+            data = Uri.parse("tel:${userCallingEntity.MobileNo}")
+        }
+        startActivity(intentCalling)
+    }
+
+    fun shareEmailData(userCallingEntity: UserCallingEntity) {
+        UtilityNew.shareMailSmsList(
+            context = this@HomeActivity,
+            prdSubject = "",
+            prdDetail = "Dear Sir/Madam,",
+            mailTo = userCallingEntity.EmailId,
+            mobileNo = userCallingEntity.MobileNo
+        )
+    }
+
+
+    fun setonClickListner(){
+
+        binding.navigationView.setNavigationItemSelectedListener(this)
+        binding.tvKnowledge.setOnClickListener(this)
+        binding.tvSalesMat.setOnClickListener(this)
+    }
+
     //region SetUpDashboard
     private fun setupDashBoard_Adapter() {
 
@@ -1015,7 +969,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     //endregion
 
-
+    //region Mark : All Alert Dialog
 
     // region Share Product and Forece Sync Dialog
 
@@ -1120,8 +1074,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     //endregion
 
-
-    //region Mark : All Alert Dialog
     //region Utilities Alert
     private fun showMyUtilitiesDialog() {
         if (myUtilitiesDialog?.isShowing == true) return
@@ -1200,6 +1152,67 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     //endregion
 
+    //region Market PopUp Alert
+    fun marketPopUpAlert(){
+
+        prefsManager.getUserConstantEntity()?.let {  userConstant->
+            userConstant.androidpromarketEnable?.let {
+                if (prefsManager.getUserId() == "0") {
+                    if (!userConstant.androidpromarkefbaurl.isNullOrEmpty()) {
+                        openWebViewPopUp_marketing(binding.root, userConstant.androidpromarkefbaurl, true, "")
+                    }
+                } else {
+                    if (!userConstant.androidpromarketuidurl.isNullOrEmpty()) {
+                        openWebViewPopUp_marketing(binding.root, userConstant.androidpromarketuidurl, true, "")
+                    }
+                }
+            }
+        }
+
+    }
+
+    //endregion
+
+
+
+    fun showCallingDetailsPopUp(lstCallingDetail: List<UserCallingEntity>) {
+        if (callingDetailDialog?.isShowing == true) return
+
+        val builder = AlertDialog.Builder(this, R.style.CustomDialog)
+        val binding = CallingUserDetailDialogBinding.inflate(layoutInflater)
+
+        builder.setView(binding.root)
+        callingDetailDialog = builder.create()
+
+        // Set up RecyclerView
+            with(binding.rvCalling) {
+            layoutManager = LinearLayoutManager(this@HomeActivity)
+            setHasFixedSize(true)
+            isNestedScrollingEnabled = false
+            adapter = CallingDetailAdapter(lstCallingDetail,
+                onMobileClick = { userEntity ->
+
+                    callingDetailDialog?.dismiss()
+                    shareCallingData(userEntity) },
+                onEmailClick = { userEntity ->
+
+                    callingDetailDialog?.dismiss()
+                    shareEmailData(userEntity)
+                }
+            )
+        }
+
+        binding.txtMessage.text = getString(R.string.RM_Calling)
+
+        // Set up cross button listener
+        binding.ivCross.setOnClickListener {
+            callingDetailDialog?.dismiss()
+        }
+
+        callingDetailDialog?.setCancelable(false)
+        callingDetailDialog?.show()
+    }
+
     //region Logout Alert
     fun dialogLogout() {
 
@@ -1256,6 +1269,8 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     //endregion
+
+
 
     //endregion
 
@@ -1582,6 +1597,10 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                                 else{
                                   //Mark :Below code only execute when there is no force Update happend
 
+
+                                    //Mark :Call Market Pop Up Alert
+                                    marketPopUpAlert()
+
                                     state.data?.horizonDetail?.SYNC_CONTACT?.takeIf { it.ACTION_NEEDED == "NO_ACTION"}
                                         ?.let { syncContactEntity->
 
@@ -1640,6 +1659,48 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                                         }
 
                                     }
+
+                                }
+
+
+                            }
+                        }
+
+                    }
+                }
+
+                launch {
+                    viewModel.userCallingDtlResponse.collect{  event->
+
+                        event.contentIfNotHandled?.let {
+
+                            when (it) {
+                                is APIState.Empty -> {
+
+                                    hideLoading()
+                                }
+
+                                is APIState.Failure -> {
+                                    hideLoading()
+                                    this@HomeActivity.showSnackbar(binding.root, it.errorMessage)
+                                }
+
+                                is APIState.Loading -> {
+
+                                    displayLoadingWithText()
+                                }
+
+                                is APIState.Success -> {
+                                    hideLoading()
+
+                                        it.data?.MasterData
+                                            ?.filterNotNull() // Remove null values from the list
+                                            ?.takeIf { it.isNotEmpty() } // Proceed only if the list is not empty
+                                            ?.let { nonNullCallingDetails ->
+                                                showCallingDetailsPopUp(nonNullCallingDetails)
+                                            }
+
+
 
                                 }
 

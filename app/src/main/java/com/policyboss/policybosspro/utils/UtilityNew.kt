@@ -17,6 +17,8 @@ import android.telephony.SmsManager
 import android.util.Base64
 import android.util.Log
 import android.app.AlertDialog
+import android.content.ComponentName
+import android.content.pm.LabeledIntent
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -563,6 +565,106 @@ object UtilityNew {
         }
     }
 
+
+    /****************************************************************
+    //Note :Share Data to specific Apps
+     ****************************************************************/
+
+    fun shareMailSmsList(context: Context, prdSubject: String, prdDetail: String, mailTo: String, mobileNo: String) {
+        try {
+            val shareIntent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, prdDetail)
+                type = "text/plain"
+            }
+
+            val pm = context.packageManager
+            val resInfo = pm.queryIntentActivities(shareIntent, 0)
+            val intentList = mutableListOf<LabeledIntent>()
+
+            for (ri in resInfo) {
+                val packageName = ri.activityInfo.packageName
+
+                if (packageName.contains("android.email") || packageName.contains("mms") || packageName.contains("messaging")
+                    || packageName.contains("android.gm") || packageName.contains("com.google.android.apps.plus")
+                ) {
+                    shareIntent.component = ComponentName(packageName, ri.activityInfo.name)
+
+                    when {
+                        packageName.contains("android.email") -> {
+                            shareIntent.apply {
+                                type = "image/*"
+                                data = Uri.parse("mailto:")
+                                putExtra(Intent.EXTRA_EMAIL, arrayOf(mailTo))
+                                putExtra(Intent.EXTRA_SUBJECT, prdSubject)
+                                putExtra(Intent.EXTRA_TEXT, prdDetail)
+                                setPackage(packageName)
+                            }
+                        }
+                        packageName.contains("mms") -> {
+                            shareIntent.apply {
+                                type = "vnd.android-dir/mms-sms"
+                                data = Uri.parse("sms:$mobileNo")
+                                putExtra(Intent.EXTRA_TEXT, prdDetail)
+                                setPackage(packageName)
+                            }
+                        }
+                        packageName.contains("whatsapp") -> {
+                            val toNumber = mobileNo.replace("+", "").replace(" ", "")
+                            shareIntent.apply {
+                                type = "text/plain"
+                                putExtra("jid", "$toNumber@s.whatsapp.net")
+                                putExtra(Intent.EXTRA_TEXT, prdDetail)
+                                setPackage(packageName)
+                            }
+                        }
+                        packageName.contains("messaging") -> {
+                            shareIntent.apply {
+                                type = "vnd.android-dir/mms-sms"
+                                data = Uri.parse("sms:$mobileNo")
+                                putExtra(Intent.EXTRA_TEXT, prdDetail)
+                                setPackage(packageName)
+                            }
+                        }
+                        packageName.contains("com.google.android.apps.plus") -> {
+                            shareIntent.apply {
+                                type = "image/*"
+                                putExtra(Intent.EXTRA_TEXT, prdDetail)
+                                setPackage(packageName)
+                            }
+                        }
+                        packageName.contains("android.gm") -> {
+                            shareIntent.apply {
+                                type = "image/*"
+                                putExtra(Intent.EXTRA_SUBJECT, prdSubject)
+                                putExtra(Intent.EXTRA_TEXT, prdDetail)
+                                setPackage(packageName)
+                            }
+                        }
+                        else -> {
+                            shareIntent.apply {
+                                type = "text/plain"
+                                putExtra(Intent.EXTRA_TEXT, prdDetail)
+                            }
+                        }
+                    }
+
+                    intentList.add(LabeledIntent(shareIntent, packageName, ri.loadLabel(pm), ri.icon))
+                }
+            }
+
+            if (intentList.isNotEmpty()) {
+                intentList.removeAt(intentList.size - 1)
+            }
+
+            val openInChooser = Intent.createChooser(shareIntent, "Share Via").apply {
+                putExtra(Intent.EXTRA_INITIAL_INTENTS, intentList.toTypedArray())
+            }
+            context.startActivity(openInChooser)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
 
 
 }

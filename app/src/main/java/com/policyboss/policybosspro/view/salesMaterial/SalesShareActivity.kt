@@ -77,7 +77,7 @@ class SalesShareActivity :BaseActivity() {
 
             setDisplayShowHomeEnabled(true)
             setDisplayHomeAsUpEnabled(true)
-            setTitle("Sales Material")
+            setTitle(Constant.SalesTitle)
         }
         // Initialize contentBinding for the included layout
         includedBinding = ContentSalesShareBinding.bind(binding.includeSalesShare.root)
