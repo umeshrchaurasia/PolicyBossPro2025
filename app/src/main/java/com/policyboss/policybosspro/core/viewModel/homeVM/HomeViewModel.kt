@@ -159,7 +159,8 @@ class HomeViewModel @Inject constructor(
             }
         } catch (e: Exception) {
             Log.e(Constant.TAG, "Error occurred: ${e.message}")
-            _masterState.value = APIState.Failure("Error occurred: ${e.message}")
+            //_masterState.value = APIState.Failure("Error occurred: ${e.message}")
+            _masterState.value = APIState.Failure(errorMessage = Constant.MasterData)
 
         }
 
@@ -334,6 +335,40 @@ class HomeViewModel @Inject constructor(
 
     //endregion
 
+//userClickActionOnNotification
+
+
+    fun userClickActionOnNotification(notifyReqID : String, appVersion: String, deviceCode: String) = viewModelScope.launch {
+
+        var body = HashMap<String, String>()
+        body.put("UserNotificationRequestId", notifyReqID)
+        body.put("app_version", appVersion)
+        body.put("device_code", deviceCode)
+        body.put("ssid", prefManager.getSSID())
+        body.put("fbaid", prefManager.getFBAID())
+
+
+
+
+
+        try {
+            // Concurrent API calls
+            val apiDeferred = async { homeRepository.userClickActionOnNotification(body) }
+
+            val apiResponse = apiDeferred.await()
+
+            if (apiResponse?.isSuccessful() == true) {
+
+                Log.d(Constant.TAG, "User Click on Notification: ${apiResponse.message()}")
+            }else{
+                Log.d(Constant.TAG, "Error occurred at User Click on Notification : ${apiResponse?.message()}")
+            }
+
+        } catch (e: Exception) {
+            Log.e(Constant.TAG, "Error occurred: ${e.message}")
+        }
+
+    }
 
     //region Not in Used
     fun getUserConstant(appVersion: String, deviceCode: String) = viewModelScope.launch {

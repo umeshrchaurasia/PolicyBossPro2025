@@ -5,11 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.policyboss.policybosspro.core.model.notification.NotifyEntity
 import com.policyboss.policybosspro.core.repository.notificationRepository.INotificationRepository
-import com.policyboss.policybosspro.core.repository.notificationRepository.NotificationRepository
 import com.policyboss.policybosspro.utils.Constant
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -20,7 +17,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class NotificationViewModel @Inject constructor(
+class FCMNotificationViewModel @Inject constructor(
 
     private val notificationRepository: INotificationRepository
 
@@ -28,6 +25,7 @@ class NotificationViewModel @Inject constructor(
 
     private val _notificationState = MutableStateFlow<NotifyEntity?>(null)
     val notificationFlow = _notificationState.asSharedFlow()
+
 
 
     init {
@@ -41,18 +39,9 @@ class NotificationViewModel @Inject constructor(
                 }
         }
     }
-    fun sendNotification(notifyEntity: NotifyEntity) {
 
-        viewModelScope.launch {
-            notificationRepository.observeNotifications()
-                .catch { e ->
-                    Log.e("NotificationViewModel", "Error collecting notifications", e)
-                }
-                .collect { notification ->
-                    _notificationState.value = notification
-                }
-        }
-    }
+
+
 
 
     override fun onCleared() {

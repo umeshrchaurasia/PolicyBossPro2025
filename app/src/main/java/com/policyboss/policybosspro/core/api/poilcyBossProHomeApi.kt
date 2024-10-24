@@ -6,6 +6,7 @@ import com.policyboss.policybosspro.core.response.home.UserCallingResponse
 import com.policyboss.policybosspro.core.response.horizonResponse.horizonSyncDetails.HorizonsyncDetailsResponse
 import com.policyboss.policybosspro.core.response.master.dynamicDashboard.MenuMasterResponse
 import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantResponse
+import com.policyboss.policybosspro.core.response.notification.NotificationUpdateResponse
 import com.policyboss.policybosspro.core.response.salesMaterial.SalesMaterialProductDetailsResponse
 
 import com.policyboss.policybosspro.core.response.salesMaterial.SalesMaterialResponse
@@ -60,6 +61,13 @@ interface poilcyBossProHomeApi {
     @Headers("token:" + Constant.token)
     @POST("quote/Postfm/user-calling")
     suspend fun getUserCallingDetail(@Body body: HashMap<String,String>): Response<UserCallingResponse?>
+
+
+
+    @Headers("token:" + Constant.token)
+    @POST("/quote/Postfm/update-notification")
+    suspend fun userClickActionOnNotification(@Body body: HashMap<String,String>): Response<NotificationUpdateResponse?>
+
 
 
     /****************************************************************************************

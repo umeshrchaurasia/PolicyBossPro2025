@@ -9,6 +9,7 @@ import android.graphics.Color
 import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
+import androidx.activity.viewModels
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -16,6 +17,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.core.model.notification.NotifyEntity
 import com.policyboss.policybosspro.core.repository.notificationRepository.INotificationRepository
+import com.policyboss.policybosspro.core.viewModel.NotificationVM.NotifyViewModel
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utils.Constant
 import com.policyboss.policybosspro.view.home.HomeActivity
@@ -48,6 +50,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     lateinit var prefManager: PolicyBossPrefsManager
     @Inject
     lateinit var notificationRepository: INotificationRepository
+
+
 
 
     private var notificationManager: NotificationManager? = null
@@ -93,14 +97,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             web_title = webTitle
         }
 
-        val notifyEntity = NotifyEntity(
-            title = "Title here",
-            body = "Body content here",
-            notifyFlag = "L",
-            web_url = "https://example.com",
-            web_title = "Web Title",
-            message_id = "123"
-        )
 
         //Mark : Emit the notification data via NotificationRepository
 
@@ -114,22 +110,22 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         val intent = Intent(this, HomeActivity::class.java).apply {
             putExtra(Constant.PUSH_NOTIFY, notifyEntity)
-            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP or  Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
 
         val pendingIntent = PendingIntent.getActivity(
             this,
             Random.nextInt(1000),
             intent,
-            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-        val pendingIntent1 = PendingIntent.getActivity(
-            this,
-            Random.nextInt(1000),
-            intent,
             PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+
+//        val pendingIntent1 = PendingIntent.getActivity(
+//            this,
+//            Random.nextInt(1000),
+//            intent,
+//            PendingIntent.FLAG_ONE_SHOT or PendingIntent.FLAG_IMMUTABLE
+//        )
 
         val defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         createNotificationChannel()

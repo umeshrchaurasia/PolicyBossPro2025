@@ -31,7 +31,7 @@ object Constant {
     val Fail : String = "Failed"
 
     const val   NOData = "No Data Found"
-    const val   MasterData = "Failed to fetch master data"
+    const val   MasterData = "Failed to fetch data! Please retry again"
     const val   SeverUnavaiable = "Server temporarily unavailable! Please retry again"
     const val   InValidPass = "Invalid UserId and Password"
     const val   ServerError = "Service Unavailable : No Data Found"
@@ -92,18 +92,24 @@ object Constant {
     const val SalesLangEnglish = "English"
     const val SalesLangHindi = "Hindi"
     const val  SalesTitle = "SALES MATERIAL"
+    const val  NotifyTitle = "NOTIFICATION"
 
     const val PUSH_NOTIFY = "notifyFlag"
     const val   NOTIFICATION_EXTRA = "NOTIFICATION_EXTRA"
     const val   NOTIFICATION_PROGRESS = "NOTIFICATION_PROGRESS"
     const val   NOTIFICATION_MAX = "NOTIFICATION_MAX"
     const val   NOTIFICATION_MESSAGE = "NOTIFICATION_MESSAGE"
+    const val SHARED_KEY_PUSH_NOTIFY = "SHARED_KEY_PUSH_NOTIFY"
+
+    const val   PUSH_LOGIN_PAGE = "pushloginPage"
 
     const val PUSH_NOTITIFICATION = "demoAndroidApp_notification"
+
     const val   NOTIFICATION_RECEIVERNAME = "receiverName"
 
     const val CONTACT_LOG_DataFetching = "Data is Fetching Please Wait..."
     const val CONTACT_LOG_DataSending = "Sending Data to Server..."
+
 
 
 

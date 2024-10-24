@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import com.google.gson.Gson
+import com.policyboss.policybosspro.core.model.notification.NotifyEntity
 import com.policyboss.policybosspro.core.response.login.EMP
 import com.policyboss.policybosspro.core.response.login.LoginNewResponse_DSAS_Horizon
 import com.policyboss.policybosspro.core.response.login.OtpLoginMsg
@@ -216,6 +217,33 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
     fun setNotificationCounter(counter: Int) {
         editor.putInt(NOTIFICATION_COUNTER, counter).apply()
     }
+
+
+    fun setPushNotifyPreference(notifyEntity: NotifyEntity) {
+        try {
+            editor.putString(Constant.PUSH_NOTITIFICATION, gson.toJson(notifyEntity))
+            editor.apply() // Use apply for async saving
+        } catch (e: Exception) {
+            e.printStackTrace() // Consider logging or handling the exception
+        }
+    }
+
+    fun setSharePushType(type: String) {
+        editor.putString(Constant.SHARED_KEY_PUSH_NOTIFY, type)
+        editor.apply() // Use apply for async saving
+    }
+
+    fun getPushNotifyPreference(): NotifyEntity? {
+        val pushKey = pref.getString(Constant.PUSH_NOTITIFICATION, null) ?: return null
+        return gson.fromJson(pushKey, NotifyEntity::class.java)
+    }
+
+    fun clearNotification() {
+        editor.remove(Constant.SHARED_KEY_PUSH_NOTIFY)
+            .remove(Constant.PUSH_NOTITIFICATION)
+            .apply() // Use apply for async saving
+    }
+
 
     fun setIsUserLogin(isUserLogin: Boolean) {
         editor.putBoolean(PUSH_VERIFY_LOGIN, isUserLogin).apply()

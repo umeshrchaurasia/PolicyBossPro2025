@@ -6,6 +6,7 @@ import com.policyboss.policybosspro.core.response.home.UsersignupResponse
 import com.policyboss.policybosspro.core.response.horizonResponse.horizonSyncDetails.HorizonsyncDetailsResponse
 import com.policyboss.policybosspro.core.response.master.dynamicDashboard.MenuMasterResponse
 import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantResponse
+import com.policyboss.policybosspro.core.response.notification.NotificationUpdateResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -67,6 +68,11 @@ class HomeRepository @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     //endregion
+
+
+    suspend fun userClickActionOnNotification(body : HashMap<String,String>): Response<NotificationUpdateResponse?> {
+        return apiService.userClickActionOnNotification(body)
+    }
 
 
 

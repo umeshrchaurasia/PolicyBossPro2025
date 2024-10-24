@@ -1,5 +1,6 @@
 package com.policyboss.policybosspro.view.home
 
+import android.app.Activity
 import android.app.ActivityOptions
 import android.app.AlertDialog
 import android.content.Intent
@@ -19,6 +20,8 @@ import android.view.View.OnClickListener
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
@@ -39,9 +42,11 @@ import com.policyboss.policybosspro.analytics.WebEngageAnalytics
 import com.policyboss.policybosspro.analytics.WebEngageAnalytics.Companion.getInstance
 import com.policyboss.policybosspro.core.APIState
 import com.policyboss.policybosspro.core.model.homeDashboard.DashboardMultiLangEntity
+import com.policyboss.policybosspro.core.model.notification.NotifyEntity
 import com.policyboss.policybosspro.core.model.sysncContact.SyncContactEntity
 import com.policyboss.policybosspro.core.response.home.UserCallingEntity
-import com.policyboss.policybosspro.core.viewModel.NotificationVM.NotificationViewModel
+import com.policyboss.policybosspro.core.viewModel.NotificationVM.FCMNotificationViewModel
+import com.policyboss.policybosspro.core.viewModel.NotificationVM.NotifyViewModel
 import com.policyboss.policybosspro.core.viewModel.homeVM.HomeViewModel
 import com.policyboss.policybosspro.databinding.ActivityHomeBinding
 import com.policyboss.policybosspro.databinding.CallingUserDetailDialogBinding
@@ -60,6 +65,7 @@ import com.policyboss.policybosspro.utils.FirebasePushNotification.AccessToken
 import com.policyboss.policybosspro.utils.NetworkUtils
 import com.policyboss.policybosspro.utils.hideKeyboard
 import com.policyboss.policybosspro.utils.showSnackbar
+import com.policyboss.policybosspro.utils.showToast
 import com.policyboss.policybosspro.view.appCode.AppCodeActivity
 import com.policyboss.policybosspro.view.changePwd.ChangePaswordActivity
 import com.policyboss.policybosspro.view.home.adapter.CallingDetailAdapter
@@ -71,13 +77,14 @@ import com.policyboss.policybosspro.view.notification.NotificationActivity
 import com.policyboss.policybosspro.view.others.feedback.HelpFeedBackActivity
 import com.policyboss.policybosspro.view.others.incomePotential.IncomePotentialActivity
 import com.policyboss.policybosspro.view.salesMaterial.SalesMaterialActivity
+import com.policyboss.policybosspro.view.splashscreen.SplashScreenActivity
+import com.policyboss.policybosspro.view.syncContact.ui.SyncContactActivity
 import com.policyboss.policybosspro.view.syncContact.ui.WelcomeSyncContactActivityKotlin
 import com.policyboss.policybosspro.webview.CommonWebViewActivity
 import com.webengage.sdk.android.Channel
 import com.webengage.sdk.android.User
 import com.webengage.sdk.android.WebEngage
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -102,7 +109,10 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private val viewModel by viewModels<HomeViewModel>()
 
-    private val viewModelNotify: NotificationViewModel by viewModels()
+
+    private val viewModelFCMNotify: FCMNotificationViewModel by viewModels()
+
+    private val viewModelNotify : NotifyViewModel by viewModels()
     @Inject
     lateinit var prefsManager: PolicyBossPrefsManager
     lateinit var weUser: User
@@ -120,7 +130,27 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     var deeplink_value = ""
     var Title = ""
 
+
+
+    //for Notification Counter
+
+    private  var  textNotifyItemCount : TextView? = null
+
+    private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
+
+
     //endregion
+
+    private val notificationLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // Handle the result here
+            val data = result.data
+
+            textNotifyItemCount?.visibility = View.GONE
+        }
+    }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -216,6 +246,16 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
 
         setonClickListner()
+
+        // Initialize the launcher
+        //Mark : Reset Counter when come home after notification Activity
+        activityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                // Handle the result here, you can get the data as:
+                val data: Intent? = result.data
+                // Process data if needed
+            }
+        }
 
 
 
@@ -829,7 +869,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     //endregion
 
 
-    //region Handle DeepLink
+    //region Handle DeepLink and Notification
     private fun deeplinkHandle() {
         val deeplinkValue = prefsManager.getDeepLink()
 
@@ -853,7 +893,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                                     "&device_code=" + Utility.getDeviceID(this@HomeActivity) +
                                     "&ssid=" + prefsManager.getSSID() +
                                     "&fbaid=" + prefsManager.getFBAID())
-                            putExtra("NAME", "PospEnrollment")
+                            putExtra("NAME", "Posp Enrollment")
                             putExtra("TITLE", "Posp Enrollment")
                         }
                         startActivity(intent)
@@ -894,6 +934,143 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
+    private fun getNotificationAction() {
+        // region Activity Open Using Notification
+        intent.extras?.let { extras ->
+
+            // For getting User Click Action
+
+            val notifyEntity: NotifyEntity? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                extras.getParcelable(Constant.PUSH_NOTIFY, NotifyEntity::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                extras.getParcelable(Constant.PUSH_NOTIFY)
+            }
+
+            notifyEntity?.let {
+                val messageId = it.message_id?:"0"
+               // RegisterController(this@HomeActivity).getUserClickActionOnNotification(messageId, null)
+                viewModel.userClickActionOnNotification(
+                    notifyReqID = messageId,
+                    appVersion = prefsManager.getAppVersion(),
+                    deviceCode = prefsManager.getDeviceID())
+            }
+
+            // Step 1: Check if the user is logged in
+            if (prefsManager == null) {
+                notifyEntity?.let { entity ->
+                    prefsManager.setPushNotifyPreference(entity)
+                    prefsManager.setSharePushType(entity.notifyFlag?:"")
+
+                    val intent = Intent(this, SplashScreenActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                }
+            }
+            // Step 2: Handle login notification action
+            else if (extras.getString(Constant.PUSH_LOGIN_PAGE) != null) {
+                val pushLogin = extras.getString(Constant.PUSH_LOGIN_PAGE)
+                if (pushLogin == "555") {
+                    var type = ""
+                    var title = ""
+                    var body = ""
+                    var webUrl = ""
+                    var webTitle = ""
+
+                    prefsManager.getPushNotifyPreference()?.let { entity ->
+                        type = entity.notifyFlag ?:""
+                        title = entity.title ?: ""
+                        body = entity.body ?: ""
+                        webUrl = entity.web_url ?: ""
+                        webTitle = entity.web_title ?: ""
+                    }
+
+                    prefsManager.clearNotification()
+
+                } else {
+
+                }
+            }
+            // region User already logged in and app is in foreground/background
+            else if (notifyEntity != null) {
+                when (notifyEntity.notifyFlag?.trim()) {
+                    "NL" -> {
+                        val intent = Intent(this, NotificationActivity::class.java)
+                        startActivity(intent)
+                    }
+                    "PF" -> {
+                        val intent = Intent(this, MyAccountActivity::class.java)
+                        startActivity(intent)
+                    }
+                    "SL" -> {
+                        val intent = Intent(this, SalesMaterialActivity::class.java)
+                        startActivity(intent)
+                    }
+                    "SY" -> {
+                        val intent = Intent(this, WelcomeSyncContactActivityKotlin::class.java)
+                        startActivity(intent)
+                    }
+                    "SYC" -> {
+                        val intent = Intent(this, SyncContactActivity::class.java)
+                        startActivity(intent)
+                    }
+                    else -> {
+                        notifyEntity.web_url?.let { webUrl ->
+                            navigateViaNotification(notifyEntity.notifyFlag?:"", webUrl, notifyEntity.web_title ?: "")
+                        }
+                    }
+                }
+            } else {
+
+            }
+        }
+        // endregion
+    }
+
+    private fun navigateViaNotification(prdID: String, webURL: String, title: String) {
+        when (prdID) {
+            "WB" -> {
+                startActivity(
+                    Intent(this, CommonWebViewActivity::class.java)
+                        .putExtra("URL", webURL)
+                        .putExtra("NAME", title)
+                        .putExtra("TITLE", title)
+                )
+            }
+            "CB" -> {
+                Utility.loadWebViewUrlInBrowser(this, webURL)
+            }
+            else -> {
+                if (webURL.trim().isEmpty() || title.trim().isEmpty()) {
+                    return
+                }
+
+                val ipAddress: String = try {
+                    // You can replace the following line with the actual way to retrieve the IP address if needed
+                    "" // Assuming you want to leave it empty as per your Java code
+                } catch (io: Exception) {
+                    "0.0.0.0"
+                }
+
+                // Construct the URL with additional parameters
+                val append = "&ss_id=${prefsManager.getSSID()}&fba_id=${prefsManager.getFBAID()}" +
+                        "&sub_fba_id=&ip_address=$ipAddress&mac_address=$ipAddress&app_version=${prefsManager.getAppVersion()}" +
+                        "&device_id=${prefsManager.getDeviceID()}&product_id=$prdID&login_ssid="
+
+                val updatedWebURL = webURL + append
+
+                startActivity(
+                    Intent(this, CommonWebViewActivity::class.java)
+                        .putExtra("URL", updatedWebURL)
+                        .putExtra("NAME", title)
+                        .putExtra("TITLE", title)
+                )
+            }
+        }
+    }
+
+
+
     //endregion
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.dashboard_menu, menu)
@@ -905,7 +1082,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         val actionViewNew = menuNewItem.actionView
 
         // Use viewBinding to reference views instead of findViewById
-        val textNotifyItemCount = actionView?.findViewById<TextView>(R.id.notify_badge)?.apply {
+         textNotifyItemCount = actionView?.findViewById<TextView>(R.id.notify_badge)?.apply {
             visibility = View.GONE
         }
 
@@ -975,8 +1152,11 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     return false
                 }
 
+//                val intent = Intent(this, NotificationActivity::class.java)
+//                startActivity(intent)
+
                 val intent = Intent(this, NotificationActivity::class.java)
-                startActivity(intent)
+                notificationLauncher.launch(intent)
             }
         }
 
@@ -1561,17 +1741,32 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     //region Observer
     private fun observeMasterState() {
 
-
-        // Directly observe the notifications without lifecycle restriction
+//        lifecycleScope.launch {
+//            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+//                viewModelNotify.notificationCounter.collect { count ->
+//                    // Update UI with the new counter value
+//                    updateNotificationCounter(count)
+//                }
+//            }
+//        }
+//
+//
+//        // Directly observe the notifications without lifecycle restriction
         lifecycleScope.launch {
 
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
 
-                viewModelNotify.notificationFlow.collect { notifyEntity ->
+                viewModelFCMNotify.notificationFlow.collect { notifyEntity ->
                     notifyEntity?.let {
-                        showAlert("Notification: ${it.title}")
 
-                        Log.d(Constant.TAG, "FCMNotification Done")
+                        val notifyCount: Int = prefsManager.getNotificationCounter()
+
+                        if (notifyCount == 0) {
+                            textNotifyItemCount!!.visibility = View.GONE
+                        } else {
+                            textNotifyItemCount!!.visibility = View.VISIBLE
+                            textNotifyItemCount!!.text = "" + notifyCount.toString()
+                        }
                     }
                 }
             }
@@ -1606,7 +1801,10 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                                     deeplinkHandle()
 
                                     return@collectLatest
+
                                 }
+
+                                getNotificationAction()
 
 
                                 //region ForceUpdate
@@ -1662,6 +1860,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                             is APIState.Failure -> {
 
                                 hideLoading()
+                                showToast(msg = state.errorMessage.toString())
                             }
                         }
                     }
@@ -1766,14 +1965,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     //endregion
 
-    private fun initAuthReceiver(){
 
-        val  acesstoken = AccessToken()
-        var oathToken = acesstoken.accessToken
-        Log.d("Auth Token", "$oathToken")
-
-
-
-    }
 
 }

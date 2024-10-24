@@ -3,6 +3,7 @@ package com.policyboss.policybosspro.core.repository.appRepository
 import com.policyboss.policybosspro.core.api.poilcyBossProAppApi
 import com.policyboss.policybosspro.core.api.poilcyBossProHomeApi
 import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantResponse
+import com.policyboss.policybosspro.core.response.notification.NotificationUpdateResponse
 import com.policyboss.policybosspro.core.response.salesMaterial.SalesClickResponse
 import com.policyboss.policybosspro.core.response.salesMaterial.SalesMaterialProductDetailsResponse
 import com.policyboss.policybosspro.core.response.salesMaterial.SalesMaterialResponse
@@ -79,6 +80,16 @@ class AppRepository  @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
     //endregion
+
+
+
+
+
+    suspend fun getNotificationData(body : HashMap<String,String>) = flow {
+        val response = apiService.getNotificationData(body)
+        emit(response)
+    }.flowOn(Dispatchers.IO)
+
 
 
 }

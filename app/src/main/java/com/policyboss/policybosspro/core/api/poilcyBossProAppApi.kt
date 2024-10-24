@@ -1,6 +1,8 @@
 package com.policyboss.policybosspro.core.api
 
 import com.policyboss.policybosspro.core.response.doc.DocumentResponse
+import com.policyboss.policybosspro.core.response.notification.NotificationResponse
+import com.policyboss.policybosspro.core.response.notification.NotificationUpdateResponse
 import com.policyboss.policybosspro.core.response.profile.MyAcctDtlResponse
 import com.policyboss.policybosspro.core.response.salesMaterial.SalesMaterialProductDetailsResponse
 
@@ -55,5 +57,16 @@ interface poilcyBossProAppApi {
         @Part doc: MultipartBody.Part,
         @PartMap partMap: Map<String, String>
     ): Response<DocumentResponse>
+
+
+    /****************************************************************************************
+     *  Notification API
+     *************************************************************************************/
+
+    @Headers("token:" + Constant.token)
+    @POST("/quote/Postfm/get-notification-data")
+    suspend fun getNotificationData(@Body body: HashMap<String,String>): Response<NotificationResponse?>
+
+
 
 }
