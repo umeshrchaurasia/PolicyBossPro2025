@@ -28,6 +28,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.messaging.FirebaseMessaging
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.BuildConfig
 import com.policyboss.policybosspro.R
@@ -47,7 +48,10 @@ import com.policyboss.policybosspro.utils.ValidationUtil
 import com.policyboss.policybosspro.utils.hideKeyboard
 import com.policyboss.policybosspro.utils.showKeyboard
 import com.policyboss.policybosspro.utils.showToast
+import com.policyboss.policybosspro.view.WebView.PrivacyWebViewActivity
 import com.policyboss.policybosspro.view.home.HomeActivity
+import com.policyboss.policybosspro.view.raiseTicketDialog.RaiseTicketDialogActivity
+import com.policyboss.policybosspro.webview.CommonWebViewActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -126,7 +130,7 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
 
         radioButtonListner()
 
-        // displaying the response which we get from above API
+        //region displaying the response which we get from above API
 
 
         if (!checkPermission()) {
@@ -152,6 +156,9 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
 
         displayLoadingWithText()
         //endregion
+
+
+
 
     }
 
@@ -1172,7 +1179,8 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                             if(it != null){
 
 
-                                showAlert("Login is Successfully...")
+
+                                showToast("Login is Successfully...")
 
                                 this@LoginActivity.finish()
                                 startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
@@ -1419,23 +1427,20 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                 Log.d("URL", "Raise Ticket URL: $url")
 
 
-//                startActivity(
-//                    Intent(this, RaiseTicketDialogActivity::class.java)
-//                        .putExtra("URL", url)
-//                )
+                startActivity(
+                    Intent(this, RaiseTicketDialogActivity::class.java)
+                        .putExtra("URL", url)
+                )
             }
 
             binding.includeLoginNew.txtprivacy.id ->{
 
-//                startActivity(
-//                    Intent(this, PrivacyWebViewActivity::class.java)
-//                        .putExtra(
-//                            "URL",
-//                            "https://www.policyboss.com/privacy-policy-policyboss-pro?app_version=" + prefManager.appVersion + "&device_code=" + prefManager.deviceID + "&ssid=&fbaid="
-//                        )
-//                        .putExtra("NAME", "" + "privacy-policy")
-//                        .putExtra("TITLE", "" + "privacy-policy")
-//                )
+                    startActivity(Intent(this, PrivacyWebViewActivity::class.java).apply {
+                        putExtra("URL", "https://www.policyboss.com/privacy-policy-policyboss-pro?app_version=" + prefManager.getAppVersion() + "&device_code=" + prefManager.getDeviceID() + "&ssid=&fbaid=")
+                        putExtra("NAME", "privacy-policy")
+                        putExtra("TITLE", "privacy-policy")
+                    })
+
 
             }
 

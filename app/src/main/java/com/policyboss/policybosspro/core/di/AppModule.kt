@@ -4,6 +4,8 @@ import android.app.Application
 import android.content.Context
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.policyboss.policybosspro.PolicyBossProApplication
+import com.policyboss.policybosspro.core.repository.notificationRepository.INotificationRepository
+import com.policyboss.policybosspro.core.repository.notificationRepository.NotificationRepository
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import dagger.Module
 import dagger.Provides
@@ -37,4 +39,10 @@ class AppModule {
         return application as PolicyBossProApplication
     }
 
+
+    @Provides
+    @Singleton
+    fun provideNotificationRepository(
+        repository: NotificationRepository
+    ): INotificationRepository = repository
 }

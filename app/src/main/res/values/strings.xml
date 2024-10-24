@@ -8,6 +8,7 @@
     <string name="previous">Previous</string>
 
     <string name="yes">Yes</string>
+
     <string name="confirm">Confirm</string>
 
     <string name="logout">LOGOUT</string>
@@ -25,6 +26,8 @@
     <string name="dash_finmart_exclusive">FINMART EXCLUSIVES</string>
     <string name="dash_private_car">PRIVATE CAR</string>
     <string name="dash_two_wheeler">TWO WHEELER</string>
+
+
 
     <string name="term">Terms &amp; Conditions  |  </string>
     <string name="tc">T&amp;C</string>
@@ -89,7 +92,6 @@
     <string name="camera_permission_available">Camera permission is available. Starting preview.</string>
     <string name="camera_permission_denied">Camera  Permssion was denied.we need camera permission!!</string>
     <string name="camera_permission_not_available">Permission is not available. Requesting camera permission.</string>
-
 
 
     <string name="Emp_detail">Employment &amp; Income Details</string>

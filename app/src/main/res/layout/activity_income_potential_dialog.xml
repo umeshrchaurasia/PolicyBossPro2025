@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:gravity="center"
+android:orientation="vertical"
+tools:context=".view.others.incomePotential.IncomePotentialDialogActivity">
+
+<RelativeLayout
+    android:id="@+id/rlPerAnnum"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/grey_border"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/textView14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="PER ANNUM"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/tvPerAnnumToatal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/ivPerAnnum"
+        android:layout_toStartOf="@+id/ivPerAnnum"
+        android:padding="10dp"
+        android:text="1,26,26,233"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+        android:textColor="@color/red" />
+
+    <ImageView
+        android:id="@+id/ivPerAnnum"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="15dp"
+        android:src="@drawable/down2" />
+</RelativeLayout>
+
+<LinearLayout
+    android:id="@+id/llPerAnnum"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:visibility="visible">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/chHealthPerAnnum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:checked="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="HEALTH INSURANCE"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/tvHealthPerAnnum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="35dp"
+            android:layout_marginRight="35dp"
+            android:gravity="right|center_vertical"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="16,45,000"
+            android:textColor="@color/blue" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/chMotorPerAnnum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:checked="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="MOTOR INSURANCE"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/tvMotorPerAnnum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="35dp"
+            android:layout_marginRight="35dp"
+            android:gravity="right|center_vertical"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="16,45,000"
+            android:textColor="@color/blue" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/chTravelPerAnnum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:checked="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="TRAVEL INSURANCE"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/tvTravelPerAnnum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="35dp"
+            android:layout_marginRight="35dp"
+            android:gravity="right|center_vertical"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="16,45,000"
+            android:textColor="@color/blue" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/chHomePerAnnum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:checked="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="HOME LOAN"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/tvHomeLoanPerAnnum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="35dp"
+            android:layout_marginRight="35dp"
+            android:gravity="right|center_vertical"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="16,45,000"
+            android:textColor="@color/blue" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/chBusinessPerAnnum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:checked="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="BUSINESS LOAN"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/tvBusinessPerAnnum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="35dp"
+            android:layout_marginRight="35dp"
+            android:gravity="right|center_vertical"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="16,45,000"
+            android:textColor="@color/blue" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/chOtherPerAnnum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:checked="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="OTHER"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/tvOtherPerAnnum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="35dp"
+            android:layout_marginRight="35dp"
+            android:gravity="right|center_vertical"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="16,45,000"
+            android:textColor="@color/blue" />
+    </LinearLayout>
+</LinearLayout>
+
+<RelativeLayout
+    android:id="@+id/rlNext10Years"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/grey_border"
+    android:orientation="horizontal">
+
+    <TextView
+        android:id="@+id/textView114"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:text="NEXT 10 YEARS"
+        android:textColor="@color/black" />
+
+    <TextView
+        android:id="@+id/tvTotalNext10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toLeftOf="@+id/ivAfter10Years"
+        android:layout_toStartOf="@+id/ivAfter10Years"
+        android:padding="10dp"
+        android:text="1,26,26,233"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium"
+        android:textColor="@color/red" />
+
+    <ImageView
+        android:id="@+id/ivAfter10Years"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="15dp"
+        android:src="@drawable/down2" />
+</RelativeLayout>
+
+<LinearLayout
+    android:id="@+id/llNext10Years"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/chHealthNext10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:checked="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="HEALTH INSURANCE"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/tvHealthNext10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="35dp"
+            android:layout_marginRight="35dp"
+            android:gravity="right|center_vertical"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="16,45,000"
+            android:textColor="@color/blue" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/chMotorNext10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:checked="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="MOTOR INSURANCE"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/tvMotorNext10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="35dp"
+            android:layout_marginRight="35dp"
+            android:gravity="right|center_vertical"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="16,45,000"
+            android:textColor="@color/blue" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/chTravelNext10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:checked="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="TRAVEL INSURANCE"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/tvTravelNext10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="35dp"
+            android:layout_marginRight="35dp"
+            android:gravity="right|center_vertical"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="16,45,000"
+            android:textColor="@color/blue" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/chHomeNext10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:checked="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="HOME LOAN"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/tvHomeNext10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="35dp"
+            android:layout_marginRight="35dp"
+            android:gravity="right|center_vertical"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="16,45,000"
+            android:textColor="@color/blue" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/chBusinessNext10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:checked="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="BUSINESS LOAN"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/tvBusinessNext10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="35dp"
+            android:layout_marginRight="35dp"
+            android:gravity="right|center_vertical"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="16,45,000"
+            android:textColor="@color/blue" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/chOtherNext10"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginStart="15dp"
+            android:checked="true" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="OTHER"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:id="@+id/tvOtherNext10"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="35dp"
+            android:layout_marginRight="35dp"
+            android:gravity="right|center_vertical"
+            android:paddingBottom="10dp"
+            android:paddingTop="10dp"
+            android:text="16,45,000"
+            android:textColor="@color/blue" />
+    </LinearLayout>
+</LinearLayout>
+</LinearLayout>

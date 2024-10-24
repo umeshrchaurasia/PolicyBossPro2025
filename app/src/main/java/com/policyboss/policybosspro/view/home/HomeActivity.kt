@@ -29,6 +29,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.google.android.material.navigation.NavigationView
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.BuildConfig
@@ -40,6 +41,7 @@ import com.policyboss.policybosspro.core.APIState
 import com.policyboss.policybosspro.core.model.homeDashboard.DashboardMultiLangEntity
 import com.policyboss.policybosspro.core.model.sysncContact.SyncContactEntity
 import com.policyboss.policybosspro.core.response.home.UserCallingEntity
+import com.policyboss.policybosspro.core.viewModel.NotificationVM.NotificationViewModel
 import com.policyboss.policybosspro.core.viewModel.homeVM.HomeViewModel
 import com.policyboss.policybosspro.databinding.ActivityHomeBinding
 import com.policyboss.policybosspro.databinding.CallingUserDetailDialogBinding
@@ -54,6 +56,7 @@ import com.policyboss.policybosspro.utility.UtilityNew
 import com.policyboss.policybosspro.utils.Constant
 import com.policyboss.policybosspro.utils.CoroutineHelper
 import com.policyboss.policybosspro.utils.FeedbackHelper
+import com.policyboss.policybosspro.utils.FirebasePushNotification.AccessToken
 import com.policyboss.policybosspro.utils.NetworkUtils
 import com.policyboss.policybosspro.utils.hideKeyboard
 import com.policyboss.policybosspro.utils.showSnackbar
@@ -74,6 +77,7 @@ import com.webengage.sdk.android.Channel
 import com.webengage.sdk.android.User
 import com.webengage.sdk.android.WebEngage
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -97,6 +101,8 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private var isSwipeRefresh = false
 
     private val viewModel by viewModels<HomeViewModel>()
+
+    private val viewModelNotify: NotificationViewModel by viewModels()
     @Inject
     lateinit var prefsManager: PolicyBossPrefsManager
     lateinit var weUser: User
@@ -450,10 +456,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
  // ******************************End ************************************************************
 
 
-
-
-
-
     //region Drawer Menu handling
      //Mark : Drawer Menu onNavigationItemSelected Event
     override fun onNavigationItemSelected(menuItem: MenuItem): Boolean {
@@ -579,6 +581,10 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
             R.id.nav_raiseTicket -> {
                 startRaiseTicketActivity()
+            }
+            R.id.nav_MYUtilities -> {
+                trackUtilityContactEvent()
+                showMyUtilitiesDialog()
             }
 
 
@@ -757,7 +763,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .skipMemoryCache(true)
                         .override(64, 64)
-                       // .transform(CircleTransform(this@HomeActivity)) // applying image transformer
+                        .transform(CircleCrop()) // applying image transformer
                         .into(ivProfile)
 
                 } catch (e: Exception) {
@@ -789,12 +795,16 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private fun setupHeaderLayoutListeners() {
         with(headerBinding) {
             txtknwyour.setOnClickListener {
+
+                binding.drawer.closeDrawer(GravityCompat.START)
                 val url = "${prefsManager.getNotif_popupurl_elite()}&app_version=${prefsManager.getAppVersion()}" +
                         "&device_code=${prefsManager.getDeviceID()}&ssid=${prefsManager.getDeviceID()}&fbaid=${prefsManager.getFBAID()}"
                 openWebViewPopUp(txtFbaID, url, true, "")
             }
 
             ivProfile.setOnClickListener {
+                binding.drawer.closeDrawer(GravityCompat.START)
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     val shareIntent = Intent(this@HomeActivity, MyAccountActivity::class.java)
                     val pairs = arrayOf(android.util.Pair(ivProfile as View, "profileTransition"))
@@ -812,7 +822,79 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     //endregion
 
+    //region Deeplik Handling
 
+
+
+    //endregion
+
+
+    //region Handle DeepLink
+    private fun deeplinkHandle() {
+        val deeplinkValue = prefsManager.getDeepLink()
+
+        if (deeplinkValue != null && deeplinkValue.isNotEmpty()) {
+
+            try {
+                val myUri = Uri.parse(deeplinkValue)
+
+                val prdID = myUri.getQueryParameter("product_id")
+                val titleValue = myUri.getQueryParameter("title") ?: ""
+
+                Title = titleValue
+
+                when (prdID) {
+                    "41" -> startActivity(Intent(this, WelcomeSyncContactActivityKotlin::class.java))
+                    "501" -> startActivity(Intent(this, MyAccountActivity::class.java))
+                    "502" -> {
+                        val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+                            putExtra("URL", prefsManager.getEnableProPOSPurl() +
+                                    "&app_version=" + prefsManager.getAppVersion() +
+                                    "&device_code=" + Utility.getDeviceID(this@HomeActivity) +
+                                    "&ssid=" + prefsManager.getSSID() +
+                                    "&fbaid=" + prefsManager.getFBAID())
+                            putExtra("NAME", "PospEnrollment")
+                            putExtra("TITLE", "Posp Enrollment")
+                        }
+                        startActivity(intent)
+                    }
+                    "503" -> startActivity(Intent(this, NotificationActivity::class.java))
+                    "504" -> startActivity(Intent(this, SalesMaterialActivity::class.java))
+                    "505" -> FeedbackHelper.showFeedbackDialog(this)
+                    else -> {
+                        val ipAddress = try {
+                            ""  // Replace with actual logic to get IP address
+                        } catch (e: Exception) {
+                            "0.0.0.0"
+                        }
+
+                        val append = "&ss_id=${prefsManager.getSSID()}&fba_id=${prefsManager.getFBAID()}" +
+                                "&sub_fba_id=&ip_address=$ipAddress&mac_address=$ipAddress" +
+                                "&app_version=policyboss-${BuildConfig.VERSION_NAME}&device_id=${Utility.getDeviceID(this)}" +
+                                "&login_ssid="
+
+                        // Update deeplinkValue with appended parameters
+                        val updatedDeeplinkValue = deeplinkValue + append
+
+                        // Delayed execution using Coroutine
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            startActivity(Intent(this, CommonWebViewActivity::class.java).apply {
+                                putExtra("URL", updatedDeeplinkValue)
+                                putExtra("NAME", Title)
+                                putExtra("TITLE", Title)
+                            })
+                        }, 100)
+                    }
+                }
+            } catch (ex: Exception) {
+                Log.d("Deeplink", ex.toString())
+            } finally {
+                prefsManager.clearDeeplink() // Clear deeplink at the end
+            }
+        }
+    }
+
+    //endregion
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.dashboard_menu, menu)
 
@@ -1420,72 +1502,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
     //endregion
 
-    //region Handle DeepLink
-    private fun deeplinkHandle() {
-        val deeplinkValue = prefsManager.getDeepLink()
 
-        if (deeplinkValue != null && deeplinkValue.isNotEmpty()) {
-
-            try {
-                val myUri = Uri.parse(deeplinkValue)
-
-                val prdID = myUri.getQueryParameter("product_id")
-                val titleValue = myUri.getQueryParameter("title") ?: ""
-
-                Title = titleValue
-
-                when (prdID) {
-                    "41" -> startActivity(Intent(this, WelcomeSyncContactActivityKotlin::class.java))
-                    "501" -> startActivity(Intent(this, MyAccountActivity::class.java))
-                    "502" -> {
-                        val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
-                            putExtra("URL", prefsManager.getEnableProPOSPurl() +
-                                    "&app_version=" + prefsManager.getAppVersion() +
-                                    "&device_code=" + Utility.getDeviceID(this@HomeActivity) +
-                                    "&ssid=" + prefsManager.getSSID() +
-                                    "&fbaid=" + prefsManager.getFBAID())
-                            putExtra("NAME", "PospEnrollment")
-                            putExtra("TITLE", "Posp Enrollment")
-                        }
-                        startActivity(intent)
-                    }
-                    "503" -> startActivity(Intent(this, NotificationActivity::class.java))
-                    "504" -> startActivity(Intent(this, SalesMaterialActivity::class.java))
-                    "505" -> FeedbackHelper.showFeedbackDialog(this)
-                    else -> {
-                        val ipAddress = try {
-                            ""  // Replace with actual logic to get IP address
-                        } catch (e: Exception) {
-                            "0.0.0.0"
-                        }
-
-                        val append = "&ss_id=${prefsManager.getSSID()}&fba_id=${prefsManager.getFBAID()}" +
-                                "&sub_fba_id=&ip_address=$ipAddress&mac_address=$ipAddress" +
-                                "&app_version=policyboss-${BuildConfig.VERSION_NAME}&device_id=${Utility.getDeviceID(this)}" +
-                                "&login_ssid="
-
-                        // Update deeplinkValue with appended parameters
-                        val updatedDeeplinkValue = deeplinkValue + append
-
-                        // Delayed execution using Coroutine
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            startActivity(Intent(this, CommonWebViewActivity::class.java).apply {
-                                putExtra("URL", updatedDeeplinkValue)
-                                putExtra("NAME", Title)
-                                putExtra("TITLE", Title)
-                            })
-                        }, 100)
-                    }
-                }
-            } catch (ex: Exception) {
-                Log.d("Deeplink", ex.toString())
-            } finally {
-                prefsManager.clearDeeplink() // Clear deeplink at the end
-            }
-        }
-    }
-
-    //endregion
 
     //region Open App in Play Store
     private fun openAppMarketPlace() {
@@ -1544,8 +1561,27 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     //region Observer
     private fun observeMasterState() {
 
+
+        // Directly observe the notifications without lifecycle restriction
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+            repeatOnLifecycle(Lifecycle.State.RESUMED) {
+
+                viewModelNotify.notificationFlow.collect { notifyEntity ->
+                    notifyEntity?.let {
+                        showAlert("Notification: ${it.title}")
+
+                        Log.d(Constant.TAG, "FCMNotification Done")
+                    }
+                }
+            }
+
+
+        }
+
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
 
                 // Collecting masterState
                 launch {
@@ -1564,7 +1600,14 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
                                 setupDashBoard_Adapter()
                                 shortcutAppMenu()
-                                deeplinkHandle()
+
+                                if (!prefsManager.getDeepLink().isNullOrEmpty()) {
+                                    // Handle deep link here
+                                    deeplinkHandle()
+
+                                    return@collectLatest
+                                }
+
 
                                 //region ForceUpdate
                                 //Mark: get  current version from App
@@ -1590,24 +1633,25 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                                         }
                                     )
 
+                                    return@collectLatest
+
                                 }
 
                                 //endregion
 
-                                else{
-                                  //Mark :Below code only execute when there is no force Update happend
 
+                                // region market PopUp and sync PopUp Alert
+                                //Mark :Call Market Pop Up Alert
+                                marketPopUpAlert()
 
-                                    //Mark :Call Market Pop Up Alert
-                                    marketPopUpAlert()
+                                state.data?.horizonDetail?.SYNC_CONTACT?.takeIf { it.ACTION_NEEDED == "NO_ACTION"}
+                                    ?.let { syncContactEntity->
 
-                                    state.data?.horizonDetail?.SYNC_CONTACT?.takeIf { it.ACTION_NEEDED == "NO_ACTION"}
-                                        ?.let { syncContactEntity->
+                                        showMySyncPopUpAlert(syncContactEntity)
 
-                                            showMySyncPopUpAlert(syncContactEntity)
+                                    }
 
-                                        }
-                                }
+                                //endregion
 
 
 
@@ -1721,4 +1765,15 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
 
     //endregion
+
+    private fun initAuthReceiver(){
+
+        val  acesstoken = AccessToken()
+        var oathToken = acesstoken.accessToken
+        Log.d("Auth Token", "$oathToken")
+
+
+
+    }
+
 }

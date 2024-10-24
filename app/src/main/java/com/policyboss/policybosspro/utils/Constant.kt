@@ -25,6 +25,7 @@ object Constant {
 
 
     val URL : String = "URL"
+    const val DEFAULT = "-"
 
     val ErrorMessage : String = "Error occurred,Please try Again!"
     val Fail : String = "Failed"
@@ -92,7 +93,7 @@ object Constant {
     const val SalesLangHindi = "Hindi"
     const val  SalesTitle = "SALES MATERIAL"
 
-
+    const val PUSH_NOTIFY = "notifyFlag"
     const val   NOTIFICATION_EXTRA = "NOTIFICATION_EXTRA"
     const val   NOTIFICATION_PROGRESS = "NOTIFICATION_PROGRESS"
     const val   NOTIFICATION_MAX = "NOTIFICATION_MAX"
@@ -113,6 +114,7 @@ object Constant {
     const val PERMISSION_STORAGE_CONSTANT = 104
 
     const val REQUEST_PERMISSION_SETTING = 101
+    const val CROP_IMAGE_REQUEST_CODE = 105
 
 
     const val   TAG_SAVING_CALL_LOG = "SAVING_CALL_LOG"

@@ -43,6 +43,13 @@ android {
         viewBinding = true
         buildConfig = true
     }
+
+    //for CFirebase Push Notification
+    packaging {
+        resources {
+            excludes += "META-INF/DEPENDENCIES"
+        }
+    }
 }
 
 dependencies {
@@ -115,6 +122,9 @@ dependencies {
     implementation ("com.google.firebase:firebase-dynamic-links:22.1.0")
     implementation ("com.google.firebase:firebase-messaging:24.0.0")
 
+  //Firebase Auth {latest req for token}
+    implementation("com.google.auth:google-auth-library-oauth2-http:1.3.0")
+
     implementation ("com.github.bumptech.glide:glide:4.15.1")
 
    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")  // for swipe to refresh
@@ -129,6 +139,10 @@ dependencies {
     implementation ("com.webengage:android-sdk:4.16.1")
 
     implementation(files("libs/MiPush_SDK_Client_5_1_5-G_3rd.aar"))
+
+
+
+
 
 
     // Image Cropper

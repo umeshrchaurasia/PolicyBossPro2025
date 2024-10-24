@@ -134,7 +134,7 @@
                     style="@style/LinearLayoutStyle"
                     android:animateLayoutChanges="true"
 
-                    android:visibility="visible">
+                    android:visibility="gone">
 
 
                     <LinearLayout
@@ -240,7 +240,7 @@
                     android:id="@+id/llAddress"
                     style="@style/LinearLayoutStyle"
                     android:animateLayoutChanges="true"
-                    android:visibility="gone">
+                    android:visibility="visible">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -249,11 +249,11 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             style="@style/textInputLayoutStyle2"
-
                             android:hint="ADDRESS 1">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/etAddress1"
+                                android:text=""
                                 style="@style/TextInputEditText2"/>
                         </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
@@ -289,6 +289,23 @@
                                 />
                         </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            style="@style/textInputLayoutStyle2"
+                            android:hint="PINCODE">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                style="@style/TextInputEditText2"
+                                android:inputType="number"
+                                android:maxLength="6"
+                                android:id="@+id/etPincode"
+                                />
+                        </com.google.android.material.textfield.TextInputLayout>
+                    </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -297,28 +314,16 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             style="@style/textInputLayoutStyle2"
-                           
-                            android:hint="PINCODE"
-                            >
-
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etPincode"
-                                style="@style/TextInputEditText2"
-                                android:inputType="number"
-                                android:maxLength="6" />
-                        </com.google.android.material.textfield.TextInputLayout>
-
-                        <com.google.android.material.textfield.TextInputLayout
-                            style="@style/TextInputEditText2"
-                           
                             android:hint="CITY">
 
                             <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/etCity"
                                 style="@style/TextInputEditText2"
-                                android:enabled="false" />
+                                android:id="@+id/etCity"
+                                />
                         </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
+
+
 
                     <LinearLayout
                         android:layout_width="match_parent"

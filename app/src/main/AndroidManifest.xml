@@ -48,12 +48,11 @@
 
             <data android:mimeType="application/pdf" />
         </intent>
-
         <intent>
             <action android:name="android.intent.action.SEND" />
+
             <data android:mimeType="text/plain" />
         </intent>
-
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <!-- If you don't know the MIME type in advance, set "mimeType" to "*/*". -->
@@ -77,8 +76,6 @@
     </queries>
 
     <uses-permission android:name="android.permission.INTERNET" />
-
-
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
@@ -112,26 +109,50 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".view.salesMaterial.SalesShareActivity"
+            android:name=".view.others.incomePotential.IncomePotentialdetailActivity"
+            android:screenOrientation="portrait"
             android:exported="false" />
+        <activity
+            android:name=".view.others.incomePotential.IncomePotentialDialogActivity"
+            android:screenOrientation="portrait"
+            android:exported="false" />
+        <activity
+            android:name=".view.WebView.PrivacyWebViewActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".view.raiseTicketDialog.RaiseTicketDialogActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/DialogTheme" />
+        <activity
+            android:name=".view.salesMaterial.SalesShareActivity"
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.salesMaterial.SalesDetailActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.knowledgeGuru.KnowledgeGuruWebviewActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.knowledgeGuru.KnowledgeGuruActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.others.feedback.HelpFeedBackActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.salesMaterial.SalesMaterialActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.notification.NotificationActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.appCode.AppCodeActivity"
             android:exported="false"
@@ -143,50 +164,63 @@
         </activity>
         <activity
             android:name=".view.myAccount.MyAccountActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.syncContact.ui.WelcomeSyncContactActivityKotlin"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.syncContact.ui.SyncContactActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.changePwd.ChangePaswordActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.others.incomePotential.IncomePotentialActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".webview.SyncWebViewActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".paymentEliteplan.SyncRazorPaymentActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".paymentEliteplan.RazorPaymentEliteActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".webview.ShareQuoteActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".webview.CommonWebViewActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.home.HomeActivity"
             android:exported="false"
-            android:launchMode="singleTask" /> <!-- <activity -->
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" /> <!-- <activity -->
         <!-- android:name=".view.splashscreen.SplashScreenActivity" -->
         <!-- android:exported="false" /> -->
         <activity
             android:name=".view.login.LoginActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.introslider.EulaActivity"
             android:exported="false"
             android:screenOrientation="portrait" />
         <activity
             android:name=".BaseActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.introslider.WelcomeActivity"
             android:exported="false"
@@ -194,19 +228,18 @@
         <activity
             android:name=".view.splashscreen.SplashScreenActivity"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-
-        <!-- Theme is optional and only needed if default theme has no action bar. -->
+        </activity> <!-- Theme is optional and only needed if default theme has no action bar. -->
         <activity
             android:name="com.canhub.cropper.CropImageActivity"
-            android:theme="@style/Base.Theme.AppCompat"
-            />
+            android:theme="@style/Base.Theme.AppCompat" />
+
         <meta-data
             android:name="com.razorpay.ApiKey"
             android:value="rzp_live_DFxDFYDslN2DIq" />
@@ -231,11 +264,7 @@
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
-        </provider>
-
-
-
-        <!-- <receiver -->
+        </provider> <!-- <receiver -->
         <!-- android:name=".broadcast.SMSBroadCastReceiver" -->
         <!-- android:exported="true"> &lt;!&ndash; Ensure this is true since it's receiving system broadcasts &ndash;&gt; -->
         <!-- <intent-filter android:priority="5822"> -->
@@ -264,15 +293,15 @@
             <intent-filter>
                 <action android:name="rzp.device_token.share" />
             </intent-filter>
-        </receiver> <!-- // 05 temp comment -->
-        <!-- <service -->
-        <!-- android:name=".utility.MyFirebaseMessagingService" -->
-        <!-- android:exported="false" -->
-        <!-- android:stopWithTask="false"> -->
-        <!-- <intent-filter> -->
-        <!-- <action android:name="com.google.firebase.MESSAGING_EVENT" /> -->
-        <!-- </intent-filter> -->
-        <!-- </service> -->
+        </receiver>
+         <service
+         android:name=".utils.FirebasePushNotification.MyFirebaseMessagingService"
+         android:exported="false"
+         android:stopWithTask="false">
+         <intent-filter>
+          <action android:name="com.google.firebase.MESSAGING_EVENT" />
+         </intent-filter>
+         </service>
         <!-- Note: For ForegroundService WorkManger Android ver 13 and above -->
         <service
             android:name="androidx.work.impl.foreground.SystemForegroundService"

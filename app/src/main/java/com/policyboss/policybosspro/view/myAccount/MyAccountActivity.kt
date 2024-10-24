@@ -42,6 +42,7 @@ import com.policyboss.policybosspro.utils.BitmapUtility
 import com.policyboss.policybosspro.utils.Constant
 import com.policyboss.policybosspro.utils.hideKeyboard
 import com.policyboss.policybosspro.utils.showSnackbar
+import com.policyboss.policybosspro.utils.showToast
 import com.webengage.sdk.android.User
 import com.webengage.sdk.android.WebEngage
 import com.webengage.sdk.android.utils.Gender
@@ -421,35 +422,36 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
     //region ShowAccount Details
     private fun setAcctDtlInfo(accountDtlEntity: AccountDtlEntity) {
         with(includedBinding) {
-            etSubHeading.setText(accountDtlEntity.Designation ?: "")
-            etMobileNo.setText(accountDtlEntity.EditMobiNumb ?: "")
-            etEmailId.setText(accountDtlEntity.EditEmailId?.trim() ?: "")
+            etSubHeading.setText(accountDtlEntity.Designation ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
+            etMobileNo.setText(accountDtlEntity.EditMobiNumb ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
+            etEmailId.setText(accountDtlEntity.EditEmailId?.trim() ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
+            
+            etAddress1.setText(accountDtlEntity.Address_1?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
 
-            etAddress1.setText(accountDtlEntity.Address_1 ?: "")
-            etAddress2.setText(accountDtlEntity.Address_2 ?: "")
-            etAddress3.setText(accountDtlEntity.Address_3 ?: "")
-            etPincode.setText(accountDtlEntity.PinCode ?: "")
-            etCity.setText(accountDtlEntity.City ?: "")
-            etState.setText(accountDtlEntity.StateName ?: "")
+            etAddress2.setText(accountDtlEntity.Address_2 ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
+            etAddress3.setText(accountDtlEntity.Address_3 ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
+            etPincode.setText(accountDtlEntity.PinCode ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
+            etCity.setText(accountDtlEntity.City ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
+            etState.setText(accountDtlEntity.StateName ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
 
-            etAccountHolderName.setText(accountDtlEntity.LoanName ?: "")
-            etPAN.setText(accountDtlEntity.Loan_PAN ?: "")
-            etAadhaar.setText(accountDtlEntity.Loan_Aadhaar ?: "")
-            etBankAcNo.setText(accountDtlEntity.Loan_BankAcNo ?: "")
-            etIfscCode.setText(accountDtlEntity.Loan_IFSC ?: "")
-            etMicrCode.setText(accountDtlEntity.Loan_MICR ?: "")
-            etBankName.setText(accountDtlEntity.Loan_BankName ?: "")
-            etBankBranch.setText(accountDtlEntity.Loan_BankBranch ?: "")
-            etBankCity.setText(accountDtlEntity.Loan_BankCity ?: "")
+            etAccountHolderName.setText(accountDtlEntity.LoanName ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
+            etPAN.setText(accountDtlEntity.Loan_PAN ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
+            etAadhaar.setText(accountDtlEntity.Loan_Aadhaar ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
+            etBankAcNo.setText(accountDtlEntity.Loan_BankAcNo ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
+            etIfscCode.setText(accountDtlEntity.Loan_IFSC ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
+            etMicrCode.setText(accountDtlEntity.Loan_MICR ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
+            etBankName.setText(accountDtlEntity.Loan_BankName ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
+            etBankBranch.setText(accountDtlEntity.Loan_BankBranch ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
+            etBankCity.setText(accountDtlEntity.Loan_BankCity ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
 
             when (accountDtlEntity.Loan_Account_Type) {
                 "SAVING" -> setSavingAcc()
                 "CURRENT" -> setCurrentAcc()
             }
 
-            etSubHeadingPosp.setText(accountDtlEntity.DisplayDesignation?.uppercase() ?: "")
-            etMobileNoPosp.setText(accountDtlEntity.DisplayPhoneNo ?: "")
-            etEmailIdPosp.setText(accountDtlEntity.DisplayEmail?.trim() ?: "")
+            etSubHeadingPosp.setText(accountDtlEntity.DisplayDesignation?.uppercase() ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
+            etMobileNoPosp.setText(accountDtlEntity.DisplayPhoneNo ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
+            etEmailIdPosp.setText(accountDtlEntity.DisplayEmail?.trim() ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
 
             accountDtlEntity?.doc_available.let { docList ->
                 if (!docList.isNullOrEmpty()) {
@@ -786,7 +788,7 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
 
                                     //setupSalesMaterialAdapter(lstSalesProdEntity)
 
-                                   showAlert("Document Uploaded Successfully!!")
+                                    showToast("Document Uploaded Successfully!!")
 
                                 }
                             }

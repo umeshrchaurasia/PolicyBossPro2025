@@ -1,0 +1,1174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/white"
+    android:orientation="vertical"
+    tools:context=".view.others.incomePotential.IncomePotentialdetailActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:titleTextAppearance="@style/TextStyle.Toolbar"
+            app:titleTextColor="@color/white"/>
+
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+
+            <TextView
+                android:id="@+id/txtHeader"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/grey_form_header"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text=""
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:layout_marginTop="5dp"
+                android:background="@drawable/grey_border"
+                android:orientation="vertical"
+                android:padding="10dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/hint_color"
+                    android:gravity="center_horizontal"
+                    android:padding="3dp"
+                    android:text="EARNING FROM DIFFERENT SEGMENTS OF CUSTOMERS"
+                    android:textColor="@color/nav_blue"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/rlPerAnnum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:background="@drawable/blue_border_graybg"
+                android:orientation="horizontal"
+                android:weightSum="100">
+
+                <TextView
+                    android:id="@+id/textViewAnnual"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="40"
+                    android:gravity="left"
+                    android:padding="10dp"
+                    android:text="Annual Family Premium"
+                    android:textColor="@color/black"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textView143"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="60"
+                    android:gravity="right"
+                    android:padding="10dp"
+                    android:text="Income"
+                    android:textColor="@color/black"
+                    android:textStyle="bold" />
+
+
+            </LinearLayout>
+
+            <!--Less 50k-->
+            <RelativeLayout
+                android:id="@+id/rlLess50k"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:background="@drawable/blue_border_graybg"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/ivLess50"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:padding="2dp"
+                    android:src="@drawable/ic_add" />
+
+                <TextView
+                    android:id="@+id/textView141"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="15dp"
+                    android:layout_toRightOf="@+id/ivLess50"
+                    android:padding="8dp"
+                    android:text="Less than 50,000"
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:id="@+id/txtless50k"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="15dp"
+                    android:padding="8dp"
+                    android:text="0"
+                    android:textColor="@color/black" />
+
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/llLess50k"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:background="@drawable/blue_border"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="12dp"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="No. of Families" />
+
+                    <TextView
+                        android:id="@+id/tvNoFamilyLess50k"
+                        style="@style/textViewPotentialValue"
+                        android:text="868" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="Estimated Family Income" />
+
+                    <TextView
+                        android:id="@+id/tvEstFamilyIncomLess50k"
+                        style="@style/textViewPotentialValue"
+                        android:text="100000" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lvspnLoanEligi50k"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:id="@+id/spnLoanEligiLess50"
+                        style="@style/textViewPotential"
+                        android:text="" />
+
+                    <TextView
+                        android:id="@+id/spnLoanEligAmtLess50"
+                        style="@style/textViewPotentialValue"
+                        android:text="" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lvAvgPremiumLess50k"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="Average Premium" />
+
+                    <TextView
+                        android:id="@+id/tvAvgPremiumLess50k"
+                        style="@style/textViewPotentialValue"
+                        android:text="" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lvInternationalLess50k"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="International Travel Probability" />
+
+                    <TextView
+                        android:id="@+id/tvInternationalLess50k"
+                        style="@style/textViewPotentialValue"
+                        android:text="0%" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="Potential Conversion" />
+
+                    <TextView
+                        android:id="@+id/tvPotConverionLess50k"
+                        style="@style/textViewPotentialValue"
+                        android:text="30%" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:id="@+id/lbtvPotPremiumLess50k"
+                        style="@style/textViewPotential"
+                        android:text="Potential Premium" />
+
+                    <TextView
+                        android:id="@+id/tvPotPremiumLess50k"
+                        style="@style/textViewPotentialValue"
+                        android:text="16,45,000" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="Potential Commission" />
+
+                    <TextView
+                        android:id="@+id/tvPotCommissionLess50k"
+                        style="@style/textViewPotentialValue"
+                        android:text="2400" />
+                </LinearLayout>
+            </LinearLayout>
+            <!--End less 50k-->
+
+            <!-- 50k-->
+            <RelativeLayout
+                android:id="@+id/rl50k"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:background="@drawable/blue_border_graybg"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/iv50k"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:padding="2dp"
+                    android:src="@drawable/ic_add" />
+
+                <TextView
+                    android:id="@+id/textView14"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="15dp"
+                    android:layout_toRightOf="@+id/iv50k"
+                    android:padding="8dp"
+                    android:text="50,000 to 1,00,000"
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:id="@+id/txt50k"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="15dp"
+                    android:padding="8dp"
+                    android:text="0"
+                    android:textColor="@color/black" />
+
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/ll50k"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+
+                android:layout_marginRight="12dp"
+                android:background="@drawable/blue_border"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="12dp"
+
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="No. of Families" />
+
+                    <TextView
+                        android:id="@+id/tvNoFamily50k"
+                        style="@style/textViewPotentialValue"
+                        android:text="868" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="Estimated Family Income" />
+
+                    <TextView
+                        android:id="@+id/tvEstFamilyIncom50k"
+                        style="@style/textViewPotentialValue"
+                        android:text="100000" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lvspnLoanEligiMore50"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:id="@+id/spnLoanEligiMore50"
+                        style="@style/textViewPotential"
+                        android:text="" />
+
+                    <TextView
+                        android:id="@+id/spnLoanEligAmtMore50"
+                        style="@style/textViewPotentialValue"
+                        android:text="" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lvAvgPremiumMore50"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="Average Premium" />
+
+                    <TextView
+                        android:id="@+id/tvAvgPremium50k"
+                        style="@style/textViewPotentialValue"
+                        android:text="" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lvInternationalmore50k"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="International Travel Probability" />
+
+                    <TextView
+                        android:id="@+id/tvInternationalmore50k"
+                        style="@style/textViewPotentialValue"
+                        android:text="10%" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="Potential Conversion" />
+
+                    <TextView
+                        android:id="@+id/tvPotConverion50k"
+                        style="@style/textViewPotentialValue"
+                        android:text="30%" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:id="@+id/lbtvPotPremium50k"
+                        style="@style/textViewPotential"
+                        android:text="Potential Premium" />
+
+                    <TextView
+                        android:id="@+id/tvPotPremium50k"
+                        style="@style/textViewPotentialValue"
+                        android:text="16,45,000" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="Potential Commission" />
+
+                    <TextView
+                        android:id="@+id/tvPotCommission50k"
+                        style="@style/textViewPotentialValue"
+                        android:text="2400" />
+                </LinearLayout>
+            </LinearLayout>
+            <!-- end 50k-->
+
+            <!-- 1lac-->
+            <RelativeLayout
+                android:id="@+id/rl1lac"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:background="@drawable/blue_border_graybg"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/iv1lac"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:padding="2dp"
+                    android:src="@drawable/ic_add" />
+
+                <TextView
+                    android:id="@+id/textView124"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="15dp"
+                    android:layout_toRightOf="@+id/iv1lac"
+                    android:padding="8dp"
+                    android:text="1,00,000 to 3,00,000"
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:id="@+id/txt1lac"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="15dp"
+                    android:padding="8dp"
+                    android:text="0"
+                    android:textColor="@color/black" />
+
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/ll1lac"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:background="@drawable/blue_border"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="12dp"
+
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="No. of Families" />
+
+                    <TextView
+                        android:id="@+id/tvNoFamily1lac"
+                        style="@style/textViewPotentialValue"
+                        android:text="868" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="Estimated Family Income" />
+
+                    <TextView
+                        android:id="@+id/tvEstFamilyIncom1lac"
+                        style="@style/textViewPotentialValue"
+                        android:text="100000" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lvspnLoanEligiMore1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:id="@+id/spnLoanEligiMore1"
+                        style="@style/textViewPotential"
+                        android:text="" />
+
+                    <TextView
+                        android:id="@+id/spnLoanEligAmtMore1"
+                        style="@style/textViewPotentialValue"
+                        android:text="" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lvAvgPremiumMore1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="Average Premium" />
+
+                    <TextView
+                        android:id="@+id/tvAvgPremium1lac"
+                        style="@style/textViewPotentialValue"
+                        android:text="" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lvInternationalMore1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="International Travel Probability" />
+
+                    <TextView
+                        android:id="@+id/tvInternationalMore1"
+                        style="@style/textViewPotentialValue"
+                        android:text="20%" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="Potential Conversion" />
+
+                    <TextView
+                        android:id="@+id/tvPotConverion1lac"
+                        style="@style/textViewPotentialValue"
+                        android:text="30%" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:id="@+id/lbtvPotPremium1lac"
+                        style="@style/textViewPotential"
+                        android:text="Potential Premium" />
+
+                    <TextView
+                        android:id="@+id/tvPotPremium1lac"
+                        style="@style/textViewPotentialValue"
+                        android:text="16,45,000" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="Potential Commission" />
+
+                    <TextView
+                        android:id="@+id/tvPotCommission1lac"
+                        style="@style/textViewPotentialValue"
+                        android:text="2400" />
+                </LinearLayout>
+            </LinearLayout>
+            <!-- end 1 lac-->
+
+            <!-- 3lac-->
+            <RelativeLayout
+                android:id="@+id/rl3lac"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:background="@drawable/blue_border_graybg"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/iv3lac"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:padding="2dp"
+                    android:src="@drawable/ic_add" />
+
+                <TextView
+                    android:id="@+id/textView104"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="15dp"
+                    android:layout_toRightOf="@+id/iv3lac"
+                    android:padding="8dp"
+                    android:text="3,00,000 to 10,00,000"
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:id="@+id/txt3lac"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="15dp"
+                    android:padding="8dp"
+                    android:text="0"
+                    android:textColor="@color/black" />
+
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/ll3lac"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+
+                android:layout_marginRight="12dp"
+                android:background="@drawable/blue_border"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="12dp"
+
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="No. of Families" />
+
+                    <TextView
+                        android:id="@+id/tvNoFamily3lac"
+                        style="@style/textViewPotentialValue"
+                        android:text="868" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="Estimated Family Income" />
+
+                    <TextView
+                        android:id="@+id/tvEstFamilyIncom3lac"
+                        style="@style/textViewPotentialValue"
+                        android:text="100000" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/lvspnLoanEligiMore3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:id="@+id/spnLoanEligiMore3"
+                        style="@style/textViewPotential"
+                        android:text="" />
+
+                    <TextView
+                        android:id="@+id/spnLoanEligAmtMore3"
+                        style="@style/textViewPotentialValue"
+                        android:text="" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lvAvgPremiumtMore3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="Average Premium" />
+
+                    <TextView
+                        android:id="@+id/tvAvgPremium3lac"
+                        style="@style/textViewPotentialValue"
+                        android:text="" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lvInternationalMore3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="International Travel Probability" />
+
+                    <TextView
+                        android:id="@+id/tvInternationalMore3"
+                        style="@style/textViewPotentialValue"
+                        android:text="40%" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="Potential Conversion" />
+
+                    <TextView
+                        android:id="@+id/tvPotConverion3lac"
+                        style="@style/textViewPotentialValue"
+                        android:text="30%" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:id="@+id/lbtvPotPremium3lac"
+                        style="@style/textViewPotential"
+                        android:text="Potential Premium" />
+
+                    <TextView
+                        android:id="@+id/tvPotPremium3lac"
+                        style="@style/textViewPotentialValue"
+                        android:text="16,45,000" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="Potential Commission" />
+
+                    <TextView
+                        android:id="@+id/tvPotCommission3lac"
+                        style="@style/textViewPotentialValue"
+                        android:text="2400" />
+                </LinearLayout>
+            </LinearLayout>
+            <!-- end 3 lac-->
+
+            <!-- above 10lac-->
+            <RelativeLayout
+                android:id="@+id/rl10lac"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:background="@drawable/blue_border_graybg"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/iv10lac"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:padding="2dp"
+                    android:src="@drawable/ic_add" />
+
+                <TextView
+                    android:id="@+id/textView24"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginLeft="15dp"
+                    android:layout_toRightOf="@+id/iv10lac"
+                    android:padding="8dp"
+                    android:text="Above 10,00,000"
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:id="@+id/txt10lac"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="15dp"
+                    android:padding="8dp"
+                    android:text="0"
+                    android:textColor="@color/black" />
+
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/ll10lac"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="12dp"
+
+                android:layout_marginRight="12dp"
+                android:background="@drawable/blue_border"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="12dp"
+
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="No. of Families" />
+
+                    <TextView
+                        android:id="@+id/tvNoFamily10lac"
+                        style="@style/textViewPotentialValue"
+                        android:text="868" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="Estimated Family Income" />
+
+                    <TextView
+                        android:id="@+id/tvEstFamilyIncom10lac"
+                        style="@style/textViewPotentialValue"
+                        android:text="100000" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lvspnLoanEligiAbove10"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:id="@+id/spnLoanEligiAbove10"
+                        style="@style/textViewPotential"
+                        android:text="" />
+
+                    <TextView
+                        android:id="@+id/spnLoanEligAmtAbove10"
+                        style="@style/textViewPotentialValue"
+                        android:text="" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lvAvgPremiumtAbove10"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="Average Premium" />
+
+                    <TextView
+                        android:id="@+id/tvAvgPremium10lac"
+                        style="@style/textViewPotentialValue"
+                        android:text="" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/lvInternationalAbove10"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="International Travel Probability" />
+
+                    <TextView
+                        android:id="@+id/tvInternationalAbove10"
+                        style="@style/textViewPotentialValue"
+                        android:text="60%" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="Potential Conversion" />
+
+                    <TextView
+                        android:id="@+id/tvPotConverion10lac"
+                        style="@style/textViewPotentialValue"
+                        android:text="30%" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        android:id="@+id/lbtvPotPremium10lac"
+                        style="@style/textViewPotential"
+                        android:text="Potential Premium" />
+
+                    <TextView
+                        android:id="@+id/tvPotPremium10lac"
+                        style="@style/textViewPotentialValue"
+                        android:text="" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+
+                    <TextView
+                        style="@style/textViewPotential"
+                        android:text="Potential Commission" />
+
+                    <TextView
+                        android:id="@+id/tvPotCommission10lac"
+                        style="@style/textViewPotentialValue"
+                        android:text="2400" />
+                </LinearLayout>
+            </LinearLayout>
+            <!-- end 10 lac-->
+
+
+            <TextView
+                android:id="@+id/txtSum"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginRight="12dp"
+                android:background="@color/darkBlue"
+                android:gravity="right"
+                android:padding="8dp"
+                android:text=""
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

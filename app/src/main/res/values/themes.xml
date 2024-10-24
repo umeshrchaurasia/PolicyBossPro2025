@@ -263,12 +263,9 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:enabled">false</item>
 
-<!--        <item name="android:paddingTop">2dp</item>-->
-<!--        <item name="android:paddingBottom">0dp</item>-->
-<!--        <item name="android:layout_marginTop">8dp</item>-->
 
         <item name="android:minHeight">36dp</item>      <!-- NEW: Set minimum height -->
-        <item name="android:paddingTop">8dp</item>      <!-- MODIFIED: Reduced from original -->
+        <item name="android:paddingTop">18dp</item>      <!-- hint Text giong more up side -->
         <item name="android:paddingBottom">0dp</item>   <!-- NEW: Added for balance -->
         <item name="android:layout_marginTop">8dp</item> <!-- MODIFIED: Reduced from 8dp -->
 
