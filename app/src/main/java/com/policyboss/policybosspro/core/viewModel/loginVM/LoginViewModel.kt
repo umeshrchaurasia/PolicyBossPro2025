@@ -232,7 +232,6 @@ class LoginViewModel @Inject constructor(
     }
 
 
-     // temp005
     fun getotpLoginHorizon(login_id: String) = viewModelScope.launch {
 
         var body = HashMap<String, String>()
@@ -270,8 +269,6 @@ class LoginViewModel @Inject constructor(
 
 
     }
-
-
 
 
     fun  otpVerifyHorizon(otp : String, mobileno : String) = viewModelScope.launch {

@@ -1,8 +1,10 @@
 package com.policyboss.policybosspro.utils.FirebasePushNotification
 
+import android.Manifest
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -19,6 +21,7 @@ import com.policyboss.policybosspro.core.model.notification.NotifyEntity
 import com.policyboss.policybosspro.core.repository.notificationRepository.INotificationRepository
 import com.policyboss.policybosspro.core.viewModel.NotificationVM.NotifyViewModel
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
+import com.policyboss.policybosspro.utils.AppPermission.PermissionHandler
 import com.policyboss.policybosspro.utils.Constant
 import com.policyboss.policybosspro.view.home.HomeActivity
 import com.webengage.sdk.android.WebEngage
@@ -61,12 +64,33 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         if (data.isNotEmpty()) {
             if (data["source"] == "webengage") {
                 Log.d("webengage_data", data.toString())
-                WebEngage.get().`receive`(data)
+                WebEngage.get().receive(data)
             } else {
-                sendNotification(remoteMessage, data)
+
+               // sendNotification(remoteMessage, data)
+                //Mark : Check first Post Notification Permission have in TIRAMISU the send
+                checkAndSendNotification(this,remoteMessage, data)
             }
         }
     }
+
+    private fun checkAndSendNotification(context: Context, remoteMessage: RemoteMessage, data: Map<String, String>) {
+        // Check if the device is running Android 13 (API level 33) or higher
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+                // Permission is granted, send the notification
+                sendNotification(remoteMessage, data)
+            } else {
+                // Log or handle the denied permission case
+                Log.d("MyFirebaseMsgService", "POST_NOTIFICATIONS permission is denied.")
+                // Optionally, notify the main activity to prompt the user to enable the permission
+            }
+        } else {
+            // For devices below Android 13, send the notification without checking permission
+            sendNotification(remoteMessage, data)
+        }
+    }
+
 
     private fun sendNotification(remoteMessage: RemoteMessage, data: Map<String, String>) {
         notifyEntity = NotifyEntity()
@@ -160,6 +184,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         updateNotificationCounter()
     }
 
+
+
+
     private fun updateNotificationCounter() {
         val notifyCounter = prefManager.getNotificationCounter()
         prefManager.setNotificationCounter( notifyCounter + 1)
@@ -210,4 +237,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             null
         }
     }
+
+
+
+
+
+
 }

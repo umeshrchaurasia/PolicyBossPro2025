@@ -15,7 +15,7 @@ import com.policyboss.policybosspro.databinding.PushNotifyItemBinding
 class NotificationAdapter(
     private val mContext: Context,
     private var notificationList: MutableList<NotificationEntity>,
-    private val onItemClicked: (NotificationEntity) -> Unit,
+    private val onItemClicked: ((NotificationEntity) -> Unit)? = null
 
 ) : RecyclerView.Adapter<NotificationAdapter.NotificationItem>() {
 
@@ -39,11 +39,11 @@ class NotificationAdapter(
                     if (notificationEntity.isOpen) {
                         rlBigImg.visibility = View.GONE
                         viewBigImg.visibility = View.GONE
-                        imgArrow.visibility = View.VISIBLE
+                        imgArrow.visibility = View.INVISIBLE
                     } else {
-                        rlBigImg.visibility = View.VISIBLE
-                        viewBigImg.visibility = View.VISIBLE
-                        imgArrow.visibility = View.VISIBLE
+                        rlBigImg.visibility = View.GONE
+                        viewBigImg.visibility = View.GONE
+                        imgArrow.visibility = View.INVISIBLE
 
                         Glide.with(mContext)
                             .load(notificationEntity.img_url)
@@ -51,8 +51,8 @@ class NotificationAdapter(
                     }
                 }
 
-                lyParent.setOnClickListener { onItemClicked(notificationEntity) }
-                rlArrow.setOnClickListener { updateList(notificationEntity) }
+//                lyParent.setOnClickListener { onItemClicked(notificationEntity) }
+//                rlArrow.setOnClickListener { updateList(notificationEntity) }
             }
         }
     }

@@ -108,14 +108,19 @@
         android:theme="@style/Theme.Policybossprov34"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
+<!--     Note:   android:theme="@style/Theme.PolicyBossProSplashScreen" create custom splash Screen   -->
+        <activity
+            android:name=".view.others.contactUS.ContactUsActivity"
+            android:exported="false" />
         <activity
             android:name=".view.others.incomePotential.IncomePotentialdetailActivity"
-            android:screenOrientation="portrait"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.others.incomePotential.IncomePotentialDialogActivity"
-            android:screenOrientation="portrait"
-            android:exported="false" />
+            android:exported="false"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".view.WebView.PrivacyWebViewActivity"
             android:exported="false"
@@ -229,7 +234,7 @@
             android:name=".view.splashscreen.SplashScreenActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/SplashTheme">
+            android:theme="@style/Theme.PolicyBossProSplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -294,15 +299,15 @@
                 <action android:name="rzp.device_token.share" />
             </intent-filter>
         </receiver>
-         <service
-         android:name=".utils.FirebasePushNotification.MyFirebaseMessagingService"
-         android:exported="false"
-         android:stopWithTask="false">
-         <intent-filter>
-          <action android:name="com.google.firebase.MESSAGING_EVENT" />
-         </intent-filter>
-         </service>
-        <!-- Note: For ForegroundService WorkManger Android ver 13 and above -->
+
+        <service
+            android:name=".utils.FirebasePushNotification.MyFirebaseMessagingService"
+            android:exported="false"
+            android:stopWithTask="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service> <!-- Note: For ForegroundService WorkManger Android ver 13 and above -->
         <service
             android:name="androidx.work.impl.foreground.SystemForegroundService"
             android:foregroundServiceType="dataSync" />

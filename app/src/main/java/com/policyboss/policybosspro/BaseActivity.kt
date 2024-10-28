@@ -22,6 +22,7 @@ import android.webkit.JavascriptInterface
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.Toast
 import androidx.core.content.FileProvider
 import com.policyboss.policybosspro.databinding.LayoutCommonWebviewPopupBinding
 import com.policyboss.policybosspro.databinding.ProgressdialogLoadingBinding
@@ -34,6 +35,7 @@ import java.util.regex.Pattern
 import javax.inject.Inject
 
 import com.policyboss.policybosspro.view.syncContact.ui.WelcomeSyncContactActivityKotlin
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
@@ -138,7 +140,7 @@ open class BaseActivity() : AppCompatActivity() {
             setMessage(msg)
             setCancelable(false)
 
-            setPositiveButton("OK") { dialog, whichButton ->
+            setPositiveButton(positiveBtn ?: "OK") { dialog, whichButton ->
                 onPositiveClick?.invoke()
                 dialog.dismiss()
             }
@@ -156,6 +158,56 @@ open class BaseActivity() : AppCompatActivity() {
     }
 
     //endregion
+
+
+    //region Features: Send Sms,Send Mail, Dialer
+    fun sendSms(mobNumber: String) {
+        try {
+            val formattedNumber = mobNumber
+                .replace("\\s".toRegex(), "")
+                .replace("\\+".toRegex(), "")
+                .replace("-".toRegex(), "")
+                .replace(",".toRegex(), "")
+
+            val smsIntent = Intent(Intent.ACTION_VIEW, Uri.fromParts("sms", formattedNumber, null))
+            startActivity(smsIntent)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Invalid Number", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun composeEmail(address: String, subject: String) {
+        val emailIntent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:")
+            putExtra(Intent.EXTRA_EMAIL, arrayOf(address))
+            putExtra(Intent.EXTRA_SUBJECT, subject)
+        }
+        startActivity(Intent.createChooser(emailIntent, "Email via..."))
+    }
+
+    fun dialNumber(mobNumber: String) {
+        try {
+            val formattedNumber = mobNumber
+                .replace("\\s".toRegex(), "")
+                .replace("\\+".toRegex(), "")
+                .replace("-".toRegex(), "")
+                .replace(",".toRegex(), "")
+
+            val callIntent = Intent(Intent.ACTION_DIAL).apply {
+                data = Uri.parse("tel:$formattedNumber")
+            }
+            startActivity(callIntent)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(this, "Invalid Number", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    //endregion
+
+
+
 
     //region Share Data as Text
     fun datashareList(context: Context, prdSubject: String, bodyMsg: String, link: String) {
@@ -175,6 +227,7 @@ open class BaseActivity() : AppCompatActivity() {
     }
     //endregion
 
+    //region Share Image
     fun datashareList(context: Context, bitmap: Bitmap?, prdSubject: String, prdDetail: String) {
         var fos: OutputStream? = null
         var screenshotUri: Uri? = null
@@ -235,6 +288,7 @@ open class BaseActivity() : AppCompatActivity() {
         }
     }
 
+    //endregion
 
 
     //region Method for marketing web view pop-up
@@ -392,8 +446,10 @@ open class BaseActivity() : AppCompatActivity() {
     inner class MyJavaScriptInterface(private val mContext: Context) {
 
 
-        @Inject
-        lateinit var prefsManager: PolicyBossPrefsManager
+
+       // lateinit var prefsManager: PolicyBossPrefsManager
+
+        var prefsManager  = PolicyBossPrefsManager( this@BaseActivity)
 
         // region Raise Ticket
         @JavascriptInterface
@@ -415,7 +471,7 @@ open class BaseActivity() : AppCompatActivity() {
         @JavascriptInterface
         fun syncsummary() {
             // Fetch UserConstantEntity and navigate to CommonWebViewActivity with lead dashboard URL
-
+          //  prefsManager = PolicyBossPrefsManager( this@BaseActivity)
             val intent = Intent(mContext, CommonWebViewActivity::class.java).apply {
                 putExtra("URL", prefsManager.getLeadDashUrl())
                 putExtra("NAME", "Sync Contact Dashboard")

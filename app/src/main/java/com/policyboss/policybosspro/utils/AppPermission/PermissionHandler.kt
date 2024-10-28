@@ -82,15 +82,31 @@ class PermissionHandler(private val activity: AppCompatActivity)  {
         return when {
             permissions.contains(Manifest.permission.CAMERA) ->
                 "Camera and storage permissions are required to take and save photos."
+
             permissions.contains(Manifest.permission.READ_MEDIA_IMAGES) ||
                     permissions.contains(Manifest.permission.READ_EXTERNAL_STORAGE) ->
                 "Storage permission is required to access and share files."
+
             permissions.contains(Manifest.permission.READ_CONTACTS) ->
                 "Contacts and call log permissions are required to sync your contacts."
+
+            permissions.contains(Manifest.permission.POST_NOTIFICATIONS) -> // Added rationale for POST_NOTIFICATIONS
+                "Notification permission is required to send notifications to you."
+
             else -> "These permissions are required for the app to function properly."
         }
     }
 
+    fun showPermissionDeniedDialog(permanentlyDeniedPermissions: List<String>,txtMessage : String? = null) {
+        MaterialAlertDialogBuilder(activity)
+            .setTitle("Permission Denied")
+            .setMessage(txtMessage ?: "Please enable necessary permissions in Settings to continue.")
+            .setPositiveButton("Open Settings") { _, _ ->
+                openAppSettings()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
     fun openAppSettings() {
         Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
             data = Uri.fromParts("package", activity.packageName, null)

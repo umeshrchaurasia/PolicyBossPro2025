@@ -209,6 +209,8 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
 
         prefManager = new PolicyBossPrefsManager(this);
 
+        userConstantEntity = prefManager.getUserConstantEntity();
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
 
@@ -905,6 +907,7 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
         lyCamera = (LinearLayout) dialogView.findViewById(R.id.lyCamera);
         lyGallery = (LinearLayout) dialogView.findViewById(R.id.lyGallery);
         lyPdf = (LinearLayout) dialogView.findViewById(R.id.lyPdf);
+        lyPdf.setVisibility(View.GONE);
 
         lyCamera.setOnClickListener(new View.OnClickListener() {
             @Override

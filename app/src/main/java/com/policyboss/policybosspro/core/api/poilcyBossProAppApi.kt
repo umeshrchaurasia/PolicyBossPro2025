@@ -1,5 +1,6 @@
 package com.policyboss.policybosspro.core.api
 
+import com.policyboss.policybosspro.core.response.contactUs.ContactUsResponse
 import com.policyboss.policybosspro.core.response.doc.DocumentResponse
 import com.policyboss.policybosspro.core.response.notification.NotificationResponse
 import com.policyboss.policybosspro.core.response.notification.NotificationUpdateResponse
@@ -67,6 +68,10 @@ interface poilcyBossProAppApi {
     @POST("/quote/Postfm/get-notification-data")
     suspend fun getNotificationData(@Body body: HashMap<String,String>): Response<NotificationResponse?>
 
+
+    @Headers("token:" + Constant.token)
+    @POST("/quote/Postfm/contact-us-PB")
+    suspend fun getContactUs(@Body body: HashMap<String,String>): Response<ContactUsResponse?>
 
 
 }

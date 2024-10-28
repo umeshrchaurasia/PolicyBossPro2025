@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Policybossprov34</string>
+    <string name="app_name">PolicyBoss Pro</string>
     <string name="file_provider_authority" translatable="false">com.policyboss.policybosspro.fileprovider</string>
 
     <string name="select_date_range"> Select Date Range</string>
@@ -26,7 +26,6 @@
     <string name="dash_finmart_exclusive">FINMART EXCLUSIVES</string>
     <string name="dash_private_car">PRIVATE CAR</string>
     <string name="dash_two_wheeler">TWO WHEELER</string>
-
 
 
     <string name="term">Terms &amp; Conditions  |  </string>
@@ -97,6 +96,7 @@
     <string name="Emp_detail">Employment &amp; Income Details</string>
 
     <string name="RM_Calling">Do you want to call/mail to your: </string>
+    <string name="Support_Calling">Do you want to call Support Team. </string>
 
     <string name="NineHundredNinetyNine">Pro Membership(\u20B9 999)</string>
     <string name="TwoHundredNinetyNine">Lite Membership(\u20B9 299)</string>

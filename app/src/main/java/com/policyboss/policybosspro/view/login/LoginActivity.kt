@@ -175,18 +175,6 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         setEnableNextButton(bln = true)
 
 
-       // loginPrefManager = LoginPrefManager(this@LoginActivity)
-      //  prefManager = PrefManager(this@LoginActivity)
-
-        //region set Repository and VieModel
-      
-      //  loginViewModel = ViewModelProvider(this,viewModelFactory).get(LoginViewModel ::class.java)
-
-        //endregion
-
-        //   weUser = WebEngage.get().user();
-
-        // clear UserConstant Entity....
 
         prefManager.setDeviceID(Utility.getDeviceID(this@LoginActivity))
 
@@ -944,7 +932,9 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                                 //pospurl
 
                                 enable_pro_signupurl = it.data?.MasterData?.get(0)?.enable_pro_signupurl?: ""
-                                prefManager.setEnablePro_ADDSUBUSERurl(enable_pro_signupurl)
+
+                                prefManager.setEnableProPOSPurl(enable_pro_signupurl)
+
 
                                 enable_otp_only = it.data?.MasterData?.get(0)?.enable_otp_only?:""
 
@@ -1446,15 +1436,15 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
 
             binding.includeLoginNew.txtterm.id ->{
 
-//                startActivity(
-//                    Intent(this, PrivacyWebViewActivity::class.java)
-//                        .putExtra(
-//                            "URL",
-//                            "https://www.policyboss.com/terms-condition?app_version=" + prefManager.appVersion + "&device_code=" + prefManager.deviceID + "&ssid=&fbaid="
-//                        )
-//                        .putExtra("NAME", "" + "Terms & Conditions")
-//                        .putExtra("TITLE", "" + "Terms & Conditions")
-//                )
+                startActivity(
+                    Intent(this, PrivacyWebViewActivity::class.java)
+                        .putExtra(
+                            "URL",
+                            "https://www.policyboss.com/terms-condition?app_version=" + prefManager.getAppVersion() + "&device_code=" + prefManager.getDeviceID() + "&ssid=&fbaid="
+                        )
+                        .putExtra("NAME", "" + "Terms & Conditions")
+                        .putExtra("TITLE", "" + "Terms & Conditions")
+                )
 
             }
 

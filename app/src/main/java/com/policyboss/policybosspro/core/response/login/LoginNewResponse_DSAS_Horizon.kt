@@ -58,7 +58,7 @@ data class POSP(
     var Erp_Id: String="",
     var FOS_Code: String="",
     var Father_Name: String="",
-    var Fba_Id: String="",
+    var Fba_Id: String?="",
     var First_Name: String="",
     var Gender: String="",
     var IsFOS:  String="",

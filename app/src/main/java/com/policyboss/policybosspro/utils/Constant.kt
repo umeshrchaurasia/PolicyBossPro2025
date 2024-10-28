@@ -91,8 +91,10 @@ object Constant {
 
     const val SalesLangEnglish = "English"
     const val SalesLangHindi = "Hindi"
-    const val  SalesTitle = "SALES MATERIAL"
+    const val  SalesTitle = "CUSTOMER COMM."
     const val  NotifyTitle = "NOTIFICATION"
+
+    const val  ContactUsTitle = "CONTACT US"
 
     const val PUSH_NOTIFY = "notifyFlag"
     const val   NOTIFICATION_EXTRA = "NOTIFICATION_EXTRA"

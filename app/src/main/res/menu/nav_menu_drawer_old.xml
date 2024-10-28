@@ -19,7 +19,6 @@
             android:title="App Code">
 
         </item>
-
         <item
             android:id="@+id/nav_QA"
             android:icon="@drawable/ic_business_name"
@@ -68,51 +67,6 @@
             android:title="Finmart Business Contact"
             android:visible="false" />
 
-
-
-        <item
-            android:id="@+id/nav_Doc"
-            android:icon="@drawable/my_account"
-            android:orderInCategory="250"
-            android:visible="false"
-            android:title="My DOCUMENTS">
-            <menu>
-                <item
-                    android:id="@+id/nav_franchise1"
-                    android:icon="@drawable/agreemnet"
-                    android:orderInCategory="260"
-                    android:title="Loan Agreement"
-                    android:visible="false" />
-
-                <item
-                    android:id="@+id/nav_AppointmentLetter"
-                    android:icon="@drawable/agreemnet"
-                    android:orderInCategory="270"
-                    android:title="POSP Appointment Letter"
-                    android:visible="true" />
-
-                <item
-                    android:id="@+id/nav_Certificate"
-                    android:icon="@drawable/agreemnet"
-                    android:orderInCategory="280"
-                    android:title="POSP Application Form"
-                    android:visible="true" />
-            </menu>
-        </item>
-
-
-
-
-
-
-
-
-    </group>
-
-
-    <group
-        android:id="@+id/account_group"
-        android:checkableBehavior="single">
         <item
             android:id="@+id/nav_myaccount_pro"
             android:icon="@drawable/my_account"
@@ -160,67 +114,98 @@
 
             </menu>
         </item>
+
+        <item
+            android:id="@+id/nav_Doc"
+            android:icon="@drawable/my_account"
+            android:orderInCategory="250"
+            android:visible="false"
+            android:title="My DOCUMENTS">
+            <menu>
+                <item
+                    android:id="@+id/nav_franchise1"
+                    android:icon="@drawable/agreemnet"
+                    android:orderInCategory="260"
+                    android:title="Loan Agreement"
+                    android:visible="false" />
+
+                <item
+                    android:id="@+id/nav_AppointmentLetter"
+                    android:icon="@drawable/agreemnet"
+                    android:orderInCategory="270"
+                    android:title="POSP Appointment Letter"
+                    android:visible="true" />
+
+                <item
+                    android:id="@+id/nav_Certificate"
+                    android:icon="@drawable/agreemnet"
+                    android:orderInCategory="280"
+                    android:title="POSP Application Form"
+                    android:visible="true" />
+            </menu>
+        </item>
+
+
+
+        <item
+            android:id="@+id/nav_LEADS"
+            android:icon="@drawable/my_account"
+            android:orderInCategory="400"
+            android:title="SYNC CONTACTS">
+            <menu>
+
+                <item
+                    android:id="@+id/nav_contact"
+                    android:icon="@drawable/sync_contact_ic"
+                    android:orderInCategory="410"
+                    android:title="Sync/ReSync Now"
+                    android:visible="true" />
+                <item
+                    android:id="@+id/nav_generateLead"
+                    android:icon="@drawable/vehicledetail"
+                    android:orderInCategory="420"
+                    android:visible="false"
+                    android:title="Generate Motor Leads" />
+
+                <item
+                    android:id="@+id/nav_scan_vehicle"
+                    android:icon="@drawable/camera_search_ic"
+                    android:orderInCategory="425"
+                    android:title="Scan Vehicle"
+                    android:visible="false" />
+
+                <item
+                    android:id="@+id/nav_sharedata1"
+                    android:icon="@drawable/share_data"
+                    android:orderInCategory="440"
+                    android:visible="false"
+                    android:title="Generate Loan Leads" />
+
+                <item
+                    android:id="@+id/nav_leaddetail"
+                    android:icon="@drawable/insurance_policy_ic"
+                    android:orderInCategory="450"
+                    android:title="Summary &amp; Dashboard"
+                    android:visible="true" />
+
+
+
+
+                <!--added temp =05-->
+                <item
+                    android:id="@+id/nav_gift"
+                    android:icon="@drawable/mps"
+                    android:orderInCategory="470"
+                    android:title="Gift Voucher"
+                    android:visible="false" />
+
+            </menu>
+        </item>
+
+
+
+
     </group>
-
-    <group
-        android:id="@+id/sync_contact_group"
-        android:checkableBehavior="single">
-    <item
-        android:id="@+id/nav_LEADS"
-        android:icon="@drawable/my_account"
-        android:orderInCategory="400"
-        android:title="SYNC CONTACTS">
-        <menu>
-
-            <item
-                android:id="@+id/nav_contact"
-                android:icon="@drawable/sync_contact_ic"
-                android:orderInCategory="410"
-                android:title="Sync/ReSync Now"
-                android:visible="true" />
-            <item
-                android:id="@+id/nav_generateLead"
-                android:icon="@drawable/vehicledetail"
-                android:orderInCategory="420"
-                android:visible="false"
-                android:title="Generate Motor Leads" />
-
-            <item
-                android:id="@+id/nav_scan_vehicle"
-                android:icon="@drawable/camera_search_ic"
-                android:orderInCategory="425"
-                android:title="Scan Vehicle"
-                android:visible="false" />
-
-            <item
-                android:id="@+id/nav_sharedata1"
-                android:icon="@drawable/share_data"
-                android:orderInCategory="440"
-                android:visible="false"
-                android:title="Generate Loan Leads" />
-
-            <item
-                android:id="@+id/nav_leaddetail"
-                android:icon="@drawable/insurance_policy_ic"
-                android:orderInCategory="450"
-                android:title="Summary &amp; Dashboard"
-                android:visible="true" />
-
-
-
-
-            <!--added temp =05-->
-            <item
-                android:id="@+id/nav_gift"
-                android:icon="@drawable/mps"
-                android:orderInCategory="470"
-                android:title="Gift Voucher"
-                android:visible="false" />
-
-        </menu>
-    </item>
-    </group>
-
 
     <item
         android:id="@+id/nav_MYUtilities"
@@ -270,7 +255,6 @@
         android:orderInCategory="910"
         android:title="Co Browser User"
         android:visible="false" />
-
     <item
         android:id="@+id/nav_logout"
         android:icon="@drawable/logout"

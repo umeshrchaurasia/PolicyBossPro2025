@@ -26,6 +26,7 @@ import androidx.work.WorkManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.snackbar.Snackbar
+import com.policyboss.demoandroidapp.Utility.ExtensionFun.showSnackbar
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.analytics.WebEngageAnalytics
@@ -35,8 +36,11 @@ import com.policyboss.policybosspro.databinding.ActivitySyncContactBinding
 import com.policyboss.policybosspro.databinding.DialogLoadingBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utility.Utility
+import com.policyboss.policybosspro.utils.AppPermission.AppPermissionManager
+import com.policyboss.policybosspro.utils.AppPermission.PermissionHandler
 import com.policyboss.policybosspro.utils.Constant
 import com.policyboss.policybosspro.utils.NetworkUtils
+import com.policyboss.policybosspro.utils.showSnackbar
 import com.policyboss.policybosspro.view.syncContact.worker.CallLogWorkManager
 import com.policyboss.policybosspro.view.syncContact.worker.ContactLogWorkManager
 import com.policyboss.policybosspro.webview.CommonWebViewActivity
@@ -77,8 +81,9 @@ class SyncContactActivity : BaseActivity() {
         "android.permission.READ_CALL_LOG"
     )
 
-    //  lateinit var loginResponseEntity: LoginResponseEntity
-    lateinit var userConstantEntity: UserConstantEntity
+
+
+    private lateinit var permissionHandler: PermissionHandler
 
     @Inject
     lateinit var prefManager:PolicyBossPrefsManager
@@ -108,24 +113,72 @@ class SyncContactActivity : BaseActivity() {
         txtPercentServer =  binding.includedSyncContact.txtPercentServer
 
         dialogAnim = Dialog(this)
+        // Initialize PermissionHandler
+        permissionHandler = PermissionHandler(this)
 
 
         isContactWorkFinished = false
         isCallLogWorkFinished = false
 
-        if (!checkPermission()) {
-            requestPermission()
-        }else{
-            if (NetworkUtils.isNetworkAvailable(this@SyncContactActivity)) {
-                initData()
-                setOneTimeRequestWithCoroutine()
-            } else {
-                Snackbar.make( binding.root, getString(R.string.noInternet), Snackbar.LENGTH_SHORT).show()
-            }
+        // Check or request permissions
+        checkAndRequestPermissions()
 
-        }
+        // region old way
+//        if (!checkPermission()) {
+//            requestPermission()
+//        }else{
+//            if (NetworkUtils.isNetworkAvailable(this@SyncContactActivity)) {
+//                initData()
+//                setOneTimeRequestWithCoroutine()
+//            } else {
+//                Snackbar.make( binding.root, getString(R.string.noInternet), Snackbar.LENGTH_SHORT).show()
+//            }
+//
+//        }
+
+        //emdregion
 
     }
+
+
+    private fun checkAndRequestPermissions() {
+        permissionHandler.checkAndRequestPermissions(
+            AppPermissionManager.PermissionType.CONTACTS_AND_CALL_LOG,
+            onResult = { granted ->
+                if (granted) {
+
+                    // regionPermission Granted
+                    if (NetworkUtils.isNetworkAvailable(this@SyncContactActivity)) {
+                        // Permission granted, proceed with network-dependent operations
+                        initData()
+                        setOneTimeRequestWithCoroutine()
+                    }else{
+
+                        showSnackbar(binding.root, getString(R.string.noInternet))
+                    }
+                    //endregion
+                } else {
+                    // Handle permission denial, e.g., show a Snackbar or dialog
+                  //  Snackbar.make(binding.root, "Permissions are required to sync contacts", Snackbar.LENGTH_SHORT).show()
+
+                    binding.root.showSnackbar(
+                        R.string.permission_required,
+                        Snackbar.LENGTH_INDEFINITE,
+                        R.string.ok
+                    )
+                    {
+                        checkAndRequestPermissions()
+                    }
+                }
+
+            },
+            onPermanentlyDenied = { permanentlyDeniedPermissions ->
+                // Handle permanently denied permissions by directing to Settings
+                permissionHandler.showPermissionDeniedDialog(permanentlyDeniedPermissions)
+            }
+        )
+    }
+
 
 
     fun initData(){

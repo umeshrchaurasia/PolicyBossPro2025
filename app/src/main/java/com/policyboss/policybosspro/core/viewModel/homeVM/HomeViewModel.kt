@@ -67,18 +67,7 @@ class HomeViewModel @Inject constructor(
 
     //endregion
 
-    //region Declaeration of SalesMaterial State
-    private val salesMaterialStateFlow : MutableStateFlow<Event<APIState<SalesMaterialResponse>>> = MutableStateFlow(Event(APIState.Empty()))
-    val SalesMaterialResponse: StateFlow<Event<APIState<SalesMaterialResponse>>>
-        get() = salesMaterialStateFlow
 
-
-
-    private val salesMaterialDtlStateFlow : MutableStateFlow<Event<APIState<SalesMaterialProductDetailsResponse>>> = MutableStateFlow(Event(APIState.Empty()))
-    val SalesMaterialDtlResponse: StateFlow<Event<APIState<SalesMaterialProductDetailsResponse>>>
-        get() = salesMaterialDtlStateFlow
-
-    //endregion
 
     //region set  CurrentDashboard Entity for Sharing
     private var _currentDashboardEntity: DashboardMultiLangEntity? = null
@@ -96,6 +85,10 @@ class HomeViewModel @Inject constructor(
     fun ShareTitle() = getCurrentDashboardSharedEntity()?.title?:""
 
     //endregion
+
+
+
+
 
     //region  Master Data
     fun getMasterData() = viewModelScope.launch {

@@ -24,11 +24,21 @@ object AppPermissionManager {
     //Mark : Contact and Call Log Permission
     val contactsAndCallLog = arrayOf(Manifest.permission.READ_CONTACTS, Manifest.permission.READ_CALL_LOG)
 
+
+
+    // Mark: Post Notifications Permission
+    val postNotifications = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        arrayOf(Manifest.permission.POST_NOTIFICATIONS)
+    } else {
+        emptyArray() // No action for versions below TIRAMISU
+    }
+
     // Permission groups for different features
     enum class PermissionType {
         CAMERA_AND_STORAGE,
         STORAGE,
-        CONTACTS_AND_CALL_LOG
+        CONTACTS_AND_CALL_LOG,
+        POST_NOTIFICATIONS
     }
 
     fun getPermissions(type: PermissionType): Array<String> {
@@ -36,6 +46,7 @@ object AppPermissionManager {
             PermissionType.CAMERA_AND_STORAGE -> cameraAndStorage
             PermissionType.STORAGE -> storage
             PermissionType.CONTACTS_AND_CALL_LOG -> contactsAndCallLog
+            PermissionType.POST_NOTIFICATIONS -> postNotifications
         }
     }
 }

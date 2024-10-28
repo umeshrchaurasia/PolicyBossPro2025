@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+<!--  // refer :  https://tomas-repcik.medium.com/setting-up-the-splash-screen-with-android-api-3dddbb1ed514-->
+
+
+        <style name="Theme.PolicyBossProSplashScreen" parent="Theme.SplashScreen">
+            <item name="windowSplashScreenBackground">@color/white</item>
+            <item name="windowSplashScreenAnimatedIcon">@drawable/ic_app_launcher_round</item>
+            <item name="windowSplashScreenAnimationDuration">300</item>
+            <item name="postSplashScreenTheme">@style/Theme.Policybossprov34</item>
+
+
+<!--            <item name="android:windowSplashScreenBrandingImage">@drawable/...</item>-->
+        </style>
+
+
+    
+</resources>

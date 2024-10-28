@@ -47,7 +47,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10dp"
-                android:hint="User Name"
+                android:hint="Email/User Id/Mobile No./Erp Code"
                 app:endIconMode="custom"
                 app:endIconDrawable="@drawable/ic_email_24"
                 android:paddingBottom="0dp"

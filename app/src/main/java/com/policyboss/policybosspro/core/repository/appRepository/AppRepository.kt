@@ -91,5 +91,13 @@ class AppRepository  @Inject constructor(
     }.flowOn(Dispatchers.IO)
 
 
+    suspend fun getContactUs(body : HashMap<String,String>) = flow {
+        val response = apiService.getContactUs(body)
+        emit(response)
+    }.flowOn(Dispatchers.IO)
+
+
+
+
 
 }

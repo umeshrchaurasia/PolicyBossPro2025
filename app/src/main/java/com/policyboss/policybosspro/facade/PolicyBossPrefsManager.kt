@@ -343,69 +343,26 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
 
 
 
-    fun getFBAID() : String {
-
+    fun getFBAID(): String {
         val response = getLoginHorizonResponse()
+        val userType = response?.user_type ?: ""
 
-        //  return response?.EMP?.FBA_ID?:"0"
-
-
-
-        val usertype= response?.user_type?:""
-
-        when(usertype){
-
-
-            "POSP" ->{
-                // return response?.POSP ?.Fba_Id?:"0"
-
-                var Fba_Id = "0"
-                response?.POSP?.let { posp ->
-                    when (posp) {
-
-                        is POSP -> {
-                            Fba_Id = posp.Fba_Id?.takeIf { it.isNotEmpty() } ?: "0" // Retrieve and handle Fba_Id
-                        }
-                        else -> {
-                            // Handle unexpected type (log, throw exception, etc.)
-                            println("Unexpected POSP type: ${posp?.javaClass}")
-                        }
-                    }
+        return when (userType) {
+            "POSP", "FOS" -> {
+                // Assuming POSP can be a Map here
+                val posp = response?.POSP
+                if (posp is Map<*, *>) {
+                    (posp["Fba_Id"] as? String)?.takeIf { it.isNotEmpty() } ?: "0"
+                } else {
+                    "0"
                 }
-                return Fba_Id
             }
-            "FOS" ->{
-                var Fba_Id = "0"
-                response?.POSP?.let { posp ->
-                    when (posp) {
-
-                        is POSP -> {
-                            Fba_Id = posp.Fba_Id?.takeIf { it.isNotEmpty() } ?: "0" // Retrieve and handle Fba_Id
-                        }
-                        else -> {
-                            // Handle unexpected type (log, throw exception, etc.)
-                            println("Unexpected POSP type: ${posp?.javaClass}")
-                        }
-                    }
-                }
-                return Fba_Id
-
-            }
-
-            "EMP" ->{
-                return response?.EMP?.FBA_ID?:"0"
-
-            }
-            "MISP" ->{
-                return response?.EMP?.FBA_ID?:"0"
-
-
-            }
-
+            "EMP", "MISP" -> response?.EMP?.FBA_ID?.toString() ?: "0"
+            else -> "0"
         }
-
-        return "0"
     }
+
+
 
     fun  getERPID() : String {
 

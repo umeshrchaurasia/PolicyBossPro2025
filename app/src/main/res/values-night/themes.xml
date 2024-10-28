@@ -3,5 +3,27 @@
     <style name="Base.Theme.Policybossprov34" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+
+        <item name="colorPrimary">@color/colorAccent</item>
+        <!--status bar color-->
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <!--<item name="android:windowBackground">@color/window_background</item>-->
+        <!-- <item name="android:windowBackground">@color/background</item>-->
+        <item name="android:windowBackground">@color/white</item>
+        <item name="android:windowActivityTransitions">true</item>
+
+        <!--  It should be true otherwise action mode will not overlay toolbar -->
+        <item name="windowActionModeOverlay">true</item>
+        <!--  For Custom Action Mode Background Color/Drawable -->
+        <item name="actionModeBackground">@color/colorAccent</item>
+
+        <!--For Material TextInput Styler-->
+        <item name="textInputStyle">@style/textInputLayoutStyle</item>
+
+        <!-- Set the cursor and text selection handle color to blue -->
+        <!--    Note :If colorSecondary is not explicitly set, it typically falls back to colorPrimary.-->
+        <item name="colorControlActivated">@color/colorPrimary</item>
+
     </style>
 </resources>

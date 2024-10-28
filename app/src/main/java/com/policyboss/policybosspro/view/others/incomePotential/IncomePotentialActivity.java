@@ -59,7 +59,7 @@ public class IncomePotentialActivity extends BaseJavaActivity implements View.On
         setContentView(R.layout.activity_income_potential);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setTitle("POLICYBOSS PRP");
+        setTitle("INCOME CALCULATOR");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 

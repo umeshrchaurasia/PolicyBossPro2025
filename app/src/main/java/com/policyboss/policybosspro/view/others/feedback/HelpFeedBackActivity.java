@@ -11,6 +11,7 @@ import android.view.View;
 
 import com.policyboss.policybosspro.R;
 import com.policyboss.policybosspro.analytics.WebEngageAnalytics;
+import com.policyboss.policybosspro.view.others.contactUS.ContactUsActivity;
 import com.policyboss.policybosspro.webview.CommonWebViewActivity;
 import com.webengage.sdk.android.Analytics;
 import com.webengage.sdk.android.WebEngage;
@@ -36,6 +37,7 @@ public class HelpFeedBackActivity extends AppCompatActivity implements View.OnCl
         setContentView(R.layout.activity_help_feed_back);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        setTitle("HELP &  FEEDBACK");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initWidgets();
         setListener();
@@ -64,10 +66,10 @@ public class HelpFeedBackActivity extends AppCompatActivity implements View.OnCl
             case R.id.cvChat:
                 //    startActivity(new Intent(this, InsertContactActivity.class));
                 break;
-//            case R.id.cvContactUs:
-//                startActivity(new Intent(this, ContactUsActivity.class));
-//                tracktContactFeedbackEvent();
-//                break;
+            case R.id.cvContactUs:
+                startActivity(new Intent(this, ContactUsActivity.class));
+                tracktContactFeedbackEvent();
+                break;
 //            case R.id.cvRaiseTicket:
 //                startActivity(new Intent(this, RaiseTicketActivity.class));
 //                break;

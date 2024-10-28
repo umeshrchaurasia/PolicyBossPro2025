@@ -33,6 +33,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.BuildConfig
@@ -58,6 +59,8 @@ import com.policyboss.policybosspro.databinding.LayoutSharePopupBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utility.Utility
 import com.policyboss.policybosspro.utility.UtilityNew
+import com.policyboss.policybosspro.utils.AppPermission.AppPermissionManager
+import com.policyboss.policybosspro.utils.AppPermission.PermissionHandler
 import com.policyboss.policybosspro.utils.Constant
 import com.policyboss.policybosspro.utils.CoroutineHelper
 import com.policyboss.policybosspro.utils.FeedbackHelper
@@ -85,7 +88,10 @@ import com.webengage.sdk.android.Channel
 import com.webengage.sdk.android.User
 import com.webengage.sdk.android.WebEngage
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.roundToInt
@@ -127,17 +133,18 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     private lateinit var headerBinding: DrawerHeaderBinding // layout name drawer_header in activity_xml
 
     var shortcutManager: ShortcutManager? = null
-    var deeplink_value = ""
+
     var Title = ""
 
 
-
+    private lateinit var permissionHandler: PermissionHandler
     //for Notification Counter
 
     private  var  textNotifyItemCount : TextView? = null
 
     private lateinit var activityResultLauncher: ActivityResultLauncher<Intent>
 
+    private var currentSelectedItemId: Int = R.id.nav_home
 
     //endregion
 
@@ -202,9 +209,14 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         //Initialize headerView
         headerBinding = DrawerHeaderBinding.bind(navigationView.getHeaderView(0))
 
+
         initHeaderLayout()
 
         setupHeaderLayoutListeners()
+
+        permissionHandler = PermissionHandler(this)
+        requestNotificationPermission()
+
 
         //region Handle OnBackPressed()
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
@@ -263,6 +275,47 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
 
     }
+
+    override fun onResume() {
+        super.onResume()
+
+
+    }
+
+
+    //region Permission POST_NOTIFICATIONS
+    private fun requestNotificationPermission() {
+        permissionHandler.checkAndRequestPermissions(
+            AppPermissionManager.PermissionType.POST_NOTIFICATIONS,
+            onResult = { granted ->
+                if (granted) {
+                    // Permission granted, proceed with notifications
+                } else {
+                    // Handle permission denial
+                   // we can also show here snackbar before asking message again...
+                }
+            },
+            onPermanentlyDenied = { permanentlyDeniedPermissions ->
+                // Show an explanation or direct the user to the settings to grant permissions
+                showPermissionDeniedDialog(permanentlyDeniedPermissions)
+            }
+        )
+
+
+    }
+
+    private fun showPermissionDeniedDialog(permanentlyDeniedPermissions: List<String>) {
+        MaterialAlertDialogBuilder(this)
+            .setTitle("Permission Denied")
+            .setMessage("Please enable notification permissions in Settings to receive notifications.")
+            .setPositiveButton("Open Settings") { _, _ ->
+                permissionHandler.openAppSettings()
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    //endregion
 
 //*************** DashBoard List Adapter Home/Dashboard Menu Action *****************************************
 
@@ -508,21 +561,48 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
 
         // Toggle checked state of the menu item
-        toggleMenuItemChecked(menuItem)
+       // toggleMenuItemChecked(menuItem)
+
+        // Clear previous selection and set new one
+        clearNavigationSelection()
+        menuItem.isChecked = true
+        currentSelectedItemId = menuItem.itemId
 
         // Hide the keyboard
         hideKeyboard(binding.root)
 
-        // Add dynamic drawer menu items
-        if (handleDynamicMenu(menuItem)) {
-            return true
-        }
 
-        // Handle specific menu item clicks
-        handleMenuItemClick(menuItem)
+        Handler(Looper.getMainLooper()).postDelayed({
+            // Add dynamic drawer menu items
+            if (handleDynamicMenu(menuItem)) {
+
+                return@postDelayed
+            }
+
+            // Handle specific menu item clicks
+            handleMenuItemClick(menuItem)
 
         // Close the drawer after item selection
         binding.drawer.closeDrawer(GravityCompat.START)
+
+            // Close drawer
+            binding.drawer.closeDrawer(GravityCompat.START)
+        }, 150)
+
+        //region  Add dynamic drawer menu items
+//        if (handleDynamicMenu(menuItem)) {
+//            return true
+//        }
+//
+//        // Handle specific menu item clicks
+//        handleMenuItemClick(menuItem)
+//
+//        // Close the drawer after item selection
+//        binding.drawer.closeDrawer(GravityCompat.START)
+
+        //endregion
+
+
         return true
     }
     //Mark: Drawer -Menu Click Navigate to Specific Activity / WebView Handling
@@ -561,6 +641,18 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
         }
         return false
+    }
+
+    private fun clearNavigationSelection() {
+        val menu = binding.navigationView.menu
+        for (i in 0 until menu.size()) {
+            menu.getItem(i).isChecked = false
+        }
+    }
+
+    fun setSelectedNavigationItem(itemId: Int) {
+        currentSelectedItemId = itemId
+        binding.navigationView.setCheckedItem(itemId)
     }
 
 
@@ -1741,38 +1833,37 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     //region Observer
     private fun observeMasterState() {
 
-//        lifecycleScope.launch {
-//            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
-//                viewModelNotify.notificationCounter.collect { count ->
-//                    // Update UI with the new counter value
-//                    updateNotificationCounter(count)
-//                }
-//            }
-//        }
-//
-//
-//        // Directly observe the notifications without lifecycle restriction
+
+
+
+
         lifecycleScope.launch {
 
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
 
-                viewModelFCMNotify.notificationFlow.collect { notifyEntity ->
-                    notifyEntity?.let {
+                viewModelFCMNotify.notificationFlow
+                    .onEach { notifyEntity ->
 
-                        val notifyCount: Int = prefsManager.getNotificationCounter()
+                        notifyEntity?.let {
 
-                        if (notifyCount == 0) {
-                            textNotifyItemCount!!.visibility = View.GONE
-                        } else {
-                            textNotifyItemCount!!.visibility = View.VISIBLE
-                            textNotifyItemCount!!.text = "" + notifyCount.toString()
+                            val notifyCount: Int = prefsManager.getNotificationCounter()
+
+                            if (notifyCount == 0) {
+                                textNotifyItemCount!!.visibility = View.GONE
+                            } else {
+                                textNotifyItemCount!!.visibility = View.VISIBLE
+                                textNotifyItemCount!!.text = "" + notifyCount.toString()
+                            }
                         }
+
+                    }.catch { e->
+
+                        Log.e("NOTIFICATION FCM ERROE", "Error:", e)
                     }
-                }
+                    .collect()
             }
-
-
         }
+
 
 
         lifecycleScope.launch {
@@ -1794,6 +1885,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
 
                                 setupDashBoard_Adapter()
+                                initHeaderLayout()
                                 shortcutAppMenu()
 
                                 if (!prefsManager.getDeepLink().isNullOrEmpty()) {

@@ -1,6 +1,8 @@
 package com.policyboss.policybosspro.view.myAccount
 
 import android.Manifest
+import android.app.AlertDialog
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.net.Uri
@@ -13,6 +15,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.ScrollView
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -38,10 +41,8 @@ import com.policyboss.policybosspro.utility.Utility
 import com.policyboss.policybosspro.utility.UtilityNew
 import com.policyboss.policybosspro.utils.AppPermission.AppPermissionManager
 import com.policyboss.policybosspro.utils.AppPermission.PermissionHandler
-import com.policyboss.policybosspro.utils.BitmapUtility
 import com.policyboss.policybosspro.utils.Constant
 import com.policyboss.policybosspro.utils.hideKeyboard
-import com.policyboss.policybosspro.utils.showSnackbar
 import com.policyboss.policybosspro.utils.showToast
 import com.webengage.sdk.android.User
 import com.webengage.sdk.android.WebEngage
@@ -156,6 +157,8 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
 
         setListener()
 
+        bindAboutMe()
+
         apiGetProfileDetails()
 
 
@@ -237,6 +240,29 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
 
 
 
+    private fun bindAboutMe() {
+        val userConstantEntity = prefsManager.getUserConstantEntity()
+
+        with(includedBinding){
+
+            tvName.text = prefsManager.getName() // Safe call with null fallback
+            tvFbaCode.text = "${prefsManager.getFBAID()}" // String interpolation for conversion
+
+            userConstantEntity?.let {
+                tvPospNo.text = prefsManager.getSSID()// Only set if SSID is not null
+                tvLoginId.text = it.LoginID ?: "" // Use elvis operator to avoid null values
+                tvPospStatus.text = it.POSP_STATUS ?: ""
+
+                txtManagerName.text = it.ManagName ?: ""
+                txtManagerMobile.text = it.MangMobile ?: ""
+                txtManagerEmail.text = it.MangEmail ?: ""
+
+                txtSupportMobile.text = it.SuppMobile ?: ""
+                txtSupportEmail.text = it.SuppEmail ?: ""
+            }
+        }
+
+    }
 
 
     fun apiGetProfileDetails(){
@@ -337,6 +363,11 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
 
            ivProfile.setOnClickListener(this@MyAccountActivity)
             ivPhotoCam.setOnClickListener(this@MyAccountActivity)
+
+            ivManagerMobile.setOnClickListener(this@MyAccountActivity)
+            ivManagerEmail.setOnClickListener(this@MyAccountActivity)
+            ivSupportMobile.setOnClickListener(this@MyAccountActivity)
+            ivSupportEmail.setOnClickListener(this@MyAccountActivity)
 //            ivPhotoView.setOnClickListener(this@MyAccountActivity)
 //            ivPanCam.setOnClickListener(this@MyAccountActivity)
 //            ivPanView.setOnClickListener(this@MyAccountActivity)
@@ -346,10 +377,7 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
 //            ivAadharCam.setOnClickListener(this@MyAccountActivity)
 //            ivAadharView.setOnClickListener(this@MyAccountActivity)
 //
-//            ivManagerMobile.setOnClickListener(this@MyAccountActivity)
-//            ivManagerEmail.setOnClickListener(this@MyAccountActivity)
-//            ivSupportMobile.setOnClickListener(this@MyAccountActivity)
-//            ivSupportEmail.setOnClickListener(this@MyAccountActivity)
+
 //
 //            btnSave.setOnClickListener(this@MyAccountActivity)
 //            txtSaving.setOnClickListener(this@MyAccountActivity)
@@ -677,7 +705,7 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
 
                 } else {
 
-                    showAlert("App need perission")
+                    //showAlert("App need perission")
                 }
             },
             onPermanentlyDenied = { permissions ->
@@ -889,6 +917,31 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
 
     //endregion
 
+    fun ConfirmAlert(title: String, body: String, mobile: String) {
+        try {
+            AlertDialog.Builder(this).apply {
+                setTitle(title)
+                setMessage(body)
+                setPositiveButton("Call") { _, _ ->
+                    val intentCalling = Intent(Intent.ACTION_DIAL).apply {
+                        data = Uri.parse("tel:$mobile")
+                    }
+                    startActivity(intentCalling)
+                }
+                setNegativeButton("Cancel") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                create().apply {
+                    setCancelable(false)
+                    setCanceledOnTouchOutside(false)
+                }.show()
+            }
+        } catch (ex: Exception) {
+            Toast.makeText(this, "Please try again..", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
     override fun onClick(view: View?) {
 
         hideKeyboard(binding.root)
@@ -944,8 +997,46 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
                // createBitmapFromURL(ivPhotoView.tag.toString(), "FBA PHOTOGRAPH").execute()
             }
 
+            R.id.ivManagerMobile ->{
+
+                ConfirmAlert("Calling",
+                    resources.getString(R.string.RM_Calling) + " " + prefsManager.getUserConstantEntity()?.ManagName?:"",
+                    prefsManager.getUserConstantEntity()?.MangMobile?: ""
+                )
 
 
+            }
+
+            R.id.ivManagerEmail ->{
+
+                composeEmail(
+                    address= prefsManager.getUserConstantEntity()?.MangEmail?:"",
+                    subject = ""
+
+                )
+            }
+
+            R.id.ivSupportMobile ->{
+
+
+                ConfirmAlert(
+                    "Calling",
+                    resources.getString(R.string.Support_Calling),
+                    prefsManager.getUserConstantEntity()?.SuppMobile?: ""
+
+                )
+
+
+            }
+
+            R.id.ivSupportEmail ->{
+                composeEmail(
+                    address= prefsManager.getUserConstantEntity()?.SuppEmail?:"",
+                    subject = ""
+
+                )
+
+            }
 
 
         }
