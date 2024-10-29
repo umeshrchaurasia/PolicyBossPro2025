@@ -272,6 +272,16 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
 
 
+       // binding.navigationView.menu.
+
+//        val navMenu = binding.navigationView.menu
+//        val contactMenuItem = navMenu.findItem(R.id.nav_MYUtilities)
+//
+//        // Check if the item is available, then set it as checked
+//        contactMenuItem?.isChecked = true
+
+
+       // setSelectedNavigationItem(R.id.nav_myaccount)
 
 
     }
@@ -561,18 +571,18 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
 
         // Toggle checked state of the menu item
-       // toggleMenuItemChecked(menuItem)
+        toggleMenuItemChecked(menuItem)
 
-        // Clear previous selection and set new one
-        clearNavigationSelection()
-        menuItem.isChecked = true
-        currentSelectedItemId = menuItem.itemId
 
         // Hide the keyboard
         hideKeyboard(binding.root)
 
 
         Handler(Looper.getMainLooper()).postDelayed({
+
+
+
+            currentSelectedItemId = menuItem.itemId
             // Add dynamic drawer menu items
             if (handleDynamicMenu(menuItem)) {
 

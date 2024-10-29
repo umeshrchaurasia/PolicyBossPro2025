@@ -102,17 +102,8 @@
 
 
 
+<!--        account group-->
 
-
-
-
-
-    </group>
-
-
-    <group
-        android:id="@+id/account_group"
-        android:checkableBehavior="single">
         <item
             android:id="@+id/nav_myaccount_pro"
             android:icon="@drawable/my_account"
@@ -160,66 +151,67 @@
 
             </menu>
         </item>
-    </group>
+<!--        //end account grouop-->
 
-    <group
-        android:id="@+id/sync_contact_group"
-        android:checkableBehavior="single">
-    <item
-        android:id="@+id/nav_LEADS"
-        android:icon="@drawable/my_account"
-        android:orderInCategory="400"
-        android:title="SYNC CONTACTS">
-        <menu>
-
-            <item
-                android:id="@+id/nav_contact"
-                android:icon="@drawable/sync_contact_ic"
-                android:orderInCategory="410"
-                android:title="Sync/ReSync Now"
-                android:visible="true" />
-            <item
-                android:id="@+id/nav_generateLead"
-                android:icon="@drawable/vehicledetail"
-                android:orderInCategory="420"
-                android:visible="false"
-                android:title="Generate Motor Leads" />
-
-            <item
-                android:id="@+id/nav_scan_vehicle"
-                android:icon="@drawable/camera_search_ic"
-                android:orderInCategory="425"
-                android:title="Scan Vehicle"
-                android:visible="false" />
-
-            <item
-                android:id="@+id/nav_sharedata1"
-                android:icon="@drawable/share_data"
-                android:orderInCategory="440"
-                android:visible="false"
-                android:title="Generate Loan Leads" />
-
-            <item
-                android:id="@+id/nav_leaddetail"
-                android:icon="@drawable/insurance_policy_ic"
-                android:orderInCategory="450"
-                android:title="Summary &amp; Dashboard"
-                android:visible="true" />
+<!--        sync_contact_group-->
 
 
+        <!-- end sync_contact grouop-->
+
+        <item
+            android:id="@+id/nav_LEADS"
+            android:icon="@drawable/my_account"
+            android:orderInCategory="400"
+            android:title="SYNC CONTACTS">
+            <menu>
+
+                <item
+                    android:id="@+id/nav_contact"
+                    android:icon="@drawable/sync_contact_ic"
+                    android:orderInCategory="410"
+                    android:title="Sync/ReSync Now"
+                    android:visible="true" />
+                <item
+                    android:id="@+id/nav_generateLead"
+                    android:icon="@drawable/vehicledetail"
+                    android:orderInCategory="420"
+                    android:visible="false"
+                    android:title="Generate Motor Leads" />
+
+                <item
+                    android:id="@+id/nav_scan_vehicle"
+                    android:icon="@drawable/camera_search_ic"
+                    android:orderInCategory="425"
+                    android:title="Scan Vehicle"
+                    android:visible="false" />
+
+                <item
+                    android:id="@+id/nav_sharedata1"
+                    android:icon="@drawable/share_data"
+                    android:orderInCategory="440"
+                    android:visible="false"
+                    android:title="Generate Loan Leads" />
+
+                <item
+                    android:id="@+id/nav_leaddetail"
+                    android:icon="@drawable/insurance_policy_ic"
+                    android:orderInCategory="450"
+                    android:title="Summary &amp; Dashboard"
+                    android:visible="true" />
 
 
-            <!--added temp =05-->
-            <item
-                android:id="@+id/nav_gift"
-                android:icon="@drawable/mps"
-                android:orderInCategory="470"
-                android:title="Gift Voucher"
-                android:visible="false" />
 
-        </menu>
-    </item>
-    </group>
+
+                <!--added temp =05-->
+                <item
+                    android:id="@+id/nav_gift"
+                    android:icon="@drawable/mps"
+                    android:orderInCategory="470"
+                    android:title="Gift Voucher"
+                    android:visible="false" />
+
+            </menu>
+        </item>
 
 
     <item
@@ -264,6 +256,7 @@
         android:orderInCategory="900"
         android:visible="false"
         android:title="WHAT'S NEW" />
+
     <item
         android:id="@+id/nav_cobrowser"
         android:icon="@drawable/whats_new"
@@ -276,6 +269,9 @@
         android:icon="@drawable/logout"
         android:orderInCategory="10000"
         android:title="LOG-OUT" />
+
+
+    </group>
 
     <group
         android:id="@+id/dynamic_menu"

@@ -3,4 +3,10 @@
     <declare-styleable name="CustomImageView">
         <attr name="aspectRatio" format="float" />
     </declare-styleable>
+
+<!--    // drawer Color-->
+    <attr name="colorNavigationItem" format="color" />
+    <attr name="colorNavigationItemSelected" format="color" />
+
+    <attr name="drawableNavigationItemBackground" format="reference" />
 </resources>
