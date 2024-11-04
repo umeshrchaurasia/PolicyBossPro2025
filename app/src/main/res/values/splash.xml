@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-<!--  // refer :  https://tomas-repcik.medium.com/setting-up-the-splash-screen-with-android-api-3dddbb1ed514-->
+<!--  //customized: refer :  https://tomas-repcik.medium.com/setting-up-the-splash-screen-with-android-api-3dddbb1ed514-->
 
 
         <style name="Theme.PolicyBossProSplashScreen" parent="Theme.SplashScreen">

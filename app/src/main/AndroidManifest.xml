@@ -92,7 +92,6 @@
     <uses-permission android:name="com.policyboss.policybosspro.permission.MIPUSH_RECEIVE" />
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" /> <!-- ForPhoto Permission -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- For Workmanager Notification Permission -->
-    <uses-permission android:name="android.permission.RECEIVE_SMS" /> <!-- For RECEIVE SMS Permission. get Sms for OTP -->
     <permission
         android:name="com.policyboss.policybosspro.permission.MIPUSH_RECEIVE"
         android:protectionLevel="signature" />
@@ -234,7 +233,7 @@
             android:name=".view.splashscreen.SplashScreenActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/Theme.PolicyBossProSplashScreen">
+            android:theme="@style/Theme.Policybossprov34">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

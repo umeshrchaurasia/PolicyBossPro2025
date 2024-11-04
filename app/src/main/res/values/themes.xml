@@ -9,6 +9,8 @@
             <!--status bar color-->
             <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
             <item name="colorAccent">@color/colorAccent</item>
+
+<!--        <item name="colorOnSurface">@color/colorText</item>-->
         <!--<item name="android:windowBackground">@color/window_background</item>-->
         <!-- <item name="android:windowBackground">@color/background</item>-->
         <item name="android:windowBackground">@color/white</item>
@@ -29,22 +31,32 @@
         <item name="colorControlActivated">@color/colorPrimary</item>
 
 
+        <!-- NavigationView Selected Item Colors  -->
+         <!--   Note : Only working on Theme.MaterialComponents.DayNight.NoActionBar -->
+        <item name="colorControlHighlight">@color/colorAccentPressed</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+
+
+
     </style>
 
     <style name="Theme.Policybossprov34" parent="Base.Theme.Policybossprov34" />
 
 
+
+
     <!-- Define the Splash Screen theme -->
-    <style name="Theme.Splash" parent="Theme.SplashScreen">
-        <!-- Splash screen background -->
-        <item name="windowSplashScreenBackground">@color/bg_dashboard</item>
-        <!-- Splash screen icon -->
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_policyboss</item>
-        <!-- Duration for splash screen icon animation -->
-        <item name="windowSplashScreenAnimationDuration">300</item>
-        <!-- Post-splash screen theme (main app theme) -->
-        <item name="postSplashScreenTheme">@style/Theme.Policybossprov34</item>
-    </style>
+<!--    <style name="Theme.Splash" parent="Theme.SplashScreen">-->
+<!--        &lt;!&ndash; Splash screen background &ndash;&gt;-->
+<!--        <item name="windowSplashScreenBackground">@color/bg_dashboard</item>-->
+<!--        &lt;!&ndash; Splash screen icon &ndash;&gt;-->
+<!--        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_policyboss</item>-->
+<!--        &lt;!&ndash; Duration for splash screen icon animation &ndash;&gt;-->
+<!--        <item name="windowSplashScreenAnimationDuration">300</item>-->
+<!--        &lt;!&ndash; Post-splash screen theme (main app theme) &ndash;&gt;-->
+<!--        <item name="postSplashScreenTheme">@style/Theme.Policybossprov34</item>-->
+<!--    </style>-->
 
     <!-- Define a custom splash screen theme -->
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">

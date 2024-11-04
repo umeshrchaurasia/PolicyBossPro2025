@@ -6,6 +6,8 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
+import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
@@ -25,6 +27,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -214,6 +217,8 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         setupHeaderLayoutListeners()
 
+        setupNavigationViewTheme()
+
         permissionHandler = PermissionHandler(this)
         requestNotificationPermission()
 
@@ -289,6 +294,26 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     override fun onResume() {
         super.onResume()
 
+
+    }
+
+    private fun setupNavigationViewTheme() {
+        // Get current night mode
+        val isDarkMode = resources.configuration.uiMode and
+                Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+
+        if (isDarkMode) {
+            navigationView.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.header_light_text))
+
+            navigationView.itemTextColor = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white))
+            navigationView.itemIconTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white))
+
+        } else {
+            navigationView.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.white))
+
+            navigationView.itemTextColor = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.header_dark_text))
+            navigationView.itemIconTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.header_dark_text))
+        }
 
     }
 
@@ -570,9 +595,10 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             return false
         }
 
-        // Toggle checked state of the menu item
-        toggleMenuItemChecked(menuItem)
 
+
+        // Toggle checked state of the menu item
+       toggleMenuItemChecked(menuItem)
 
         // Hide the keyboard
         hideKeyboard(binding.root)
@@ -599,18 +625,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             binding.drawer.closeDrawer(GravityCompat.START)
         }, 150)
 
-        //region  Add dynamic drawer menu items
-//        if (handleDynamicMenu(menuItem)) {
-//            return true
-//        }
-//
-//        // Handle specific menu item clicks
-//        handleMenuItemClick(menuItem)
-//
-//        // Close the drawer after item selection
-//        binding.drawer.closeDrawer(GravityCompat.START)
 
-        //endregion
 
 
         return true
@@ -620,7 +635,13 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     //region Drawer -Menu Methods
 
     private fun toggleMenuItemChecked(menuItem: MenuItem) {
-        menuItem.isChecked = !menuItem.isChecked
+       // menuItem.isChecked = !menuItem.isChecked
+
+        val menu = binding.navigationView.menu
+        for (i in 0 until menu.size()) {
+            menu.getItem(i).isChecked = false
+        }
+        menuItem.isChecked = true
     }
 
     private fun handleDynamicMenu(menuItem: MenuItem): Boolean {

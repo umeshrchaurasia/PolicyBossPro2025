@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.Policybossprov34" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.Policybossprov34" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
 
@@ -24,6 +24,11 @@
         <!-- Set the cursor and text selection handle color to blue -->
         <!--    Note :If colorSecondary is not explicitly set, it typically falls back to colorPrimary.-->
         <item name="colorControlActivated">@color/colorPrimary</item>
+
+        <!--   Note : Only working on Theme.MaterialComponents.DayNight.NoActionBar -->
+        <item name="colorControlHighlight">@color/colorAccentPressed</item>
+        <item name="colorOnPrimary">@color/white</item>
+
 
     </style>
 </resources>

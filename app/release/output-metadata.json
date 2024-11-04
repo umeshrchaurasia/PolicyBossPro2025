@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.policyboss.policybosspro",
+  "variantName": "release",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 45,
+      "versionName": "1.4.0.5",
+      "outputFile": "app-release.apk"
+    }
+  ],
+  "elementType": "File"
+}

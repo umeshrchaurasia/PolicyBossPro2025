@@ -100,7 +100,7 @@ class SplashScreenActivity : AppCompatActivity() {
             if (prefManager.isFirstTimeLaunch()) {
                 navigateToWelcome()
             } else {
-                delay(3000) // Optional delay if you still want it
+                delay(2000) // Optional delay if you still want it
                 navigateBasedOnLoginStatus()
             }
         } catch (e: Exception) {

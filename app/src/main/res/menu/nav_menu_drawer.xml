@@ -9,6 +9,7 @@
             android:id="@+id/nav_home"
             android:icon="@drawable/home"
             android:orderInCategory="50"
+            android:checkable="true"
             android:title="@string/nav_home" />
 
         <item
@@ -16,6 +17,7 @@
             android:icon="@drawable/ic_business_name"
             android:orderInCategory="51"
             android:visible="true"
+            android:checkable="true"
             android:title="App Code">
 
         </item>
@@ -44,6 +46,7 @@
             android:icon="@drawable/mps"
             android:orderInCategory="100"
             android:visible="false"
+            android:checkable="true"
             android:title="@string/nav_finbox" />
 
 
@@ -52,12 +55,14 @@
             android:icon="@drawable/ic_business_name"
             android:orderInCategory="100"
             android:visible="false"
+            android:checkable="true"
             android:title="@string/nav_finperks" />
         <item
             android:id="@+id/nav_festivelink"
             android:icon="@drawable/share_data"
             android:orderInCategory="100"
             android:title="FESTIVE LINKS"
+            android:checkable="true"
             android:visible="false" />
 
 
@@ -65,6 +70,7 @@
             android:id="@+id/nav_insert_contact"
             android:icon="@drawable/home"
             android:orderInCategory="105"
+            android:checkable="true"
             android:title="Finmart Business Contact"
             android:visible="false" />
 
@@ -74,6 +80,7 @@
             android:id="@+id/nav_Doc"
             android:icon="@drawable/my_account"
             android:orderInCategory="250"
+            android:checkable="true"
             android:visible="false"
             android:title="My DOCUMENTS">
             <menu>
@@ -82,18 +89,21 @@
                     android:icon="@drawable/agreemnet"
                     android:orderInCategory="260"
                     android:title="Loan Agreement"
+                    android:checkable="true"
                     android:visible="false" />
 
                 <item
                     android:id="@+id/nav_AppointmentLetter"
                     android:icon="@drawable/agreemnet"
                     android:orderInCategory="270"
+                    android:checkable="true"
                     android:title="POSP Appointment Letter"
                     android:visible="true" />
 
                 <item
                     android:id="@+id/nav_Certificate"
                     android:icon="@drawable/agreemnet"
+                    android:checkable="true"
                     android:orderInCategory="280"
                     android:title="POSP Application Form"
                     android:visible="true" />
@@ -108,11 +118,13 @@
             android:id="@+id/nav_myaccount_pro"
             android:icon="@drawable/my_account"
             android:orderInCategory="200"
+            
             android:title="MY ACCOUNT">
             <menu>
                 <item
                     android:id="@+id/nav_myaccount"
                     android:icon="@drawable/vector_person"
+                    android:checkable="true"
                     android:orderInCategory="210"
                     android:title="My Profile" />
 
@@ -127,18 +139,21 @@
                     android:icon="@drawable/posp_enrollment"
                     android:orderInCategory="230"
                     android:visible="false"
+                    android:checkable="true"
                     android:title="Add Sub User" />
 
                 <item
                     android:id="@+id/nav_raiseTicket"
                     android:icon="@drawable/posp_enrollment"
                     android:orderInCategory="240"
+                    android:checkable="true"
                     android:title="Raise a Ticket" />
 
                 <item
                     android:id="@+id/nav_sendSmsTemplate"
                     android:icon="@drawable/mps"
                     android:orderInCategory="242"
+                    android:checkable="true"
                     android:title="Sms Templates"
                     android:visible="false" />
                 <item
@@ -146,6 +161,7 @@
                     android:icon="@drawable/change_password"
                     android:orderInCategory="245"
                     android:visible="true"
+                    android:checkable="true"
                     android:title="Change Password" />
 
 
@@ -170,12 +186,14 @@
                     android:icon="@drawable/sync_contact_ic"
                     android:orderInCategory="410"
                     android:title="Sync/ReSync Now"
+                    android:checkable="true"
                     android:visible="true" />
                 <item
                     android:id="@+id/nav_generateLead"
                     android:icon="@drawable/vehicledetail"
                     android:orderInCategory="420"
                     android:visible="false"
+                    android:checkable="true"
                     android:title="Generate Motor Leads" />
 
                 <item
@@ -190,12 +208,14 @@
                     android:icon="@drawable/share_data"
                     android:orderInCategory="440"
                     android:visible="false"
+                    android:checkable="true"
                     android:title="Generate Loan Leads" />
 
                 <item
                     android:id="@+id/nav_leaddetail"
                     android:icon="@drawable/insurance_policy_ic"
                     android:orderInCategory="450"
+                    android:checkable="true"
                     android:title="Summary &amp; Dashboard"
                     android:visible="true" />
 
@@ -207,6 +227,7 @@
                     android:id="@+id/nav_gift"
                     android:icon="@drawable/mps"
                     android:orderInCategory="470"
+                    android:checkable="true"
                     android:title="Gift Voucher"
                     android:visible="false" />
 
@@ -218,6 +239,7 @@
         android:id="@+id/nav_MYUtilities"
         android:icon="@drawable/training_ic"
         android:orderInCategory="710"
+        android:checkable="true"
         android:title="MY UTILITIES">
 
     </item>
@@ -234,11 +256,13 @@
                 android:icon="@drawable/insurance_policy_ic"
                 android:orderInCategory="810"
                 android:title="Disclosure"
+                android:checkable="true"
                 android:visible="true" />
             <item
                 android:id="@+id/nav_policy"
                 android:icon="@drawable/agreemnet"
                 android:orderInCategory="820"
+                android:checkable="true"
                 android:title="Privacy Policy" />
 
             <item

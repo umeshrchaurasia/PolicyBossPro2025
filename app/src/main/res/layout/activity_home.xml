@@ -136,9 +136,11 @@ tools:context=".view.home.HomeActivity">
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android:layout_gravity="start"
-    android:background="@color/white"
+
+    android:backgroundTint="@color/white"
     app:headerLayout="@layout/drawer_header"
     app:itemTextColor="@color/header_dark_text"
+    app:itemIconTint="@color/header_dark_text"
     app:menu="@menu/nav_menu_drawer"
     tools:openDrawer="start" />
 
