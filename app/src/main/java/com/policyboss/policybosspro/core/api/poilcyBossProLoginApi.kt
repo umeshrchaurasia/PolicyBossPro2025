@@ -96,7 +96,7 @@ interface poilcyBossProLoginApi {
 
 
     @Headers("token:" + Constant.token)
-    @POST("/quote/Postfm/Getusersignup")
+    @POST("/Postfm/Getusersignup")
     suspend fun getusersignup(@Body body: HashMap<String,String>): Response<UserNewSignUpResponse?>
 
 
@@ -124,7 +124,7 @@ interface poilcyBossProLoginApi {
     suspend fun forgotPassword(@Body body: HashMap<String,String>): Response<ForgotResponse>
 
 
-    @POST("/quote/Postfm/notification-auth-token")
+    @POST("/Postfm/notification-auth-token")
     suspend fun insert_notification_token(@Body body: HashMap<String,String>): Response<DevicetokenResponse?>
 
 

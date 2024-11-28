@@ -143,9 +143,6 @@ class HomeViewModel @Inject constructor(
                         prefManager.storeMenuDashboard(it)
                     }
 
-
-
-
                 } else {
                     _masterState.value = APIState.Failure(errorMessage = Constant.MasterData)
                 }
@@ -169,11 +166,11 @@ class HomeViewModel @Inject constructor(
         val dashBoardItemEntities = prefManager.getMenuDashBoard()?.MasterData?.Dashboard
 
         dashBoardItemEntities?.let { items ->
-            items.filter { it.dashboard_type.equals("1")  && it.isActive == 1 }
+            items.filter { it.dashboard_type == 1  && it.isActive == 1 }
                 .forEach { dashBoardItemEntity ->
                     val dashboardEntity = DashboardMultiLangEntity(
                         category = "INSURANCE",
-                        sequence = dashBoardItemEntity.sequence.toInt(),
+                        sequence = dashBoardItemEntity.ProdId.toInt(),
                         productId = dashBoardItemEntity.ProdId.toInt(),
                         menuName = dashBoardItemEntity.menuname,
                         description = dashBoardItemEntity.description,
@@ -196,8 +193,8 @@ class HomeViewModel @Inject constructor(
                         isExclusive = dashBoardItemEntity.IsExclusive,
                         isSharable = dashBoardItemEntity.IsSharable,
                         title = dashBoardItemEntity.title,
-                        info = dashBoardItemEntity.info,
-                        popupmsg = dashBoardItemEntity.popupmsg
+                        info = dashBoardItemEntity.infourl?:"",
+                        popupmsg = dashBoardItemEntity.popupinfo
                     )
                     dashboardEntities.add(dashboardEntity)
                 }

@@ -27,12 +27,12 @@ interface poilcyBossProAppApi {
      *************************************************************************************/
 
     @Headers("token:" +  Constant.token)
-    @POST("/quote/Postfm/sales-material-product-pb")
+    @POST("/Postfm/sales-material-product-pb")
     suspend fun getSalesProducts( @Body body: HashMap<String,String>): Response<SalesMaterialResponse>
 
 
     @Headers("token:" +  Constant.token)
-    @POST("/quote/Postfm/sales-material-product-details-pb")
+    @POST("/Postfm/sales-material-product-details-pb")
     suspend fun getSalesProductDetails( @Body body: HashMap<String,String>): Response<SalesMaterialProductDetailsResponse>
 
 
@@ -65,7 +65,7 @@ interface poilcyBossProAppApi {
      *************************************************************************************/
 
     @Headers("token:" + Constant.token)
-    @POST("/quote/Postfm/get-notification-data")
+    @POST("/Postfm/get-notification-data")
     suspend fun getNotificationData(@Body body: HashMap<String,String>): Response<NotificationResponse?>
 
 

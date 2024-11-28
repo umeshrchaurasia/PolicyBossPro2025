@@ -64,7 +64,7 @@ class DashboardItemAdapter(
 
             //region Set share and info visibility
             imgShare.visibility = if (item.isSharable == "Y") View.VISIBLE else View.GONE
-            imgInfo.visibility = if (item.info.isNotEmpty()) View.VISIBLE else View.GONE
+            imgInfo.visibility = if (item.info?.isNotEmpty() == true) View.VISIBLE else View.GONE
             //endregion
 
             //region Set background and font colors

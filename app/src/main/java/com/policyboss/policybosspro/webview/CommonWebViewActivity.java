@@ -167,7 +167,7 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
 
             screenData.put("SS ID", userConstantEntity.getPOSPNo());
             screenData.put("FBA ID", userConstantEntity.getFBAId());
-            screenData.put("Name", userConstantEntity.getFullName());
+            screenData.put("Name", prefManager.getName());
 
             screenData.put("url", url);
             screenData.put("title", title);
@@ -685,7 +685,7 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
                 case R.id.action_raise:
                     // Toast.makeText(this,"Popup",Toast.LENGTH_SHORT).show();
                     String url = userConstantEntity.getRaiseTickitUrl() + "&mobile_no=" + userConstantEntity.getMangMobile()
-                            + "&UDID=" + userConstantEntity.getUserid();
+                            + "&UDID=" + userConstantEntity.getUid();
                     Log.d("URL", "Raise Ticket URL: " + url);
                     //  openWebViewPopUp(webView,  url, true, CommonWebViewActivity.this);
                     openWebViewPopUp(webView, url, true, "Raise Ticket");

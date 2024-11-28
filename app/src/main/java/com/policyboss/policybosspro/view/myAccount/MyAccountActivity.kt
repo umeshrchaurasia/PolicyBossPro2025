@@ -250,8 +250,8 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
 
             userConstantEntity?.let {
                 tvPospNo.text = prefsManager.getSSID()// Only set if SSID is not null
-                tvLoginId.text = it.LoginID ?: "" // Use elvis operator to avoid null values
-                tvPospStatus.text = it.POSP_STATUS ?: ""
+                tvLoginId.text = prefsManager.getEmailId()// Use elvis operator to avoid null values
+                //tvPospStatus.text = it.POSP_STATUS ?: ""
 
                 txtManagerName.text = it.ManagName ?: ""
                 txtManagerMobile.text = it.MangMobile ?: ""

@@ -25,7 +25,7 @@ package com.policyboss.policybosspro.core.model.homeDashboard
     var isSharable: String? = null,
     var popupmsg: String? = null,
     var title: String? = null,
-    var info: String
+    var info: String? = null,
 
 )
 

@@ -722,15 +722,15 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         return   getUserConstantResponse()?.MasterData?.InvestmentUrl?:""
     }
 
-    fun getFinboxurl(): String {
-
-        return   getUserConstantResponse()?.MasterData?.finboxurl?:""
-    }
-
-    fun getFinperkurl(): String {
-
-        return   getUserConstantResponse()?.MasterData?.finperkurl?:""
-    }
+//    fun getFinboxurl(): String {
+//
+//        return   getUserConstantResponse()?.MasterData?.finboxurl?:""
+//    }
+//
+//    fun getFinperkurl(): String {
+//
+//        return   getUserConstantResponse()?.MasterData?.finperkurl?:""
+//    }
 
     fun getNotif_popupurl_elite(): String {
 

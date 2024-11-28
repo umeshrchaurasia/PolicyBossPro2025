@@ -692,15 +692,15 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             R.id.nav_home -> viewModel.getMasterData()
 
             R.id.nav_finbox -> {
-                startCommonWebViewActivity(prefsManager.getFinboxurl(), "MY FINBOX")
+             //   startCommonWebViewActivity(prefsManager.getFinboxurl(), "MY FINBOX")
             }
 
             R.id.nav_finperk -> {
-                startCommonWebViewActivity(prefsManager.getFinperkurl(), "FINPERKS")
+//startCommonWebViewActivity(prefsManager.getFinperkurl(), "FINPERKS")
             }
 
             R.id.nav_festivelink -> {
-                startCommonWebViewActivity(prefsManager.getFinperkurl(), "FESTIVE LINKS")
+         //       startCommonWebViewActivity(prefsManager.getFinperkurl(), "FESTIVE LINKS")
             }
 
             R.id.nav_AppointmentLetter -> {
@@ -789,13 +789,12 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         val navMenu = navigationView.menu
 
 
-        prefsManager.getUserConstantEntity()?.enableenrolasposp?.let {
+        prefsManager.getUserType().let {
             if (it.isNotEmpty()) {
-                if (it.toInt() == 1) {
-                    navMenu.findItem(R.id.nav_pospenrollment)?.isVisible = true
-                } else {
-                    navMenu.findItem(R.id.nav_pospenrollment)?.isVisible = false
-                }
+                navMenu.findItem(R.id.nav_pospenrollment)?.isVisible = it.toString() != "EMP"
+            }else
+            {
+                navMenu.findItem(R.id.nav_pospenrollment)?.isVisible = true
             }
         }
 
@@ -921,7 +920,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     weUser.setEmail(prefsManager.getEmpData()?.Email_Id ?: "")
 
                     Glide.with(this@HomeActivity)
-                        .load(prefsManager.getUserConstantEntity()?.loansendphoto)
+                        .load(prefsManager.getUserConstantEntity()?.pospselfphoto)
                         .placeholder(R.drawable.circle_placeholder)
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .skipMemoryCache(true)
@@ -1345,7 +1344,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
     fun onInfoListener(entity: DashboardMultiLangEntity){
 
-        openWebViewPopUp(binding.root, entity.info, true, "")
+        openWebViewPopUp(binding.root, entity.info?:"", true, "")
     }
     fun onDashBoardListener(entity: DashboardMultiLangEntity){
 
