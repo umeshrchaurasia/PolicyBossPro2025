@@ -86,6 +86,19 @@ data class POSP_USER(
 
     var  Mobile_No: String = "",
     var Erp_Id: String="",
+
+    var Permanant_Add1: String="",
+    var Permanant_Add2: String="",
+    var Permanant_Add3: String="",
+    var Permanant_City: String="",
+
+    var Permanant_Pincode: String="",
+    var Permanant_State: String="",
+    var Permanant_Country: String="",
+
+    var Gender: String ="",
+    var Birthdate: String ="",
+
 )
 
 data class DEVICE(

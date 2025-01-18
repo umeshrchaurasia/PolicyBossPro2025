@@ -159,8 +159,9 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
 
         bindAboutMe()
 
-        apiGetProfileDetails()
+   //     apiGetProfileDetails()
 
+        setAcctDtlInfo ()
 
         cameraLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) {
 
@@ -394,19 +395,19 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
         WebEngage.get().analytics().screenNavigated("MyAccount Screen")
     }
 
-    private fun setUserInfoToWebEngAnalytic(accountDtlEntity: AccountDtlEntity) {
-        weUser.setPhoneNumber(accountDtlEntity.EditMobiNumb)
-        weUser.setEmail(accountDtlEntity.EditEmailId)
+    private fun setUserInfoToWebEngAnalytic() {
+        weUser.setPhoneNumber(prefsManager.getMobileNo())
+        weUser.setEmail(prefsManager.getEmailId())
 
 
 
-        if (accountDtlEntity.Gender.equals("M")) {
+        if (prefsManager.getGender()=="M") {
             weUser.setGender(Gender.MALE)
         } else {
             weUser.setGender(Gender.FEMALE)
         }
 
-        weUser.setBirthDate("" + Utility.getDateFromWeb(accountDtlEntity.DOB?:""))
+        weUser.setBirthDate("" + Utility.getDateFromWeb1(prefsManager.getBirthdate()?:""))
 
     }
 
@@ -448,7 +449,7 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
 
 
     //region ShowAccount Details
-    private fun setAcctDtlInfo(accountDtlEntity: AccountDtlEntity) {
+    private fun setAcctDtlInfo1(accountDtlEntity: AccountDtlEntity) {
         with(includedBinding) {
             etSubHeading.setText(accountDtlEntity.Designation ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
             etMobileNo.setText(accountDtlEntity.EditMobiNumb ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
@@ -491,9 +492,52 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
                 }
             }
 
-            setUserInfoToWebEngAnalytic(accountDtlEntity)
+           // setUserInfoToWebEngAnalytic()
         }
     }
+
+
+    //endregion
+
+    private fun setAcctDtlInfo() {
+        with(includedBinding) {
+
+            var accountDtlEntity : AccountDtlEntity? =  null
+        //    etSubHeading.setText(accountDtlEntity.Designation ?.ifEmpty { Constant.DEFAULT } ?: Constant.DEFAULT)
+            etMobileNo.setText(prefsManager.getMobileNo())
+          //  etEmailId.setText(prefsManager.getLoginHorizonResponse()?.EMP?.Email_Id?: "")
+            etEmailId.setText(prefsManager.getEmailId())
+
+          etAddress1.setText(prefsManager.getPermanant_Add1())
+
+            etAddress2.setText(prefsManager.getPermanant_Add2())
+          etAddress3.setText(prefsManager.getPermanant_Add3())
+
+            etPincode.setText("" + prefsManager.getPermanant_Pincode())
+            etCity.setText(prefsManager.getPermanant_City())
+           etState.setText(prefsManager.getPermanant_State())
+
+
+
+
+
+//            accountDtlEntity?.doc_available.let { docList ->
+//                if (!docList.isNullOrEmpty()) {
+//                    for (docEntity in docList) {
+//                        if (!docEntity.FileName.isNullOrEmpty()) {
+//                            setDocumentUpload(docEntity.DocType, docEntity.FileName)
+//                        }
+//                    }
+//                }
+//            }
+
+
+            //temp
+           setUserInfoToWebEngAnalytic()
+        }
+    }
+
+
 
     private fun setSavingAcc() {
         ACCOUNT_TYPE = "SAVING"
@@ -774,7 +818,7 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
 
                                         //setupSalesMaterialAdapter(lstSalesProdEntity)
 
-                                        setAcctDtlInfo(accountDtlEntity = accountDtlEntity.get(0))
+                                      //  setAcctDtlInfo(accountDtlEntity = accountDtlEntity.get(0))
 
                                     }
                                 }

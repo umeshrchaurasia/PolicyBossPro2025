@@ -446,6 +446,28 @@ object Utility {
         }
     }
 
+    fun getDateFromWeb1(birthdate: String): String {
+        if(birthdate =="0") {
+            return ""
+        }
+        else{
+            val outputDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val inputDateFormat = SimpleDateFormat("dd-mm-yyyy", Locale.getDefault())
+            return try {
+                // Parse the input date string to a Date object
+                val date = inputDateFormat.parse(birthdate)
+
+                // Format the Date object to the desired output format
+                outputDateFormat.format(date ?: Date())
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // Handle the parse exception if the input date format is incorrect
+                ""
+            }
+        }
+    }
+
+
     fun getAgeFromDate(birthdate: String): Int {
         val dateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
         return try {

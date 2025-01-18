@@ -247,37 +247,44 @@
                 android:layout_marginTop="12dp"
                 android:layout_weight="0.4"
                 android:gravity="right"
+                android:visibility="gone"
                 android:text="@string/forgot_password"
                 android:textAppearance="@style/TextStyle.TextMedium"
                 android:textColor="@color/white" />
 
+            <LinearLayout
+                android:id="@+id/lyRaiseTicket"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                android:layout_weight="0.4"
+                android:gravity="right"
+                android:padding="4dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:text="Raise Ticket"
+                    android:textAppearance="@style/TextStyle.TextMedium"
+                    android:textColor="@color/white"
+                    android:visibility="visible" />
+
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="6dp"
+                  
+                    android:src="@drawable/ico_ticket">
+
+                </ImageView>
+            </LinearLayout>
+
         </LinearLayout>
 
         <!--        android:drawableRight="@drawable/ico_ticket"-->
-        <LinearLayout
-            android:id="@+id/lyRaiseTicket"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:orientation="horizontal"
 
-            android:padding="4dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_gravity="center_vertical"
-                android:text="Raise Ticket"
-                android:textAppearance="@style/TextStyle.TextMedium"
-                android:textColor="@color/white"
-                android:visibility="visible" />
-
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginLeft="8dp"
-                android:src="@drawable/ico_ticket"></ImageView>
-        </LinearLayout>
 
 
 

@@ -560,6 +560,321 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
     }
 
 
+    fun getPermanant_Add1() : String {
+
+        val response = getLoginHorizonResponse()
+
+        val usertype= response?.user_type?:""
+
+        when(usertype){
+
+
+            "POSP" , "FOS" ->{
+
+                val permanant_add1: String? = when (val obj = response?.POSP_USER) {
+                    is Map<*, *> -> {
+                        // Assume it's a Map, you can adjust this based on your actual JSON structure
+                        (obj["Permanant_Add1"] as? String)?.takeIf { it.isNotEmpty() } ?:""
+                    }
+                    else -> {
+
+                        ""
+                    }
+                }
+
+              //  Log.d("User Email ID.",emailID?:"")
+                return  permanant_add1?:""
+
+            }
+
+
+            "EMP" ->{
+                return ""
+            }
+            "MISP" ->{
+                return ""
+            }
+
+        }
+
+        return ""
+    }
+
+    fun getPermanant_Add2() : String {
+
+        val response = getLoginHorizonResponse()
+
+        val usertype= response?.user_type?:""
+
+        when(usertype){
+
+
+            "POSP" , "FOS" ->{
+
+                val permanant_add2: String? = when (val obj = response?.POSP_USER) {
+                    is Map<*, *> -> {
+                        // Assume it's a Map, you can adjust this based on your actual JSON structure
+                        (obj["Permanant_Add2"] as? String)?.takeIf { it.isNotEmpty() } ?:""
+                    }
+                    else -> {
+
+                        ""
+                    }
+                }
+
+                //  Log.d("User Email ID.",emailID?:"")
+                return  permanant_add2?:""
+
+            }
+
+
+            "EMP" ->{
+                return ""
+            }
+            "MISP" ->{
+                return ""
+            }
+
+        }
+
+        return ""
+    }
+
+
+    fun getPermanant_Add3() : String {
+
+        val response = getLoginHorizonResponse()
+
+        val usertype= response?.user_type?:""
+
+        when(usertype){
+
+
+            "POSP" , "FOS" ->{
+
+                val permanant_add3: String? = when (val obj = response?.POSP_USER) {
+                    is Map<*, *> -> {
+                        // Assume it's a Map, you can adjust this based on your actual JSON structure
+                        (obj["Permanant_Add3"] as? String)?.takeIf { it.isNotEmpty() } ?:""
+                    }
+                    else -> {
+
+                        ""
+                    }
+                }
+
+                //  Log.d("User Email ID.",emailID?:"")
+                return  permanant_add3?:""
+
+            }
+
+
+            "EMP" ->{
+                return ""
+            }
+            "MISP" ->{
+                return ""
+            }
+
+        }
+
+        return ""
+    }
+
+
+
+    fun getPermanant_Pincode(): String {
+        val response = getLoginHorizonResponse()
+        val userType = response?.user_type ?: ""
+
+        return when (userType) {
+            "POSP", "FOS" -> {
+                val pospUser = response?.POSP_USER
+                if (pospUser is Map<*, *>) {
+                    val pincode = pospUser["Permanant_Pincode"]
+                    return when (pincode) {
+                        is Int -> pincode.toString()
+                        is String -> pincode
+                        is Long -> pincode.toString()
+                        is Double -> pincode.toLong().toString()
+                        else -> ""
+                    }
+                } else {
+                    return ""
+                }
+            }
+            "EMP", "MISP" -> ""
+            else -> ""
+        }
+    }
+
+    fun getPermanant_City() : String {
+
+        val response = getLoginHorizonResponse()
+
+        val usertype= response?.user_type?:""
+
+        when(usertype){
+
+
+            "POSP" , "FOS" ->{
+
+                val permanant_city: String? = when (val obj = response?.POSP_USER) {
+                    is Map<*, *> -> {
+                        // Assume it's a Map, you can adjust this based on your actual JSON structure
+                        (obj["Permanant_City"] as? String)?.takeIf { it.isNotEmpty() } ?:""
+                    }
+                    else -> {
+
+                        ""
+                    }
+                }
+
+                //  Log.d("User Email ID.",emailID?:"")
+                return  permanant_city?:""
+
+            }
+
+
+            "EMP" ->{
+                return ""
+            }
+            "MISP" ->{
+                return ""
+            }
+
+        }
+
+        return ""
+    }
+
+
+    fun getPermanant_State() : String {
+
+        val response = getLoginHorizonResponse()
+
+        val usertype= response?.user_type?:""
+
+        when(usertype){
+
+
+            "POSP" , "FOS" ->{
+
+                val permanant_state: String? = when (val obj = response?.POSP_USER) {
+                    is Map<*, *> -> {
+                        // Assume it's a Map, you can adjust this based on your actual JSON structure
+                        (obj["Permanant_State"] as? String)?.takeIf { it.isNotEmpty() } ?:""
+                    }
+                    else -> {
+
+                        ""
+                    }
+                }
+
+                //  Log.d("User Email ID.",emailID?:"")
+                return  permanant_state?:""
+
+            }
+
+
+            "EMP" ->{
+                return ""
+            }
+            "MISP" ->{
+                return ""
+            }
+
+        }
+
+        return ""
+    }
+
+    fun getGender() : String {
+
+        val response = getLoginHorizonResponse()
+
+        val usertype= response?.user_type?:""
+
+        when(usertype){
+
+
+            "POSP" , "FOS" ->{
+
+                val gender: String? = when (val obj = response?.POSP_USER) {
+                    is Map<*, *> -> {
+                        // Assume it's a Map, you can adjust this based on your actual JSON structure
+                        (obj["Gender"] as? String)?.takeIf { it.isNotEmpty() } ?:""
+                    }
+                    else -> {
+
+                        ""
+                    }
+                }
+
+                //  Log.d("User Email ID.",emailID?:"")
+                return  gender?:""
+
+            }
+
+
+            "EMP" ->{
+                return ""
+            }
+            "MISP" ->{
+                return ""
+            }
+
+        }
+
+        return ""
+    }
+
+    fun getBirthdate() : String {
+
+        val response = getLoginHorizonResponse()
+
+        val usertype= response?.user_type?:""
+
+        when(usertype){
+
+
+            "POSP" , "FOS" ->{
+
+                val birthdate: String? = when (val obj = response?.POSP_USER) {
+                    is Map<*, *> -> {
+                        // Assume it's a Map, you can adjust this based on your actual JSON structure
+                        (obj["Birthdate"] as? String)?.takeIf { it.isNotEmpty() } ?:""
+                    }
+                    else -> {
+
+                        ""
+                    }
+                }
+
+                //  Log.d("User Email ID.",emailID?:"")
+                return  birthdate?:""
+
+            }
+
+
+            "EMP" ->{
+
+                return response?.EMP?.DOB?:"0"
+
+
+            }
+            "MISP" ->{
+                return ""
+            }
+
+        }
+
+        return ""
+    }
+
+
+
+
 
     fun saveLoginOTPResponse(  loginOTP : OtpLoginMsg?){
 

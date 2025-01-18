@@ -79,7 +79,7 @@
                             android:layout_alignStart="@+id/ivUser"
                             android:layout_marginStart="90dp"
                             android:src="@drawable/camera_new"
-                            android:visibility="visible" />
+                            android:visibility="gone" />
 
                     </RelativeLayout>
 
@@ -142,7 +142,7 @@
 
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-
+                        android:visibility="gone"
                         android:orientation="horizontal">
 
                         <com.google.android.material.textfield.TextInputLayout
@@ -864,6 +864,7 @@
 
 
                 <RelativeLayout
+                    android:visibility="gone"
                     android:id="@+id/rlPOSP"
                     style="@style/HeaderLayout"
                     android:padding="8dp">
@@ -895,13 +896,15 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
+                    android:visibility="gone"
                     android:background="@color/white" />
 
                 <LinearLayout
+
                     android:id="@+id/llPosp"
                     style="@style/LinearLayoutStyle"
                     android:animateLayoutChanges="true"
-                    android:visibility="visible">
+                   >
 
 
                     <LinearLayout
@@ -1650,6 +1653,7 @@
         android:minHeight="36dp"
         android:text="SAVE INFORMATION"
         android:enabled="false"
+        android:visibility="gone"
         android:textStyle="bold" />
 
 </RelativeLayout>
