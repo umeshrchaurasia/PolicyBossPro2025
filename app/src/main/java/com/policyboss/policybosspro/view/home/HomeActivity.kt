@@ -810,6 +810,35 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
 
 
+        // if SubUser Exist hide below menu
+        if(prefsManager.getSUBUserSSId() != "0"){
+
+            navMenu.findItem(R.id.nav_leaddetail)?.isVisible = false
+            navMenu.findItem(R.id.nav_contact)?.isVisible = false
+            navMenu.findItem(R.id.nav_myaccount)?.isVisible = false
+
+            navMenu.findItem(R.id.nav_addposp)?.isVisible = false
+
+        }
+        else{
+
+            navMenu.findItem(R.id.nav_leaddetail)?.isVisible = true
+            navMenu.findItem(R.id.nav_contact)?.isVisible = true
+            navMenu.findItem(R.id.nav_myaccount)?.isVisible = true
+
+
+            if(prefsManager.getUserType() == Constant.POSP &&  prefsManager.getERPID()!= "0"
+                &&  (prefsManager.getEnableProAddSubUserUrl().isNotEmpty())){
+
+                navMenu.findItem(R.id.nav_addposp)?.isVisible = true
+            }else{
+                navMenu.findItem(R.id.nav_addposp)?.isVisible = false
+            }
+
+
+
+        }
+
     }
 
     //endregion
@@ -884,7 +913,26 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
             txtEntityName.text = "Ver.${Utility.getVersionName(this@HomeActivity)}"
 
-            if (prefsManager.getEmpData() != null) {
+            //Mark : IF User is SubUser
+            //Mark : IF User is SubUser
+            if(prefsManager.getSUBUserSSId() != "0"){
+
+                txtDetails.text = prefsManager.getSUBUserName()
+                txtFbaID.text = "Fba Id - ${prefsManager.getSUBUserFBAID()}"
+                txtReferalCode.text = "Referral Code -"
+
+                weUser.login(prefsManager.getSUBUserEmailID() ?: "")
+                weUser.setOptIn(Channel.WHATSAPP, true)
+
+                weUser.setAttribute("Is Agent",
+                    when (prefsManager.getUserType()) {
+                        "POSP", "FOS" -> true
+                        else -> false
+                    }
+                )
+            }
+
+            else if (prefsManager.getEmpData() != null) {
                 txtDetails.text = prefsManager.getEmpData()?.Emp_Name ?: ""
                 txtFbaID.text = "Fba Id - ${prefsManager.getFBAID()}"
                 txtReferalCode.text = "Referral Code -"
@@ -894,9 +942,9 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
                 weUser.setAttribute("Is Agent",
                     when (prefsManager.getUserType()) {
-                    "POSP", "FOS" -> true
-                    else -> false
-                   }
+                        "POSP", "FOS" -> true
+                        else -> false
+                    }
                 )
 
 
@@ -905,7 +953,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 txtFbaID.text = "Fba Id - "
                 txtReferalCode.text = "Referral Code - "
             }
-
             prefsManager.getUserConstantEntity()?.let {
                 try {
                     txtPospNo.text = "Posp No - ${prefsManager.getSSID()}"

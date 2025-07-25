@@ -1014,13 +1014,25 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
 
 
                             hideLoading()
-                            if (it != null) {
+//                            if (it != null) {
+//
+//                                var mobileNo = it.data?.Msg?.Mobile_No?:0
+//                                // showAlert(prefManager.getSSIDByOTP())
+//
+//                                showOTPDialog(mobNo = mobileNo.toString())
+//                            }
 
-                                var mobileNo = it.data?.Msg?.Mobile_No?:0
-                                // showAlert(prefManager.getSSIDByOTP())
+                            val otpResult = loginViewModel.getOTPReqLoginResult()
 
-                                showOTPDialog(mobNo = mobileNo.toString())
+                            if (otpResult?.status.equals("SUCCESS",true)){
+
+                                showOTPDialog(mobNo = loginViewModel.getOtpMobileNo())
+                            }else{
+
+                                showAlert(msg = otpResult?.message?:"",title = "PolicyBoss Pro")
                             }
+
+
                         }
 
                         is APIState.Failure -> {

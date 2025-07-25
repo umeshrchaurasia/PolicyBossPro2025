@@ -57,5 +57,6 @@ data class UserConstantEntity(
     val pospselfdesignation: String,
     val pospselfphoto: String,
     val serviceurl: String,
-    val uid: Int
+    val uid: Int,
+    val enable_pro_Addsubuser_url : String? = null
 )

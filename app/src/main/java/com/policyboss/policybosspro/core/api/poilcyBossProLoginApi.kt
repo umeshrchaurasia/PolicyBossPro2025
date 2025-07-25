@@ -107,7 +107,7 @@ interface poilcyBossProLoginApi {
     //005 temp
     suspend fun otpLoginHorizon(  @Body body : HashMap<String,String>): Response<OtpLoginResponse>
     // suspend fun otpLoginHorizon(  @Body body : HashMap<String,String>): Response<LoginOTPResult>
-
+//OtpLoginResult
 
     @POST("auth_tokens/auth_login")
     suspend fun authLoginHorizon(  @Body body : HashMap<String,String>): Response<AuthLoginResponse>

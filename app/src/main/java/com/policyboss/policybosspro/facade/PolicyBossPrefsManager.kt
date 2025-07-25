@@ -9,6 +9,7 @@ import com.policyboss.policybosspro.core.response.login.EMP
 import com.policyboss.policybosspro.core.response.login.LoginNewResponse_DSAS_Horizon
 import com.policyboss.policybosspro.core.response.login.OtpLoginMsg
 import com.policyboss.policybosspro.core.response.login.POSP
+import com.policyboss.policybosspro.core.response.login.SUB_USER
 import com.policyboss.policybosspro.core.response.master.dynamicDashboard.MenuMasterResponse
 import com.policyboss.policybosspro.core.response.master.userConstant.Dashboardarray
 import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantEntity
@@ -254,12 +255,16 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
     }
 
 
+
     fun setEnableProAddSubUserUrl(proSignupUrl: String) {
         editor.putString(IS_ENABLE_PRO_ADDSUBUSER_URL, proSignupUrl).apply()
     }
 
-    fun getEnableProAddSubUserUrl(): String? {
-        return pref.getString(IS_ENABLE_PRO_ADDSUBUSER_URL, "")
+    fun getEnableProAddSubUserUrl(): String {
+
+        return getUserConstantResponse()?.MasterData?.enable_pro_Addsubuser_url.orEmpty()
+
+       // return pref.getString(IS_ENABLE_PRO_ADDSUBUSER_URL, "")
     }
 
     // Notification Methods
@@ -340,6 +345,63 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         return response?.Ss_Id?:"0"
     }
 
+
+    //New Added
+    // region Mark : Added :SUB_USER object field to add in webView url
+    public fun getSUBUser() : SUB_USER? {
+
+        val response = getLoginHorizonResponse()
+
+        return response?.SUB_USER
+    }
+
+    //SubUser SUB_SSID
+    fun getSUBUserSSId(): String {
+
+        val response = getLoginHorizonResponse()
+        val userType = response?.user_type ?: ""
+
+
+        return if (userType == "POSP") {
+            getSUBUser()?.Ss_Id?.toString() ?: "0"
+        } else {
+            "0"
+        }
+
+
+    }
+
+    fun getSUBUserName(): String {
+        val firstName = getSUBUser()?.First_Name ?: ""
+        val lastName = getSUBUser()?.Last_Name ?: ""
+
+        return "$firstName $lastName".trim()
+    }
+
+    fun getSUBUserEmailID(): String {
+
+        return (getSUBUser()?.Email_ID.toString()?: "")
+
+
+    }
+
+
+    //SubUser SUB_FBAID
+    fun getSUBUserFBAID(): String {
+
+
+        val response = getLoginHorizonResponse()
+        val userType = response?.user_type ?: ""
+
+
+        return if (userType == "POSP") {
+            getSUBUser()?.Sub_FBA_ID?.toString() ?: "0"
+        } else {
+            "0"
+        }
+
+    }
+    //endregion
 
 
 

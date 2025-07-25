@@ -9,7 +9,8 @@ data class LoginNewResponse_DSAS_Horizon(
     val product: String ?,
     val status: String ?,
     val user_type: String ?,
-    val Ss_Id: String ?
+    val Ss_Id: String ?,
+    val SUB_USER : SUB_USER? = null
 )
 
 data class EMP(
@@ -87,19 +88,30 @@ data class POSP_USER(
     var  Mobile_No: String = "",
     var Erp_Id: String="",
 
-    var Permanant_Add1: String="",
-    var Permanant_Add2: String="",
-    var Permanant_Add3: String="",
-    var Permanant_City: String="",
-
-    var Permanant_Pincode: String="",
-    var Permanant_State: String="",
-    var Permanant_Country: String="",
-
-    var Gender: String ="",
-    var Birthdate: String ="",
+//    var Permanant_Add1: String="",
+//    var Permanant_Add2: String="",
+//    var Permanant_Add3: String="",
+//    var Permanant_City: String="",
+//
+//    var Permanant_Pincode: String="",
+//    var Permanant_State: String="",
+//    var Permanant_Country: String="",
+//
+//    var Gender: String ="",
+//    var Birthdate: String ="",
 
 )
+
+data class SUB_USER(
+
+    val Ss_Id: Long? = null,
+    val Sub_FBA_ID: Long? = null,
+    val First_Name: String? = null,
+    val Last_Name: String? = null,
+    val Email_ID: String? = null,
+    val Mobile: String? = null
+)
+
 
 data class DEVICE(
     var OS_Detail: String = "",
