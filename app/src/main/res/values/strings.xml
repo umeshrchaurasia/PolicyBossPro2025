@@ -72,6 +72,20 @@
     <string name="threedots">&#8942;</string>
     <string name="disclosure"><b><u>DISCLOSURE</u></b></string>
 
+
+    <!-- car plate reader-->
+    <string name="plate_scan_no_text"> No text detected</string>
+
+    <string name="plate_scan_no_valid_plate"> No valid plate detected</string>
+    <string name="plate_scan_align"> Align with plate</string>
+
+    <string name="back_button">Back Button</string>
+    <string name="plate_scan_guide">Align vehicle plate within rectangle</string>
+    <string name="detect_plate">Detect Plate</string>
+
+
+
+
     <string name="popup_Profile"> PROFILE PICTURE</string>
     <string name="popup_PanCard"> FBA PAN CARD</string>
     <string name="popup_CancelCHQ"> CANCELLED CHQ</string>

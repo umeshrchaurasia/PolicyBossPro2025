@@ -11,6 +11,8 @@ import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.*
 
+//Note :-- SMS Retriever API — to help your app auto-detect OTP from SMS without needing SMS permission.
+
 
 class AppSignatureHashHelper(context: Context?) :
     ContextWrapper(context) {// Get all package details
@@ -30,10 +32,12 @@ class AppSignatureHashHelper(context: Context?) :
                     packageName,
                     PackageManager.GET_SIGNATURES
                 ).signatures
-                for (signature in signatures) {
-                    val hash = hash(packageName, signature.toCharsString())
-                    if (hash != null) {
-                        appSignaturesHashs.add(String.format("%s", hash))
+                if (signatures != null) {
+                    for (signature in signatures) {
+                        val hash = hash(packageName, signature.toCharsString())
+                        if (hash != null) {
+                            appSignaturesHashs.add(String.format("%s", hash))
+                        }
                     }
                 }
             } catch (e: Exception) {

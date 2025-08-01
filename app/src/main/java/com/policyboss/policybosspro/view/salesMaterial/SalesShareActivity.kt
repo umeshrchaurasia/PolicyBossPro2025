@@ -14,8 +14,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+import com.policyboss.demoandroidapp.Utility.ExtensionFun.applySystemBarInsetsPadding
 import com.policyboss.policybosspro.BaseActivity
 
 import com.policyboss.policybosspro.R
@@ -68,9 +70,14 @@ class SalesShareActivity :BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        // Opt into edge-to-edge drawing
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         //region Toolbar Handling
         binding = ActivitySalesShareBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.root.applySystemBarInsetsPadding()
 
         setSupportActionBar(binding.toolbar)
         supportActionBar!!.apply {

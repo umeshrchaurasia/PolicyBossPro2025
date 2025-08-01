@@ -20,6 +20,7 @@ import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.TextView
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.widget.doOnTextChanged
@@ -271,47 +272,64 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
         })
     }
 
+
     private fun initSmsListener() {
-        val client = SmsRetriever.getClient(this)
-        // client.startSmsRetriever()   //  temp
-        client.startSmsRetriever().addOnSuccessListener {
-           // registerReceiver(smsReceiver, intentFilter)
-            registerSmsReceiver()
-        }.addOnFailureListener {
-
-           // showAlert("Failed to start SMS Retriever")
-        }
-    }
-
-    private fun registerSmsReceiver() {
+        //Mark :This is your custom BroadcastReceiver that will handle
+        // the broadcast once SMS is received.
         smsReceiver = SMSReaderBroadCastReceiver().apply {
             setOTPListener(object : SMSReaderBroadCastReceiver.OTPReceiveListener {
                 override fun onOTPReceived(otp: String?) {
-                    Log.d(Constant.TAG, "OTP Received: $otp")
-                    otp?.let { pasteOTP(strOTP = it) }
-                    initSmsListener() // Re-initialize for subsequent attempts
+                    Log.d("OTP", "OTP Received: $otp")
+                    otp?.let { pasteOTP(it) }
                 }
 
                 override fun onOTPReceiveError(error: String) {
-                    Log.e(Constant.TAG, "OTP Receive Error: $error")
+                    Log.e("OTP", "Error: $error")
                 }
             })
         }
+  //Mark : This starts the Google Play Services-based SMS retriever.
+        /*******************************************
+        //This tells Google Play Services to watch for a valid SMS.
+        //It doesn’t automatically receive the SMS — it just starts listening.
+        // Without this, your app will not receive any broadcast even if an SMS a
+         ********************************************/
 
-        val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
+        val client = SmsRetriever.getClient(this)
+        client.startSmsRetriever()
+            .addOnSuccessListener {
+                Log.d("OTP", "SmsRetriever started")
 
-        //For Broadcast recevier Handling ver 34 and above
-        if (Build.VERSION.SDK_INT >= 34 && getApplicationInfo().targetSdkVersion >= 34) {
-            registerReceiver(smsReceiver, intentFilter, Context.RECEIVER_EXPORTED)
-        } else {
-            registerReceiver(smsReceiver, intentFilter)
-        }
+                val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
+
+                // ✅ Best practice: handle all versions safely
+                when {
+                    Build.VERSION.SDK_INT >= 34 && applicationInfo.targetSdkVersion >= 34 -> {
+                        registerReceiver(smsReceiver, intentFilter, Context.RECEIVER_EXPORTED)
+                    }
+
+                    Build.VERSION.SDK_INT >= Build.VERSION_CODES.O -> {
+                        registerReceiver(smsReceiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
+                    }
+
+//                    else -> {
+//                        registerReceiver(smsReceiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
+//                    }
+                }
+            }
+            .addOnFailureListener {
+                Log.e("OTP", "Failed to start retriever", it)
+            }
     }
 
 
-    //endregion
 
-    fun maskPhoneNumber(phoneNumber: String): String {
+
+
+
+    // endregion
+
+    private fun maskPhoneNumber(phoneNumber: String): String {
         if (phoneNumber.length < 10) {
             // Handle cases where the phone number is not long enough to mask
             return phoneNumber

@@ -8,9 +8,14 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.Toolbar;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -41,6 +46,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
 import android.webkit.MimeTypeMap;
@@ -50,6 +56,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -58,6 +65,7 @@ import com.canhub.cropper.CropImageContract;
 import com.canhub.cropper.CropImageContractOptions;
 import com.canhub.cropper.CropImageOptions;
 import com.canhub.cropper.CropImageView;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.policyboss.policybosspro.BaseJavaActivity;
 import com.policyboss.policybosspro.R;
@@ -81,6 +89,7 @@ import com.policyboss.policybosspro.utility.Utility;
 import com.policyboss.policybosspro.utils.AppPermission.PermissionHandler;
 //import com.policyboss.policybosspro.utils.CameraGalleryManager.CameraGalleryManager;
 import com.policyboss.policybosspro.utils.Constant;
+import com.policyboss.policybosspro.utils.ExtensionFun.ViewUtils;
 import com.policyboss.policybosspro.utils.FileDownloader;
 import com.policyboss.policybosspro.utils.FileUtilNew;
 import com.policyboss.policybosspro.utils.FileUtils;
@@ -107,6 +116,8 @@ import okhttp3.MultipartBody;
 public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaActivity.PopUpListener, BaseJavaActivity.WebViewPopUpListener, IResponseSubcriber {
 
     WebView webView;
+
+    CoordinatorLayout coordinatorLayout;
     String url = "";
     String name = "";
     String title = "";
@@ -205,11 +216,25 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Opt into edge-to-edge drawing
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
+        // Make status bar transparent so toolbar background can extend under it
+       // getWindow().setStatusBarColor(TRANSPARENT);
+
         setContentView(R.layout.activity_common_web_view);
+
+        CoordinatorLayout coordinatorLayout = findViewById(R.id.coordinator_layout);
+
+
         webView = (WebView) findViewById(R.id.webView);
+
 
         screenData = new HashMap<String, Object>();
         weAnalytics  = WebEngage.get().analytics();
+
+       // webView.applySystemBarInsetsPadding();
 
         url = getIntent().getStringExtra("URL");
         name = getIntent().getStringExtra("NAME");
@@ -224,6 +249,59 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(title);
+
+
+        AppBarLayout appBarLayout = findViewById(R.id.appbar);
+        View webContainer = findViewById(R.id.web_container);
+
+        //Mark : handle Safe Area
+        // Handle Safe Area
+//        ViewCompat.setOnApplyWindowInsetsListener(coordinatorLayout, (v, insets) -> {
+//            Insets statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars());
+//            Insets navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+//
+//            // 1. Handle AppBar (status bar)
+//            appBarLayout.setPadding(
+//                    appBarLayout.getPaddingLeft(),
+//                    statusBars.top,
+//                    appBarLayout.getPaddingRight(),
+//                    appBarLayout.getPaddingBottom()
+//            );
+//
+//            // 2. Handle WebView (navigation bar)
+//            ViewGroup.MarginLayoutParams webViewParams = (ViewGroup.MarginLayoutParams) webView.getLayoutParams();
+//            webViewParams.bottomMargin = navBars.bottom;
+//            webView.setLayoutParams(webViewParams);
+//            webView.setClipToPadding(false);
+//
+//            // 3. Ensure CoordinatorLayout respects insets
+//            return WindowInsetsCompat.CONSUMED;
+//        });
+//
+//        ViewCompat.requestApplyInsets(coordinatorLayout);
+
+        ViewCompat.setOnApplyWindowInsetsListener(coordinatorLayout, (v, insets) -> {
+            Insets statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars());
+            Insets navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
+
+            // Top padding for AppBar
+            appBarLayout.setPadding(
+                    appBarLayout.getPaddingLeft(),
+                    statusBars.top,
+                    appBarLayout.getPaddingRight(),
+                    appBarLayout.getPaddingBottom()
+            );
+
+            // Bottom padding for WebView container
+            webContainer.setPadding(
+                    webContainer.getPaddingLeft(),
+                    webContainer.getPaddingTop(),
+                    webContainer.getPaddingRight(),
+                    navBars.bottom
+            );
+
+            return insets;
+        });
 
         showDialog = new Dialog(CommonWebViewActivity.this,R.style.Dialog);
 
@@ -286,6 +364,20 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
        // pdfFileLauncher();
 
         setupPdfLauncher();
+
+        // Apply insets to AppBarLayout so toolbar content isn’t hidden under status bar
+//        View appBar = findViewById(R.id.appbar);
+//        ViewCompat.setOnApplyWindowInsetsListener(appBar, (v, insets) -> {
+//            Insets statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars());
+//            v.setPadding(
+//                    v.getPaddingLeft(),
+//                    statusBars.top, // push toolbar content below status bar
+//                    v.getPaddingRight(),
+//                    v.getPaddingBottom()
+//            );
+//            return insets;
+//        });
+//        ViewCompat.requestApplyInsets(appBar);
     }
 
 

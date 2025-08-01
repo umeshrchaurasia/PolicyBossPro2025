@@ -12,6 +12,8 @@ import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.google.firebase.messaging.FirebaseMessaging
 import com.policyboss.policybosspro.databinding.ActivitySplashScreenBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
+import com.policyboss.policybosspro.utils.Constant
+import com.policyboss.policybosspro.utils.showAlert
 
 import com.policyboss.policybosspro.view.home.HomeActivity
 import com.policyboss.policybosspro.view.introslider.WelcomeActivity
@@ -21,7 +23,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+/*********************** For Deeplink *******************************************
 
+ Mark Must hosted this link :  https://www.policyboss.com/.well-known/assetlinks.json
+ in our website for deeplink has to work
+ *********************** *********************** *********************** ************/
 
 @AndroidEntryPoint
 class SplashScreenActivity : AppCompatActivity() {
@@ -40,7 +46,9 @@ class SplashScreenActivity : AppCompatActivity() {
         }
         setContentView(binding.root)
 
-        getDynamicLinkFromFirebase()
+        // getDynamicLinkFromFirebase()
+
+
 
         // Launch coroutine for initialization sequence
         lifecycleScope.launch {
@@ -81,11 +89,53 @@ class SplashScreenActivity : AppCompatActivity() {
         //endregion
 
 
-
+        // ATTENTION: This was auto-generated to handle app links.
+        val appLinkIntent: Intent = intent
+        val appLinkAction: String? = appLinkIntent.action
+        val appLinkData: Uri? = appLinkIntent.data
     }
 
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)   //setIntent(intent) ensures getIntent() returns the latest one if needed later.
+        handleDeepLink(intent)
+    }
     //**********************************************************//
+
+    private fun handleDeepLink1(intent: Intent?) {
+        val data = intent?.data
+        if (data != null && data.path?.startsWith("/PolicyBossPro.github.io/referral") == true) {
+            val code = data.getQueryParameter("code")
+            Log.d(Constant.TAG, "Referral code: $code")
+            // TODO: Navigate to referral screen or save code
+
+            showAlert("Referral code: $code")
+        }
+    }
+
+
+    private fun handleDeepLink(intent: Intent?) {
+
+        processDeeplink(intent?.data)
+    }
+
+    private fun processDeeplink(uri: Uri?) {
+        uri?.let {
+            val host = it.host ?: "Unknown"
+            val path = it.path ?: "Unknown"
+
+            val productId = it.getQueryParameter("product_id")?.takeIf { id -> id.isNotBlank() } ?: "N/A"
+            val title = it.getQueryParameter("title")?.takeIf { t -> t.isNotBlank() } ?: "N/A"
+
+            Log.d("DeepLink", "URI: $uri")
+            Log.d("DeepLink", "Host = $host, Path = $path, ID = $productId, Title = $title")
+
+            prefManager.setDeeplink(uri.toString())
+            // Navigate or store as needed
+        }
+    }
+
 
     private suspend fun handleInitialization() {
         try {
@@ -94,8 +144,9 @@ class SplashScreenActivity : AppCompatActivity() {
             initAuthReceiver()
             val token = getToken()
 
+             handleDeepLink(intent)
 
-            getDynamicLinkFromFirebase()
+
             // Then handle navigation
             if (prefManager.isFirstTimeLaunch()) {
                 navigateToWelcome()
@@ -134,11 +185,12 @@ class SplashScreenActivity : AppCompatActivity() {
     //**********************************************************//
 
 
-    private fun getDynamicLinkFromFirebase() {
+
+    private fun getDynamicLinkFromFirebaseOld() {
         FirebaseDynamicLinks.getInstance()
             .getDynamicLink(intent)
             .addOnSuccessListener(this) { pendingDynamicLinkData ->
-                Log.i("Sync", "We have link")
+                Log.d("dynamic", "We have link")
                 var deepLink: Uri? = null
 
                 // Check if we received a dynamic link from Firebase

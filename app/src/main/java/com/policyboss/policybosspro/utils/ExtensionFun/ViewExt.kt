@@ -19,18 +19,15 @@ package com.policyboss.demoandroidapp.Utility.ExtensionFun
 import android.content.Context
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.coroutineScope
-import androidx.lifecycle.findViewTreeLifecycleOwner
+
 
 import com.google.android.material.snackbar.Snackbar
 
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+
+
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 
 /**************** For Snackbar *********************************************/
 //fun View.showSnackbar(msgId: Int, length: Int) {
@@ -80,24 +77,66 @@ fun View.showSnackbar(
 
  fun View.toast(context: Context ,text: String) = Toast.makeText( context, text, Toast.LENGTH_SHORT).show()
 
-fun basicAlert(view: View){
-
-    val builder = AlertDialog.Builder(view.context)
-
-//    with(builder)
-//    {
-//        setTitle("Androidly Alert")
-//        setMessage("We have a message")
-//        setPositiveButton("OK", DialogInterface.OnClickListener(function = positiveButtonClick))
-//        setNegativeButton(android.R.string.no, negativeButtonClick)
-//        setNeutralButton("Maybe", neutralButtonClick)
-//        show()
-//    }
 
 
+//****************************************************************************
+//Mark : Handle Default Safe Area
+//****************************************************************************/
+fun View.applySystemBarInsetsPadding() {
+    ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
+        val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+        v.updatePadding(
+            left = systemBars.left,
+            top = systemBars.top,
+            right = systemBars.right,
+            bottom = systemBars.bottom
+        )
+        insets // do not consume so children can also react if needed
+    }
+    requestApplyInsets()
 }
 
+//Mark : applyBottomSystemBarPadding If you only care about the bottom inset (e.g., navigation bar) and do not want top padding, you can:
 
+/*
+Bad Use Cases ❌
+Screens with a DrawerLayout: As you discovered, this is the classic example of where it fails.
+
+Screens with a CoordinatorLayout, FloatingActionButton (FAB), and BottomAppBar:
+ Each of these Material components needs to handle insets differently to position
+ itself correctly relative to the screen edges and each other.
+
+Any screen with an immersive background: If you want a background
+ map or image to extend edge-to-edge, but the UI controls on top of it need padding,
+ a single generic function on the root won't work.
+ */
+fun View.applyBottomSystemBarPadding() {
+    ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
+        val navBar = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+        v.updatePadding(bottom = navBar.bottom)
+        insets
+    }
+    requestApplyInsets()
+}
+
+fun View.applySelectiveSystemBarInsets(
+    applyTop: Boolean = true,
+    applyBottom: Boolean = true,
+    applyLeft: Boolean = false,
+    applyRight: Boolean = false
+) {
+    ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
+        val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+        v.updatePadding(
+            left = if (applyLeft) systemBars.left else v.paddingLeft,
+            top = if (applyTop) systemBars.top else v.paddingTop,
+            right = if (applyRight) systemBars.right else v.paddingRight,
+            bottom = if (applyBottom) systemBars.bottom else v.paddingBottom
+        )
+        insets
+    }
+    requestApplyInsets()
+}
 
 
 

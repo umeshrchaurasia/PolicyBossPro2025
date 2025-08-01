@@ -39,6 +39,8 @@ object Constant {
     const val   InValidOTP = "Invalid OTP"
 
 
+    val KEY_VEHICLE_DETECT_TEXT : String = "VehicleDetectText"
+
     const val KEY_result = "op_result"
     const val KEY_Max_Progress_result = "op_Max_Progress_result"
     const val KEY_error_result = "op_error_result"

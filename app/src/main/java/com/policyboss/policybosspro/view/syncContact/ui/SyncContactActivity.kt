@@ -17,6 +17,7 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
@@ -26,6 +27,7 @@ import androidx.work.WorkManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.snackbar.Snackbar
+import com.policyboss.demoandroidapp.Utility.ExtensionFun.applySystemBarInsetsPadding
 import com.policyboss.demoandroidapp.Utility.ExtensionFun.showSnackbar
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.R
@@ -96,8 +98,13 @@ class SyncContactActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //  setContentView(R.layout.activity_sync_contact)
+        // Opt into edge-to-edge drawing
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         binding = ActivitySyncContactBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.root.applySystemBarInsetsPadding()
 
         setSupportActionBar(binding.toolbar)
         supportActionBar!!.apply {

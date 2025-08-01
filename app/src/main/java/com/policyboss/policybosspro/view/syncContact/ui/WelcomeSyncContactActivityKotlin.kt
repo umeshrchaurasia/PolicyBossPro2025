@@ -22,10 +22,15 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.snackbar.Snackbar
+import com.policyboss.demoandroidapp.Utility.ExtensionFun.applySystemBarInsetsPadding
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.analytics.WebEngageAnalytics
@@ -51,7 +56,7 @@ import kotlinx.coroutines.withContext
 
 
 @AndroidEntryPoint
-class WelcomeSyncContactActivityKotlin : BaseActivity() , View.OnClickListener {
+open class WelcomeSyncContactActivityKotlin : BaseActivity() , View.OnClickListener {
 
     lateinit var binding: ActivityWelcomeSyncContactKotlinBinding
 
@@ -105,8 +110,13 @@ class WelcomeSyncContactActivityKotlin : BaseActivity() , View.OnClickListener {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Opt into edge-to-edge drawing
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         binding = ActivityWelcomeSyncContactKotlinBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.root.applySystemBarInsetsPadding()
 
         dialogAnim = Dialog(this)
 
@@ -190,6 +200,8 @@ class WelcomeSyncContactActivityKotlin : BaseActivity() , View.OnClickListener {
 
         viewPage2Listener()
     }
+
+
 
     //region method of Welcome Page
     private fun init_widgets() {

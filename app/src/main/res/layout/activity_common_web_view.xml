@@ -4,10 +4,11 @@ xmlns:app="http://schemas.android.com/apk/res-auto"
 xmlns:tools="http://schemas.android.com/tools"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
-fitsSystemWindows="false"
+android:id="@+id/coordinator_layout"
 tools:context=".webview.CommonWebViewActivity">
 
 <com.google.android.material.appbar.AppBarLayout
+    android:id="@+id/appbar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:theme="@style/AppTheme.AppBarOverlay">
@@ -36,6 +37,7 @@ tools:context=".webview.CommonWebViewActivity">
     android:layout_height="wrap_content"
     android:layout_gravity="bottom|end"
     android:layout_margin="@dimen/fab_margin"
+    android:contentDescription="for Doc Upload"
     android:visibility="gone"
     app:srcCompat="@drawable/ic_action_download" />
 

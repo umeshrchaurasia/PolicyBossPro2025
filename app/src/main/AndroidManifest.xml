@@ -107,8 +107,12 @@
         android:theme="@style/Theme.Policybossprov34"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-
-<!--     Note:   android:theme="@style/Theme.PolicyBossProSplashScreen" create custom splash Screen   -->
+        <activity
+            android:name=".view.vehicleScanner.VehiclePlateReaderActivity"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity"
+            android:exported="false" />
+        <!-- Note:   android:theme="@style/Theme.PolicyBossProSplashScreen" create custom splash Screen -->
         <activity
             android:name=".view.others.contactUS.ContactUsActivity"
             android:exported="false" />
@@ -239,6 +243,20 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+
+<!--  Mark Must hosted this link :         https://www.policyboss.com/.well-known/assetlinks.json-->
+
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https" />
+                <data android:host="www.policyboss.com" />
+            </intent-filter>
+
         </activity> <!-- Theme is optional and only needed if default theme has no action bar. -->
         <activity
             android:name="com.canhub.cropper.CropImageActivity"

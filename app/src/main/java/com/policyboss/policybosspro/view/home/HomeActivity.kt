@@ -29,6 +29,11 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+
+import androidx.core.view.updatePadding
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -38,6 +43,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.bitmap.CircleCrop
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.navigation.NavigationView
+import com.policyboss.demoandroidapp.Utility.ExtensionFun.applySystemBarInsetsPadding
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.BuildConfig
 import com.policyboss.policybosspro.PolicyBossProApplication
@@ -86,6 +92,7 @@ import com.policyboss.policybosspro.view.salesMaterial.SalesMaterialActivity
 import com.policyboss.policybosspro.view.splashscreen.SplashScreenActivity
 import com.policyboss.policybosspro.view.syncContact.ui.SyncContactActivity
 import com.policyboss.policybosspro.view.syncContact.ui.WelcomeSyncContactActivityKotlin
+import com.policyboss.policybosspro.view.vehicleScanner.VehiclePlateReaderActivity
 import com.policyboss.policybosspro.webview.CommonWebViewActivity
 import com.webengage.sdk.android.Channel
 import com.webengage.sdk.android.User
@@ -165,8 +172,17 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Opt into edge-to-edge drawing
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Set the status bar color to match your header
+        window.statusBarColor = ContextCompat.getColor(this, R.color.colorPrimary)
+
+        applyInsets()
 
         // Initialize views
         // region Set the toolbar as ActionBar
@@ -287,6 +303,44 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
 
        // setSelectedNavigationItem(R.id.nav_myaccount)
+
+
+    }
+
+    private fun applyInsets() {
+        // Apply insets to the main content area
+        ViewCompat.setOnApplyWindowInsetsListener(binding.appbar) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // Apply top padding to the AppBarLayout to push it down below the status bar
+            view.   updatePadding(top = systemBars.top)
+            insets // Return insets so other views can use them
+        }
+
+        // Apply insets to the scrolling content
+        ViewCompat.setOnApplyWindowInsetsListener(binding.rvHome) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // Apply bottom padding to the RecyclerView to prevent it from being obscured by the navigation bar
+            view.updatePadding(bottom = systemBars.bottom)
+            insets
+        }
+
+        // Apply insets to the Navigation Drawer
+//        ViewCompat.setOnApplyWindowInsetsListener(binding.navigationView) { view, insets ->
+//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+//            // Apply top and bottom padding to the NavigationView itself
+//            view.updatePadding(top = systemBars.top, bottom = systemBars.bottom)
+//            insets
+//        }
+
+        // For the Navigation Drawer Header (THE KEY FIX for the white space)
+        val headerView = binding.navigationView.getHeaderView(0)
+        ViewCompat.setOnApplyWindowInsetsListener(headerView) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // This applies top padding only to the header's content, allowing the
+            // NavigationView's background to draw behind the status bar.
+            view.updatePadding(top = systemBars.top)
+            insets
+        }
 
 
     }
@@ -1881,7 +1935,11 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 }
 
                 // Redirect to SalesMaterialActivity
-                startActivity(Intent(this@HomeActivity, KnowledgeGuruActivity::class.java))
+               // startActivity(Intent(this@HomeActivity, KnowledgeGuruActivity::class.java))
+
+                startActivity(Intent(this@HomeActivity, VehiclePlateReaderActivity::class.java))
+
+
 
                 // Tracking event
                 trackTopMenuEvent("CUSTOMER COMM")
