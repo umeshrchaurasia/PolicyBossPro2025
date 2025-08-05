@@ -41,6 +41,7 @@ class SalesMaterialActivity : BaseActivity() {
 
     private val viewModel by viewModels<SalesMaterialViewNodel>()
 
+    private var deeplinkProductID = ""
 
     override fun onStart() {
         super.onStart()
@@ -68,6 +69,12 @@ class SalesMaterialActivity : BaseActivity() {
         }
 
         initialize()
+
+        intent.getStringExtra(Constant.Deeplink_PRODUCT_ID)?.let { data ->
+
+            deeplinkProductID = data
+
+        }
 
         //Mark :-- call Api for Sales Material Main Page
         viewModel.getSalesProducts()
@@ -117,6 +124,25 @@ class SalesMaterialActivity : BaseActivity() {
 
     }
 
+
+    private fun deeplink(salesLst: List<SalesMateriaProdEntity>){
+
+        val productId = deeplinkProductID.toIntOrNull() ?: 0  // Convert safely
+
+        if(productId == 0){
+            return
+        }
+
+        salesLst.find { it.Product_Id == productId }?.let { entity ->
+            val intent = Intent(this, SalesDetailActivity::class.java).apply {
+                putExtra(Constant.PRODUCT_ID, entity) // Ensure entity is Parcelable/Serializable if passing full object
+            }
+            startActivity(intent)
+        }
+
+    }
+
+
     private fun observeResponse() {
 
         lifecycleScope.launch {
@@ -150,6 +176,9 @@ class SalesMaterialActivity : BaseActivity() {
 
                                        setupSalesMaterialAdapter(lstSalesProdEntity)
 
+                                       if(deeplinkProductID.isNotEmpty()  && lstSalesProdEntity.isNotEmpty() ){
+                                           deeplink(salesLst = lstSalesProdEntity )
+                                       }
                                    }
                                }
                            }

@@ -22,12 +22,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import coil.load
 import coil.request.CachePolicy
 import coil.transform.CircleCropTransformation
+import com.policyboss.demoandroidapp.Utility.ExtensionFun.applySystemBarInsetsPadding
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.analytics.WebEngageAnalytics
@@ -131,8 +133,14 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
         super.onCreate(savedInstanceState)
         //region Toolbar Set
 
+        // Opt into edge-to-edge drawing
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         binding = ActivityMyAccountBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.root.applySystemBarInsetsPadding()
+
 
         setSupportActionBar(binding.toolbar)
         supportActionBar!!.apply {

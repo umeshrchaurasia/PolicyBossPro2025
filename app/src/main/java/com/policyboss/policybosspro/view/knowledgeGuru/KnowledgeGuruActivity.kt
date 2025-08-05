@@ -7,7 +7,10 @@ import android.view.View
 import android.view.View.GONE
 import android.view.View.OnClickListener
 import androidx.activity.OnBackPressedCallback
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
+import com.policyboss.demoandroidapp.Utility.ExtensionFun.applySystemBarInsetsPadding
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.analytics.WebEngageAnalytics
 import com.policyboss.policybosspro.databinding.ActivityKnowledgeGuruBinding
@@ -24,9 +27,17 @@ class KnowledgeGuruActivity : BaseActivity(), OnClickListener {
     @Inject
     lateinit var prefsManager: PolicyBossPrefsManager
     override fun onCreate(savedInstanceState: Bundle?) {
+
+
+
         super.onCreate(savedInstanceState)
+        // Opt into edge-to-edge drawing
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         binding = ActivityKnowledgeGuruBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.root.applySystemBarInsetsPadding()
 
         setSupportActionBar(binding.toolbar)
         supportActionBar!!.apply {

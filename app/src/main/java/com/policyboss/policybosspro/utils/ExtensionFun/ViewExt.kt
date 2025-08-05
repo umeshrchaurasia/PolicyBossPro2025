@@ -119,19 +119,17 @@ fun View.applyBottomSystemBarPadding() {
     requestApplyInsets()
 }
 
-fun View.applySelectiveSystemBarInsets(
+fun View.applySystemBarInsetsPadding(
     applyTop: Boolean = true,
-    applyBottom: Boolean = true,
-    applyLeft: Boolean = false,
-    applyRight: Boolean = false
+    applyBottom: Boolean = true
 ) {
     ViewCompat.setOnApplyWindowInsetsListener(this) { v, insets ->
         val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
         v.updatePadding(
-            left = if (applyLeft) systemBars.left else v.paddingLeft,
-            top = if (applyTop) systemBars.top else v.paddingTop,
-            right = if (applyRight) systemBars.right else v.paddingRight,
-            bottom = if (applyBottom) systemBars.bottom else v.paddingBottom
+            top = if (applyTop) systemBars.top else paddingTop,
+            bottom = if (applyBottom) systemBars.bottom else paddingBottom,
+            left = systemBars.left,
+            right = systemBars.right
         )
         insets
     }

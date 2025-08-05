@@ -88,15 +88,16 @@ class VehiclePlateReaderActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
 
-        // 💡 ADD THIS LINE HERE
-       // enableEdgeToEdge()
+        // 💡1 ADD THIS LINE HERE
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
        // setContentView(R.layout.activity_vehicle_plate_reader)
         binding = ActivityVehiclePlateReaderBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // 2. Set a listener to handle the insets (safe areas)
         // Add this code to handle the insets
-       // handleWindowInsets()
+        handleWindowInsets()
 
         // Initialize UI components
         cameraPreview = binding.cameraPreview
@@ -136,17 +137,15 @@ class VehiclePlateReaderActivity : AppCompatActivity() {
 
     private fun handleWindowInsets() {
         // Find the view you want to move (your button container)
-        val viewToPad = binding.buttonContainer
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, windowInsets ->
+            val systemBars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
 
-        ViewCompat.setOnApplyWindowInsetsListener(viewToPad) { view, windowInsets ->
-            // Get the insets for the system bars (status bar and navigation bar)
-            val insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars())
+            // 3. Apply the bottom inset as padding to your button container
+            // This pushes the buttons up from behind the navigation bar.
+            binding.buttonContainer.updatePadding(bottom = systemBars.bottom)
 
-            // Apply the bottom inset as padding to the bottom of your view
-            view.updatePadding(bottom = insets.bottom)
-
-            // Return the insets so other views can use them if needed
-            WindowInsetsCompat.CONSUMED
+            // Return the insets so other views can also use them
+            windowInsets
         }
     }
 

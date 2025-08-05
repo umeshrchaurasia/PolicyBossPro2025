@@ -2,6 +2,7 @@
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:tools="http://schemas.android.com/tools"
+ android:id="@+id/root_layout"
 android:layout_width="match_parent"
 android:layout_height="match_parent"
 xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -11,6 +12,7 @@ android:orientation="vertical"
 tools:context=".view.others.incomePotential.IncomePotentialActivity">
 
 <com.google.android.material.appbar.AppBarLayout
+    android:id="@+id/appbar"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:theme="@style/AppTheme.AppBarOverlay">
@@ -31,6 +33,7 @@ tools:context=".view.others.incomePotential.IncomePotentialActivity">
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/white"
+    android:id="@+id/scroll_view"
     >
 
 

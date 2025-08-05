@@ -96,6 +96,7 @@ import com.policyboss.policybosspro.utils.FileUtils;
 import com.policyboss.policybosspro.view.home.HomeActivity;
 
 import com.policyboss.policybosspro.view.syncContact.ui.WelcomeSyncContactActivityKotlin;
+import com.policyboss.policybosspro.view.vehicleScanner.VehiclePlateReaderActivity;
 import com.webengage.sdk.android.Analytics;
 import com.webengage.sdk.android.WebEngage;
 import com.webengage.sdk.android.bridge.WebEngageMobileBridge;
@@ -144,6 +145,9 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
     Button btnSubmit;
     EditText etComment;
     ImageView ivUser, ivCross, ivProfile;
+
+    //Mark: Launcher for callback for CarPlate Scanner
+    private ActivityResultLauncher<Intent> vehiclePlateReaderLauncher;
 
     @Inject
     PolicyBossPrefsManager prefManager;
@@ -254,32 +258,6 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
         AppBarLayout appBarLayout = findViewById(R.id.appbar);
         View webContainer = findViewById(R.id.web_container);
 
-        //Mark : handle Safe Area
-        // Handle Safe Area
-//        ViewCompat.setOnApplyWindowInsetsListener(coordinatorLayout, (v, insets) -> {
-//            Insets statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars());
-//            Insets navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
-//
-//            // 1. Handle AppBar (status bar)
-//            appBarLayout.setPadding(
-//                    appBarLayout.getPaddingLeft(),
-//                    statusBars.top,
-//                    appBarLayout.getPaddingRight(),
-//                    appBarLayout.getPaddingBottom()
-//            );
-//
-//            // 2. Handle WebView (navigation bar)
-//            ViewGroup.MarginLayoutParams webViewParams = (ViewGroup.MarginLayoutParams) webView.getLayoutParams();
-//            webViewParams.bottomMargin = navBars.bottom;
-//            webView.setLayoutParams(webViewParams);
-//            webView.setClipToPadding(false);
-//
-//            // 3. Ensure CoordinatorLayout respects insets
-//            return WindowInsetsCompat.CONSUMED;
-//        });
-//
-//        ViewCompat.requestApplyInsets(coordinatorLayout);
-
         ViewCompat.setOnApplyWindowInsetsListener(coordinatorLayout, (v, insets) -> {
             Insets statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars());
             Insets navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars());
@@ -365,19 +343,11 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
 
         setupPdfLauncher();
 
-        // Apply insets to AppBarLayout so toolbar content isn’t hidden under status bar
-//        View appBar = findViewById(R.id.appbar);
-//        ViewCompat.setOnApplyWindowInsetsListener(appBar, (v, insets) -> {
-//            Insets statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars());
-//            v.setPadding(
-//                    v.getPaddingLeft(),
-//                    statusBars.top, // push toolbar content below status bar
-//                    v.getPaddingRight(),
-//                    v.getPaddingBottom()
-//            );
-//            return insets;
-//        });
-//        ViewCompat.requestApplyInsets(appBar);
+        setUpCarPlateLauncher();
+
+
+
+
     }
 
 
@@ -597,6 +567,8 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
 
     class MyJavaScriptInterface {
 
+
+
         @JavascriptInterface
         public void crossselltitle(String dynamicTitle) {
 
@@ -804,6 +776,32 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
             }
 
         }
+
+
+
+        //Mark :                                                           Car Plate Scanner
+        @JavascriptInterface
+        public void vehiclescan() {
+            Log.d("URL", "Car Plate Scanner called");
+
+            // Launch the plate reader activity on the main thread
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(CommonWebViewActivity.this, VehiclePlateReaderActivity.class);
+                    vehiclePlateReaderLauncher.launch(intent);
+                }
+            });
+
+            // If you later want to mimic the commented-out delay and callback:
+            // new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            //     @Override
+            //     public void run() {
+            //         callJavaScriptFunction("onSyncComplete", "true", "Sync completed successfully");
+            //     }
+            // }, 2000);
+        }
+
 
 
     }
@@ -1156,6 +1154,8 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
                 });
     }
 
+
+
     private void handleSelectedPdf(Uri uri) {
         try {
 
@@ -1217,6 +1217,54 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
         }
     }
 
+
+    //car Plate Scanner Launcher
+    private void setUpCarPlateLauncher(){
+
+        vehiclePlateReaderLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                new ActivityResultCallback<ActivityResult>() {
+                    @Override
+                    public void onActivityResult(ActivityResult result) {
+                        if (result.getResultCode() == RESULT_OK && result.getData() != null) {
+                            byte[] detectedTextBytes = result.getData().getByteArrayExtra(Constant.KEY_VEHICLE_DETECT_TEXT);
+                            if (detectedTextBytes != null) {
+                                String detectedText = new String(detectedTextBytes, java.nio.charset.StandardCharsets.UTF_8);
+                                // Send to JS and show toast
+                                callJavaScriptFunction("updateVehicleNumber", detectedText);
+
+                                Toast.makeText(CommonWebViewActivity.this, detectedText, Toast.LENGTH_SHORT).show();
+
+                            }
+                        }
+                    }
+                }
+        );
+    }
+
+    public void callJavaScriptFunction(final String functionName, final String... args) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                StringBuilder argBuilder = new StringBuilder();
+                for (int i = 0; i < args.length; i++) {
+                    String escaped = args[i].replace("'", "\\'");
+                    argBuilder.append("'");
+                    argBuilder.append(escaped);
+                    argBuilder.append("'");
+                    if (i < args.length - 1) {
+                        argBuilder.append(",");
+                    }
+                }
+                String jsCode = "javascript:" + functionName + "(" + argBuilder + ")";
+                Log.d("URL", "Evaluating JavaScript: " + jsCode);
+                webView.evaluateJavascript(jsCode, null);
+            }
+        });
+    }
+
+
+     //endregiion
     //endregion
 
     //********************* end *****************************************

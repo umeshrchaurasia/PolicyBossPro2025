@@ -75,6 +75,7 @@ import com.policyboss.policybosspro.utils.CoroutineHelper
 import com.policyboss.policybosspro.utils.FeedbackHelper
 import com.policyboss.policybosspro.utils.FirebasePushNotification.AccessToken
 import com.policyboss.policybosspro.utils.NetworkUtils
+import com.policyboss.policybosspro.utils.getLocalIpAddress
 import com.policyboss.policybosspro.utils.hideKeyboard
 import com.policyboss.policybosspro.utils.showSnackbar
 import com.policyboss.policybosspro.utils.showToast
@@ -180,7 +181,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         setContentView(binding.root)
 
         // Set the status bar color to match your header
-        window.statusBarColor = ContextCompat.getColor(this, R.color.colorPrimary)
+       // window.statusBarColor = ContextCompat.getColor(this, R.color.colorPrimary)
 
         applyInsets()
 
@@ -423,11 +424,21 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 when (entity.productId) {
                     1 -> {
                         // Car
-                        var motorUrl = prefsManager.getFourWheelerUrl()
+//                        var motorUrl = prefsManager.getFourWheelerUrl()
+//
+//                        motorUrl += buildUrlAppend(ipaddress, deviceId, appVersion, entity.productId, parent_ssid)
+//
+//                        openCommonWebView(
+//                            motorUrl,
+//                            "Motor Insurance",
+//                            "Motor Insurance",
+//                            Constant.INSURANCE_TYPE
+//                        )
+//
+//                        trackMainMenuEvent("Motor Insurance")
 
-
-
-                        motorUrl += buildUrlAppend(ipaddress, deviceId, appVersion, entity.productId, parent_ssid)
+                        //temp :005 car scanner dummy
+                        val motorUrl =   "http://mfmapi.policyboss.com/vehicle_input.html"
 
                         openCommonWebView(
                             motorUrl,
@@ -436,9 +447,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                             Constant.INSURANCE_TYPE
                         )
 
-
-
-                        trackMainMenuEvent("Motor Insurance")
 
                     }
 
@@ -1093,10 +1101,15 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
 
     //region Handle DeepLink and Notification
+
     private fun deeplinkHandle() {
         val deeplinkValue = prefsManager.getDeepLink()
 
-        if (deeplinkValue != null && deeplinkValue.isNotEmpty()) {
+        val subSSID = prefsManager.getSUBUserSSId()
+        val subFBAID = prefsManager.getSUBUserFBAID()
+
+
+        if (!deeplinkValue.isNullOrEmpty()) {
 
             try {
                 val myUri = Uri.parse(deeplinkValue)
@@ -1107,6 +1120,11 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 Title = titleValue
 
                 when (prdID) {
+
+                    //id 500 from Home Page
+                    "500" ->{
+                        return
+                    }
                     "41" -> startActivity(Intent(this, WelcomeSyncContactActivityKotlin::class.java))
                     "501" -> startActivity(Intent(this, MyAccountActivity::class.java))
                     "502" -> {
@@ -1115,7 +1133,9 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                                     "&app_version=" + prefsManager.getAppVersion() +
                                     "&device_code=" + Utility.getDeviceID(this@HomeActivity) +
                                     "&ssid=" + prefsManager.getSSID() +
-                                    "&fbaid=" + prefsManager.getFBAID())
+                                    "&fbaid=" + prefsManager.getFBAID() +
+                                    "&sub_fba_id=${subFBAID}" +
+                                    "&sub_ss_id=${subSSID}" )
                             putExtra("NAME", "Posp Enrollment")
                             putExtra("TITLE", "Posp Enrollment")
                         }
@@ -1123,22 +1143,98 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     }
                     "503" -> startActivity(Intent(this, NotificationActivity::class.java))
                     "504" -> startActivity(Intent(this, SalesMaterialActivity::class.java))
-                    "505" -> FeedbackHelper.showFeedbackDialog(this)
+                    "505" -> {
+
+                        //Sync Contact Dashboard
+                        startLeadDetailActivity()
+                    }
+                    "506" -> {
+
+                        //RaiseTicket Handling
+                        val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+                            putExtra("URL", prefsManager.getRaiseTickitUrl() +
+                                    "&mobile_no=" + prefsManager.getMobileNo() +
+                                    "&UDID=" + prefsManager.getUserId() +
+                                    "&app_version=" + prefsManager.getAppVersion() +
+                                    "&device_code=" + Utility.getDeviceID(this@HomeActivity) +
+                                    "&ssid=" + prefsManager.getSSID() +
+                                    "&fbaid=" + prefsManager.getFBAID())
+                            putExtra("NAME", "RAISE_TICKET")
+                            putExtra("TITLE", "RAISE TICKET")
+                        }
+                        startActivity(intent)
+                    }
+                    "507" -> {
+                        //manage support Dialog
+                        if (!NetworkUtils.isNetworkAvailable(this)) {
+                            this.showSnackbar(binding.root,getString(R.string.noInternet))
+                            return
+                        }
+                        prefsManager.getUserConstantEntity()?.let { user ->
+                            if (user.MangMobile != null && user.ManagName != null) {
+                                if (callingDetailDialog?.isShowing == true) {
+                                    return
+                                } else {
+                                    //************* call User Details Api //*************
+                                    viewModel.getUserCallingDetail()
+                                }
+                            }
+                        }
+                    }
+                    "508" -> {
+                        //Calculator Activity
+                        startActivity(Intent(this, IncomePotentialActivity::class.java))
+                    }
+                    "551" ->{
+                        // SalesMaterial : Motor Insurance
+
+                        val intent = Intent(this, SalesMaterialActivity::class.java).apply {
+                            putExtra(Constant.Deeplink_PRODUCT_ID, "2") // Ensure "2" is a valid String
+                        }
+                        startActivity(intent)
+
+                    }
+                    "552" ->{
+                        // SalesMaterial : "Health Insurance
+                        val intent = Intent(this, SalesMaterialActivity::class.java).apply {
+                            putExtra(Constant.Deeplink_PRODUCT_ID, "1") // Ensure "2" is a valid String
+                        }
+                        startActivity(intent)
+
+                    }
+                    "553" ->{
+                        // SalesMaterial : "Term Insurance"
+                        val intent = Intent(this, SalesMaterialActivity::class.java).apply {
+                            putExtra(Constant.Deeplink_PRODUCT_ID, "6") // Ensure "2" is a valid String
+                        }
+                        startActivity(intent)
+
+                    }
+                    "554" ->{
+                        // SalesMaterial : "Travel Insurance"
+
+                        val intent = Intent(this, SalesMaterialActivity::class.java).apply {
+                            putExtra(Constant.Deeplink_PRODUCT_ID, "8") // Ensure "2" is a valid String
+                        }
+                        startActivity(intent)
+
+                    }
                     else -> {
                         val ipAddress = try {
-                            ""  // Replace with actual logic to get IP address
+                            getLocalIpAddress()?: ""  // Replace with actual logic to get IP address
                         } catch (e: Exception) {
                             "0.0.0.0"
                         }
 
                         val append = "&ss_id=${prefsManager.getSSID()}&fba_id=${prefsManager.getFBAID()}" +
-                                "&sub_fba_id=&ip_address=$ipAddress&mac_address=$ipAddress" +
-                                "&app_version=policyboss-${BuildConfig.VERSION_NAME}&device_id=${Utility.getDeviceID(this)}" +
-                                "&login_ssid="
+                                "&sub_fba_id=${subFBAID}&ip_address=$ipAddress&mac_address=$ipAddress" +
+                                "&app_version=${prefsManager.getAppVersion()}&device_id=${Utility.getDeviceID(this)}" +
+                                "&login_ssid=&sub_ss_id=${subSSID}"
 
                         // Update deeplinkValue with appended parameters
                         val updatedDeeplinkValue = deeplinkValue + append
 
+                        Log.d("Deeplink URL", updatedDeeplinkValue.toString())
                         // Delayed execution using Coroutine
                         Handler(Looper.getMainLooper()).postDelayed({
                             startActivity(Intent(this, CommonWebViewActivity::class.java).apply {
@@ -1156,6 +1252,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             }
         }
     }
+
 
     private fun getNotificationAction() {
         // region Activity Open Using Notification
@@ -1935,11 +2032,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 }
 
                 // Redirect to SalesMaterialActivity
-               // startActivity(Intent(this@HomeActivity, KnowledgeGuruActivity::class.java))
-
-                startActivity(Intent(this@HomeActivity, VehiclePlateReaderActivity::class.java))
-
-
+                startActivity(Intent(this@HomeActivity, KnowledgeGuruActivity::class.java))
 
                 // Tracking event
                 trackTopMenuEvent("CUSTOMER COMM")

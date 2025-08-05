@@ -6,8 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.WindowCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.policyboss.demoandroidapp.Utility.ExtensionFun.applySystemBarInsetsPadding
 import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.databinding.ActivityWelcomeBinding
 import com.policyboss.policybosspro.utils.CoroutineHelper
@@ -28,8 +30,15 @@ class WelcomeActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Opt into edge-to-edge drawing
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         binding = ActivityWelcomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.root.applySystemBarInsetsPadding()
+
 
         initWidgets()
         setListener()

@@ -20,6 +20,8 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.WindowCompat
+import com.policyboss.demoandroidapp.Utility.ExtensionFun.applySystemBarInsetsPadding
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.databinding.ActivityKnowledgeGuruBinding
@@ -50,8 +52,14 @@ class KnowledgeGuruWebviewActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // Opt into edge-to-edge drawing
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         binding = ActivityKnowledgeGuruWebviewBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.root.applySystemBarInsetsPadding()
 
         setSupportActionBar(binding.toolbar)
 

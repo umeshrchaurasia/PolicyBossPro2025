@@ -3,6 +3,10 @@ package com.policyboss.policybosspro.view.others.incomePotential;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,8 +15,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.policyboss.policybosspro.BaseActivity;
 import com.policyboss.policybosspro.BaseJavaActivity;
 import com.policyboss.policybosspro.R;
@@ -30,6 +36,11 @@ public class IncomePotentialActivity extends BaseJavaActivity implements View.On
     double less50k, upto1lac, upto3lac, upto10lac, above10lac;
     TextView tvOptimistic, tvModerate, tvPermistic;
 
+    AppBarLayout appBarLayout ;
+    ScrollView scrollView ; // the content container
+    View rootLayout ; // or your outermost layout
+
+
     double TwoWheeler, PrivateCar, HealthInsurance, TravelInsurance, Home, PersonalLoan, Business;
     double TwoWheelerCR, PrivateCarCR, HealthInsuranceCR, TravelInsuranceCR, HomeCR, PersonalLoanCR, BusinessCR;
     double HealthInsu = 0;
@@ -46,6 +57,8 @@ public class IncomePotentialActivity extends BaseJavaActivity implements View.On
     double EstIncomeAbove10 = 10000000;
     int scenario = 0;
 
+
+
     //endregion
 
     @Override
@@ -56,7 +69,13 @@ public class IncomePotentialActivity extends BaseJavaActivity implements View.On
     }
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Opt into edge-to-edge drawing
+        WindowCompat.setDecorFitsSystemWindows(getWindow(), false);
+
         setContentView(R.layout.activity_income_potential);
+
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setTitle("INCOME CALCULATOR");
@@ -65,6 +84,29 @@ public class IncomePotentialActivity extends BaseJavaActivity implements View.On
 
 
         initWidgets();
+
+       // Handling Top and bottom safe Area
+        ViewCompat.setOnApplyWindowInsetsListener(rootLayout, (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+
+            // Status bar padding for toolbar/appbar
+            appBarLayout.setPadding(
+                    appBarLayout.getPaddingLeft(),
+                    systemBars.top,
+                    appBarLayout.getPaddingRight(),
+                    appBarLayout.getPaddingBottom()
+            );
+
+            // Navigation bar padding for ScrollView (bottom)
+            scrollView.setPadding(
+                    scrollView.getPaddingLeft(),
+                    scrollView.getPaddingTop(),
+                    scrollView.getPaddingRight(),
+                    systemBars.bottom
+            );
+
+            return insets;
+        });
         TwoWheelerCR = .17;
         PrivateCarCR = .17;
         HealthInsuranceCR = .20;
@@ -76,6 +118,11 @@ public class IncomePotentialActivity extends BaseJavaActivity implements View.On
 
     }
     private void initWidgets() {
+
+         appBarLayout = findViewById(R.id.appbar);
+         scrollView = findViewById(R.id.scroll_view); // the content container
+        rootLayout = findViewById(R.id.root_layout);
+
         ivQr = (ImageView) findViewById(R.id.ivQr);
         btnCalculate = (TextView) findViewById(R.id.btnCalculate);
         etLess50k = (EditText) findViewById(R.id.etLess50k);

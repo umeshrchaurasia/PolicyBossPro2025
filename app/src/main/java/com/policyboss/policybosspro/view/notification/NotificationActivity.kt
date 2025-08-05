@@ -7,10 +7,12 @@ import android.util.Log
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.policyboss.demoandroidapp.Utility.ExtensionFun.applySystemBarInsetsPadding
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.core.APIState
 import com.policyboss.policybosspro.core.response.notification.NotificationEntity
@@ -48,9 +50,14 @@ class NotificationActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+
         binding = ActivityNotificationBinding.inflate(layoutInflater)
         //region Toolbar Set
         setContentView(binding.root)
+
+        binding.root.applySystemBarInsetsPadding()
+
 
         setSupportActionBar(binding.toolbar)
 
