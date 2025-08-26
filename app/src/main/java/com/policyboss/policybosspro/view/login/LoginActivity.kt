@@ -51,7 +51,9 @@ import com.policyboss.policybosspro.utils.showKeyboard
 import com.policyboss.policybosspro.utils.showToast
 import com.policyboss.policybosspro.view.WebView.PrivacyWebViewActivity
 import com.policyboss.policybosspro.view.home.HomeActivity
+import com.policyboss.policybosspro.view.introslider.WelcomeActivity
 import com.policyboss.policybosspro.view.raiseTicketDialog.RaiseTicketDialogActivity
+import com.policyboss.policybosspro.view.syncContact.ui.WelcomeSyncContactActivityKotlin
 import com.policyboss.policybosspro.webview.CommonWebViewActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
@@ -1203,7 +1205,10 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                                 showToast("Login is Successfully...")
 
                                 this@LoginActivity.finish()
-                                startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
+                               // startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
+
+
+                                startActivity(Intent(this@LoginActivity, WelcomeSyncContactActivityKotlin::class.java))
 
 
                             }
@@ -1428,9 +1433,15 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
                     if (enable_pro_signupurl.isEmpty()) {
                        // startActivity(Intent(this, RegisterActivity::class.java))    //temp05
                     } else {
-                        val signupurl: String =
-                            enable_pro_signupurl + "&app_version=" + prefManager.getAppVersion() + "&device_code=" + prefManager.getDeviceID() + "&ssid=&fbaid="
+//                        val signupurl: String =
+//                            enable_pro_signupurl + "&app_version=" + prefManager.getAppVersion() + "&device_code=" + prefManager.getDeviceID() + "&ssid=&fbaid="
+//                        Utility.loadWebViewUrlInBrowser(this@LoginActivity, signupurl)
+
+
+                        val signupurl : String = enable_pro_signupurl
+
                         Utility.loadWebViewUrlInBrowser(this@LoginActivity, signupurl)
+
                     }
                 } else {
                     //startActivity(Intent(this, RegisterActivity::class.java))   //temp05

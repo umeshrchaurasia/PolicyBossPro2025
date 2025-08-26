@@ -14,9 +14,9 @@ tools:context=".view.syncContact.ui.SyncContactActivity">
 
 </ImageView>
 <com.google.android.material.appbar.AppBarLayout
-    android:id="@+id/app_bar"
+    android:id="@+id/appbar"
     app:elevation="0dp"
-    android:background="@android:color/transparent"
+    android:background="@color/colorPrimaryDark"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:theme="@style/AppTheme.AppBarOverlay">
@@ -25,7 +25,7 @@ tools:context=".view.syncContact.ui.SyncContactActivity">
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-
+        android:background="?attr/colorPrimary"
         app:popupTheme="@style/AppTheme.PopupOverlay"
         app:titleTextAppearance="@style/TextStyle.Toolbar"
         app:titleTextColor="@color/white"/>
@@ -37,7 +37,7 @@ tools:context=".view.syncContact.ui.SyncContactActivity">
     layout="@layout/content_sync_contact"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_below="@+id/app_bar" />
+    android:layout_below="@+id/appbar" />
 
 
 </RelativeLayout>

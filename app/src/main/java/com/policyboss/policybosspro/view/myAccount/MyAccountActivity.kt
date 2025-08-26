@@ -22,7 +22,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -139,8 +141,8 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
         binding = ActivityMyAccountBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.root.applySystemBarInsetsPadding()
-
+       // binding.root.applySystemBarInsetsPadding()
+        applyInsets()
 
         setSupportActionBar(binding.toolbar)
         supportActionBar!!.apply {
@@ -247,6 +249,31 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
 
     }
 
+
+    private fun applyInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+            // ✅ push appbar down below status bar
+            binding.appbar.setPadding(
+                binding.appbar.paddingLeft,
+                statusBars.top,
+                binding.appbar.paddingRight,
+                binding.appbar.paddingBottom
+            )
+
+            // ✅ push bottom content above navigation bar
+            binding.includeMyaccount.root.setPadding(
+                binding.includeMyaccount.root.paddingLeft,
+                binding.includeMyaccount.root.paddingTop,
+                binding.includeMyaccount.root.paddingRight,
+                navBars.bottom
+            )
+
+            insets
+        }
+    }
 
 
     private fun bindAboutMe() {

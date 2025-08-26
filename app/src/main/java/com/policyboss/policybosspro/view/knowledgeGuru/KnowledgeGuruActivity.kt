@@ -9,7 +9,9 @@ import android.view.View.OnClickListener
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import com.policyboss.demoandroidapp.Utility.ExtensionFun.applySystemBarInsetsPadding
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.analytics.WebEngageAnalytics
@@ -37,7 +39,7 @@ class KnowledgeGuruActivity : BaseActivity(), OnClickListener {
         binding = ActivityKnowledgeGuruBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.root.applySystemBarInsetsPadding()
+        applyInsets()
 
         setSupportActionBar(binding.toolbar)
         supportActionBar!!.apply {
@@ -60,6 +62,33 @@ class KnowledgeGuruActivity : BaseActivity(), OnClickListener {
         setListener()
 
     }
+
+
+    private fun applyInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+            // ✅ Push AppBar below status bar
+            binding.appbar.setPadding(
+                binding.appbar.paddingLeft,
+                statusBars.top,
+                binding.appbar.paddingRight,
+                binding.appbar.paddingBottom
+            )
+
+            // ✅ Push included content above nav bar
+            binding.includeKnowledgeGuru.root.setPadding(
+                binding.includeKnowledgeGuru.root.paddingLeft,
+                binding.includeKnowledgeGuru.root.paddingTop,
+                binding.includeKnowledgeGuru.root.paddingRight,
+                navBars.bottom
+            )
+
+            insets
+        }
+    }
+
 
     private fun setListener() {
 

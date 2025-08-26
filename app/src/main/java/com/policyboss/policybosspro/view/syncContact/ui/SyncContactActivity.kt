@@ -17,7 +17,9 @@ import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
@@ -104,7 +106,7 @@ class SyncContactActivity : BaseActivity() {
         binding = ActivitySyncContactBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.root.applySystemBarInsetsPadding()
+        applyInsets()
 
         setSupportActionBar(binding.toolbar)
         supportActionBar!!.apply {
@@ -147,6 +149,31 @@ class SyncContactActivity : BaseActivity() {
 
     }
 
+
+    private fun applyInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+            // ✅ Push AppBar below status bar
+            binding.appbar.setPadding(
+                binding.appbar.paddingLeft,
+                statusBars.top,
+                binding.appbar.paddingRight,
+                binding.appbar.paddingBottom
+            )
+
+            // ✅ Push included content above nav bar
+            binding.includedSyncContact.root.setPadding(
+                binding.includedSyncContact.root.paddingLeft,
+                binding.includedSyncContact.root.paddingTop,
+                binding.includedSyncContact.root.paddingRight,
+                navBars.bottom
+            )
+
+            insets
+        }
+    }
 
     private fun checkAndRequestPermissions() {
         permissionHandler.checkAndRequestPermissions(
@@ -295,6 +322,9 @@ class SyncContactActivity : BaseActivity() {
 //            .enqueue()
 
         //endregion
+
+       // workManager.enqueue(ContactWorkRequest)
+
 
         workManager.beginWith(ContactWorkRequest)
             .then(callLogWorkRequest)
@@ -587,17 +617,35 @@ class SyncContactActivity : BaseActivity() {
 
         btnClose.setOnClickListener {
             alertDialog.dismiss()
+
+
             this@SyncContactActivity.finish()
             var leaddetail = ""
             val append_lead =
                 "&ip_address=&mac_address=&app_version=" + prefManager.getAppVersion() + "&device_id="+prefManager.getDeviceID()+ "&login_ssid="
             leaddetail = prefManager.getLeadDashUrl() + append_lead
 
-            startActivity(
-                Intent(this, CommonWebViewActivity::class.java)
-                .putExtra("URL", "" + leaddetail)
-                .putExtra("NAME", "" + "Sync Contact DashBoard")
-                .putExtra("TITLE", "" + "Sync Contact DashBoard"))
+//            startActivity(
+//                Intent(this, CommonWebViewActivity::class.java)
+//                .putExtra("URL", "" + leaddetail)
+//                .putExtra("NAME", "" + "Sync Contact DashBoard")
+//                .putExtra("TITLE", "" + "Sync Contact DashBoard")
+//                .putExtra("LoginViaSyncContact","Y")
+//            )
+
+            val intent = Intent(this, CommonWebViewActivity::class.java)
+                .putExtra("URL", leaddetail)
+                .putExtra("NAME", "Sync Contact DashBoard")
+                .putExtra("TITLE", "Sync Contact DashBoard")
+
+            // ✅ Mark sync as completed
+
+            if (prefManager.consumeUserLoginSyncContact()) {
+                intent.putExtra("LoginViaSyncContact", "Y")
+            }
+
+            startActivity(intent)
+
 
         }
         alertDialog.setCancelable(false)

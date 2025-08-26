@@ -1,9 +1,11 @@
 package com.policyboss.policybosspro.core.repository.loginRepository
 
 import com.policyboss.policybosspro.core.api.poilcyBossProLoginApi
+import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import retrofit2.Response
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,6 +23,12 @@ class LoginRepository @Inject constructor(
         emit(response)
     }.flowOn(Dispatchers.IO)
 
+    suspend fun getUserConstant(body : HashMap<String,String> ): Response<UserConstantResponse?>? {
+
+
+        return apiService.getUserConstant(body)
+
+    }
 
     suspend fun  insert_notification_token(body : HashMap<String,String>) = flow {
         val response = apiService.insert_notification_token(body=body)

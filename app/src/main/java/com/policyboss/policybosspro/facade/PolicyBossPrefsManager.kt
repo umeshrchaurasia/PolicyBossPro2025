@@ -41,6 +41,7 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         private const val MSG_FIRST_CHECK = "msgfirst_check"
         private const val CONTACT_FIRST_CHECK = "Contactfirst_check"
         private const val IS_FIRST_TIME_LAUNCH = "IsFirstTimeLaunch"
+        private const val IS_MARKET_POPUP_LAUNCH = "IsMarketPOPUpLaunch"
         private const val IS_BIKE_MASTER_UPDATE = "isBikeMasterUpdate"
         private const val IS_CAR_MASTER_UPDATE = "isCarMasterUpdate"
         private const val IS_RTO_MASTER_UPDATE = "isRtoMasterUpdate"
@@ -55,6 +56,7 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         private const val CAR_VEHICLE_MOBILE_LOG = "vehicle_mobile_log"
         private const val FOS_USER_AUTHENTICATIONN = "fos_user_authenticationn"
         const val PUSH_VERIFY_LOGIN = "push_verify_login"
+        const val LOGIN_SYNC_CONTACT = "login_sync_contact"
         const val NOTIFICATION_COUNTER = "Notification_Counter"
         const val IS_ENABLE_PRO_POSPURL = "IS_enable_pro_POSPurl"
         const val IS_ENABLE_PRO_ADDSUBUSER_URL = "IS_enable_pro_Addsubuser_url"
@@ -161,6 +163,17 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         return pref.getBoolean(IS_FIRST_TIME_LAUNCH, true)
     }
 
+
+    /////////
+
+    fun setMarketPopUpLaunch(isFirstTime: Boolean) {
+        editor.putBoolean(IS_MARKET_POPUP_LAUNCH, isFirstTime).apply()
+    }
+
+    fun isMarketPopUpFirstTimeLaunch(): Boolean {
+        return pref.getBoolean(IS_MARKET_POPUP_LAUNCH, true)
+    }
+
     fun setIsCarMasterUpdate(isFirstTime: Boolean) {
         editor.putBoolean(IS_CAR_MASTER_UPDATE, isFirstTime).apply()
     }
@@ -246,6 +259,8 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
     }
 
 
+
+
     fun setIsUserLogin(isUserLogin: Boolean) {
         editor.putBoolean(PUSH_VERIFY_LOGIN, isUserLogin).apply()
     }
@@ -262,9 +277,17 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
 
     fun getEnableProAddSubUserUrl(): String {
 
-        return getUserConstantResponse()?.MasterData?.enable_pro_Addsubuser_url.orEmpty()
+        //return getUserConstantResponse()?.MasterData?.enable_pro_Addsubuser_url.orEmpty()
 
-       // return pref.getString(IS_ENABLE_PRO_ADDSUBUSER_URL, "")
+
+        val url = getUserConstantResponse()?.MasterData?.enable_pro_Addsubuser_url
+        return when {
+            url == null -> "https://www.policyboss.com/sub-user-list?product_id=1&v=20250310"
+            url.isEmpty() -> "" // explicitly empty, don’t use default
+            else -> url
+        }
+
+
     }
 
     // Notification Methods
@@ -292,8 +315,10 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
 
     fun clearDeeplink() {
         pref.edit().remove(DeepLink)
-            .commit()
+            .apply()
     }
+
+
 
     //endregion
 
@@ -326,6 +351,24 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         val response = getLoginHorizonResponse()
         return response?.EMP
     }
+
+    ///
+
+    private fun setIsUserLoginSyncContact(isUserLoginSync: Boolean) {
+        editor.putBoolean(LOGIN_SYNC_CONTACT, isUserLoginSync).apply()
+    }
+
+    fun isUserLoginSyncContact(): Boolean {
+        return pref.getBoolean(LOGIN_SYNC_CONTACT, false)
+    }
+
+    fun consumeUserLoginSyncContact(): Boolean {
+        val wasSet = isUserLoginSyncContact()
+        setIsUserLoginSyncContact(true) // reset after reading
+
+        return !wasSet
+    }
+    //
 
   // 16333
     fun getSSID() : String {

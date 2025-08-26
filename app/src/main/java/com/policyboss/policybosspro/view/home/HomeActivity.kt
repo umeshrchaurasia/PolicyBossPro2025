@@ -8,6 +8,7 @@ import android.content.pm.ShortcutInfo
 import android.content.pm.ShortcutManager
 import android.content.res.ColorStateList
 import android.content.res.Configuration
+import android.graphics.Color
 import android.graphics.drawable.Icon
 import android.net.Uri
 import android.os.Build
@@ -32,6 +33,7 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 
 import androidx.core.view.updatePadding
 import androidx.lifecycle.Lifecycle
@@ -142,6 +144,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private lateinit var navigationView : NavigationView     //layout navigation_view
     private lateinit var headerBinding: DrawerHeaderBinding // layout name drawer_header in activity_xml
+    private lateinit var insetsController: WindowInsetsControllerCompat
 
     var shortcutManager: ShortcutManager? = null
 
@@ -176,9 +179,15 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
         // Opt into edge-to-edge drawing
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.statusBarColor = Color.TRANSPARENT
 
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+
+
+        // Initialize insets controller for status bar icon contrast
+        insetsController = WindowInsetsControllerCompat(window, window.decorView)
 
         // Set the status bar color to match your header
        // window.statusBarColor = ContextCompat.getColor(this, R.color.colorPrimary)
@@ -200,6 +209,8 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 super.onDrawerClosed(drawerView)
                 // Handle the action when the drawer is closed
                 // You can leave this blank if no action is needed
+                // App bar is usually primary/dark → light icons needed
+                insetsController.isAppearanceLightStatusBars = false
             }
 
             override fun onDrawerOpened(drawerView: View) {
@@ -210,6 +221,8 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 } catch (ex: Exception) {
                     ex.printStackTrace() // Handle exceptions gracefully
                 }
+                // Drawer is usually light background → dark icons needed
+                insetsController.isAppearanceLightStatusBars = true
             }
         }
 
@@ -313,7 +326,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         ViewCompat.setOnApplyWindowInsetsListener(binding.appbar) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             // Apply top padding to the AppBarLayout to push it down below the status bar
-            view.   updatePadding(top = systemBars.top)
+            view. updatePadding(top = systemBars.top)
             insets // Return insets so other views can use them
         }
 
@@ -342,6 +355,11 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
             view.updatePadding(top = systemBars.top)
             insets
         }
+//        ViewCompat.setOnApplyWindowInsetsListener(binding.navigationView) { view, insets ->
+//            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+//            view.updatePadding(bottom = systemBars.bottom)
+//            insets
+//        }
 
 
     }
@@ -424,21 +442,9 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 when (entity.productId) {
                     1 -> {
                         // Car
-//                        var motorUrl = prefsManager.getFourWheelerUrl()
-//
-//                        motorUrl += buildUrlAppend(ipaddress, deviceId, appVersion, entity.productId, parent_ssid)
-//
-//                        openCommonWebView(
-//                            motorUrl,
-//                            "Motor Insurance",
-//                            "Motor Insurance",
-//                            Constant.INSURANCE_TYPE
-//                        )
-//
-//                        trackMainMenuEvent("Motor Insurance")
+                        var motorUrl = prefsManager.getFourWheelerUrl()
 
-                        //temp :005 car scanner dummy
-                        val motorUrl =   "http://mfmapi.policyboss.com/vehicle_input.html"
+                        motorUrl += buildUrlAppend(ipaddress, deviceId, appVersion, entity.productId, parent_ssid)
 
                         openCommonWebView(
                             motorUrl,
@@ -446,6 +452,18 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                             "Motor Insurance",
                             Constant.INSURANCE_TYPE
                         )
+
+                        trackMainMenuEvent("Motor Insurance")
+
+                        //temp :005 car scanner dummy
+//                        val motorUrl =   "http://mfmapi.policyboss.com/vehicle_input.html"
+//
+//                        openCommonWebView(
+//                            motorUrl,
+//                            "Motor Insurance",
+//                            "Motor Insurance",
+//                            Constant.INSURANCE_TYPE
+//                        )
 
 
                     }
@@ -751,7 +769,10 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private fun handleMenuItemClick(menuItem: MenuItem) {
         when (menuItem.itemId) {
-            R.id.nav_home -> viewModel.getMasterData()
+            R.id.nav_home ->{
+                prefsManager.setMarketPopUpLaunch(isFirstTime = true)
+                viewModel.getMasterData()
+            }
 
             R.id.nav_finbox -> {
              //   startCommonWebViewActivity(prefsManager.getFinboxurl(), "MY FINBOX")
@@ -798,6 +819,10 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
             R.id.nav_pospenrollment -> {
                 startPospEnrollment()
+            }
+
+            R.id.nav_addposp -> {
+                startADDSubPOSP()
             }
 
             R.id.nav_leaddetail -> {
@@ -849,7 +874,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     fun hideNavigationDrawerItem() {
         val navMenu = navigationView.menu
-
 
         prefsManager.getUserType().let {
             if (it.isNotEmpty()) {
@@ -931,6 +955,19 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         startActivity(intent)
     }
 
+
+    private fun startADDSubPOSP() {
+        val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+            putExtra("URL", prefsManager.getEnableProAddSubUserUrl() +
+                    "&app_version=" + prefsManager.getAppVersion() +
+                    "&device_code=" + Utility.getDeviceID(this@HomeActivity) +
+                    "&ssid=" + prefsManager.getSSID() +
+                    "&fbaid=" + prefsManager.getFBAID())
+            putExtra("NAME", "ADD SUBUSER")
+            putExtra("TITLE", "ADD SUBUSER")
+        }
+        startActivity(intent)
+    }
 
     private fun startLeadDetailActivity() {
         val append_lead = "&ip_address=&mac_address=&app_version=policyboss-" +
@@ -1029,7 +1066,8 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                     weUser.setEmail(prefsManager.getEmpData()?.Email_Id ?: "")
 
                     Glide.with(this@HomeActivity)
-                        .load(prefsManager.getUserConstantEntity()?.pospselfphoto)
+                       // .load(prefsManager.getUserConstantEntity()?.pospselfphoto)
+                        .load(Constant.pospselfphoto)
                         .placeholder(R.drawable.circle_placeholder)
                         .diskCacheStrategy(DiskCacheStrategy.NONE)
                         .skipMemoryCache(true)
@@ -1182,6 +1220,10 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                         }
                     }
                     "508" -> {
+                        //Calculator Activity
+                        startActivity(Intent(this, IncomePotentialActivity::class.java))
+                    }
+                    "509" -> {
                         //Calculator Activity
                         startActivity(Intent(this, IncomePotentialActivity::class.java))
                     }
@@ -1735,21 +1777,27 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     //endregion
 
     //region Market PopUp Alert
-    fun marketPopUpAlert(){
+    private fun marketPopUpAlert(){
 
-        prefsManager.getUserConstantEntity()?.let {  userConstant->
-            userConstant.androidpromarketEnable?.let {
-                if (prefsManager.getUserId() == "0") {
-                    if (!userConstant.androidpromarkefbaurl.isNullOrEmpty()) {
-                        openWebViewPopUp_marketing(binding.root, userConstant.androidpromarkefbaurl, true, "")
-                    }
-                } else {
-                    if (!userConstant.androidpromarketuidurl.isNullOrEmpty()) {
-                        openWebViewPopUp_marketing(binding.root, userConstant.androidpromarketuidurl, true, "")
-                    }
-                }
-            }
-        }
+       if( prefsManager.isMarketPopUpFirstTimeLaunch()){
+
+           prefsManager.setMarketPopUpLaunch(isFirstTime = false)
+
+           prefsManager.getUserConstantEntity()?.let {  userConstant->
+               userConstant.androidpromarketEnable?.let {
+                   if (prefsManager.getUserId() == "0") {
+                       if (!userConstant.androidpromarkefbaurl.isNullOrEmpty()) {
+                           openWebViewPopUp_marketing(binding.root, userConstant.androidpromarkefbaurl, true, "")
+                       }
+                   } else {
+                       if (!userConstant.androidpromarketuidurl.isNullOrEmpty()) {
+                           openWebViewPopUp_marketing(binding.root, userConstant.androidpromarketuidurl, true, "")
+                       }
+                   }
+               }
+           }
+
+       }
 
     }
 
@@ -2004,8 +2052,43 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
 
 
+
     //region Open App in Play Store
+
+    private fun forceUpdateApp(){
+
+        //region ForceUpdate
+        //Mark: get  current version from App
+        val currentVersion = Utility.getCurrentVersion(this@HomeActivity) // Get the current version of your app
+
+        //Mark: check for new version from Server
+        val serverVersionCode =
+            prefsManager.getAndroidProVersion()
+
+        //Mark : Force Update Via playStore
+        if (currentVersion < serverVersionCode) {
+
+            openAppMarketPlace()
+
+        }
+
+        //endregion
+    }
+
     private fun openAppMarketPlace() {
+        val appPackageName = packageName
+
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$appPackageName"))
+            intent.setPackage("com.android.vending") // ✅ Force Google Play
+            startActivity(intent)
+        } catch (e: Exception) {
+            // fallback to web browser
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")))
+        }
+    }
+
+    private fun openAppMarketPlace1() {
         val appPackageName = packageName // getPackageName() from Context or Activity
         try {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$appPackageName")))
@@ -2063,8 +2146,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
 
 
-
-
         lifecycleScope.launch {
 
             repeatOnLifecycle(Lifecycle.State.RESUMED) {
@@ -2095,7 +2176,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
 
         lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.CREATED) {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
 
                 // Collecting masterState
                 launch {
@@ -2116,61 +2197,65 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                                 initHeaderLayout()
                                 shortcutAppMenu()
 
-                                if (!prefsManager.getDeepLink().isNullOrEmpty()) {
+
+                                if (!prefsManager.getDeepLink().isNullOrBlank()) {
                                     // Handle deep link here
-                                    deeplinkHandle()
 
-                                    return@collectLatest
-
-                                }
-
-                                getNotificationAction()
+                                        deeplinkHandle()
+                                        prefsManager.clearDeeplink() // ✅ clear after consuming
+                                        return@collectLatest
 
 
-                                //region ForceUpdate
-                                //Mark: get  current version from App
-                                val currentVersion = Utility.getCurrentVersion(this@HomeActivity) // Get the current version of your app
+                                } else {
 
-                                //Mark: check for new version from Server
-                                val serverVersionCode =
-                                    prefsManager.getAndroidProVersion()
-
-                                //Mark : Force Update Via playStore
-                                if (currentVersion < serverVersionCode) {
-
-                                    UtilityNew.openPopUp(
-                                        context = this@HomeActivity,
-                                        title = "UPDATE",
-                                        desc = "New version available on play store, Please update",
-                                        positiveButtonName = "OK",
-                                        isCancelable = false,
-                                        onPositiveButtonClick = { dialog, view ->
-                                            // Handle positive action
-                                            dialog.dismiss()
-                                            openAppMarketPlace()
-                                        }
-                                    )
-
-                                    return@collectLatest
-
-                                }
-
-                                //endregion
+                                    getNotificationAction()
 
 
-                                // region market PopUp and sync PopUp Alert
-                                //Mark :Call Market Pop Up Alert
-                                marketPopUpAlert()
+                                    //region ForceUpdate
+                                    //Mark: get  current version from App
+                                    val currentVersion = Utility.getCurrentVersion(this@HomeActivity) // Get the current version of your app
 
-                                state.data?.horizonDetail?.SYNC_CONTACT?.takeIf { it.ACTION_NEEDED == "NO_ACTION"}
-                                    ?.let { syncContactEntity->
+                                    //Mark: check for new version from Server
+                                    val serverVersionCode =
+                                        prefsManager.getAndroidProVersion()
 
-                                        showMySyncPopUpAlert(syncContactEntity)
+                                    //Mark : Force Update Via playStore
+                                    if (currentVersion < serverVersionCode) {
+
+//                                        UtilityNew.openPopUp(
+//                                            context = this@HomeActivity,
+//                                            title = "UPDATE",
+//                                            desc = "New version available on play store, Please update",
+//                                            positiveButtonName = "OK",
+//                                            isCancelable = false,
+//                                            onPositiveButtonClick = { dialog, view ->
+//                                                // Handle positive action
+//                                                dialog.dismiss()
+//                                                openAppMarketPlace()
+//                                            }
+//                                        )
+
+                                        openAppMarketPlace()
+                                        return@collectLatest
 
                                     }
 
-                                //endregion
+                                    //endregion
 
+
+                                    // region market PopUp and sync PopUp Alert
+                                    //Mark :Call Market Pop Up Alert
+                                    marketPopUpAlert()
+
+                                    state.data?.horizonDetail?.SYNC_CONTACT?.takeIf { it.ACTION_NEEDED == "NO_ACTION"}
+                                        ?.let { syncContactEntity->
+
+                                            showMySyncPopUpAlert(syncContactEntity)
+
+                                        }
+
+                                    //endregion
+                                }
 
 
                             }

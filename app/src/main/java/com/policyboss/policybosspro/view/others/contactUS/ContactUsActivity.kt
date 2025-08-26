@@ -6,6 +6,8 @@ import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import androidx.activity.viewModels
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -67,10 +69,35 @@ class ContactUsActivity : BaseActivity() {
         }
         includedBinding = ContentContactUsBinding.bind(binding.includeContactUs.root)
 
+        applyInsets() // ✅ handle status + nav bar insets
 
         viewModel.getContactList()
 
         observeResponse()
+    }
+
+    private fun applyInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            // Push AppBar below status bar
+            binding.appbar.setPadding(
+                binding.appbar.paddingLeft,
+                systemBars.top,
+                binding.appbar.paddingRight,
+                binding.appbar.paddingBottom
+            )
+
+            // Push content above nav bar
+            includedBinding.root.setPadding(
+                includedBinding.root.paddingLeft,
+                includedBinding.root.paddingTop,
+                includedBinding.root.paddingRight,
+                systemBars.bottom
+            )
+
+            insets
+        }
     }
 
     private fun setupContctUSAdapter( contactUslst: List<ContactUsEntity>) {

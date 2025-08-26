@@ -18,6 +18,7 @@ import com.policyboss.policybosspro.utils.showAlert
 import com.policyboss.policybosspro.view.home.HomeActivity
 import com.policyboss.policybosspro.view.introslider.WelcomeActivity
 import com.policyboss.policybosspro.view.login.LoginActivity
+import com.policyboss.policybosspro.view.syncContact.ui.WelcomeSyncContactActivityKotlin
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -169,8 +170,10 @@ class SplashScreenActivity : AppCompatActivity() {
     }
 
     private fun navigateBasedOnLoginStatus() {
-        val targetActivity = if (prefManager.getEmpData() != null) {
+        val targetActivity = if (prefManager.getEmpData() != null && prefManager.isUserLoginSyncContact()) {
             HomeActivity::class.java
+        } else if(prefManager.getEmpData() != null && (!prefManager.isUserLoginSyncContact()) ) {
+            WelcomeSyncContactActivityKotlin::class.java
         } else {
             LoginActivity::class.java
         }

@@ -117,7 +117,7 @@ object Constant {
     const val CONTACT_LOG_DataFetching = "Data is Fetching Please Wait..."
     const val CONTACT_LOG_DataSending = "Sending Data to Server..."
 
-
+    const val pospselfphoto = "https://origin-cdnh.policyboss.com/website/Images/campaign/profile_pic.png"
 
 
 

@@ -20,7 +20,9 @@ import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import com.policyboss.demoandroidapp.Utility.ExtensionFun.applySystemBarInsetsPadding
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.R
@@ -59,7 +61,8 @@ class KnowledgeGuruWebviewActivity : BaseActivity() {
         binding = ActivityKnowledgeGuruWebviewBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.root.applySystemBarInsetsPadding()
+        applyInsets()
+       // binding.root.applySystemBarInsetsPadding()
 
         setSupportActionBar(binding.toolbar)
 
@@ -100,6 +103,30 @@ class KnowledgeGuruWebviewActivity : BaseActivity() {
     }
 
 
+    private fun applyInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+            // ✅ Push AppBar below status bar
+            binding.appbar.setPadding(
+                binding.appbar.paddingLeft,
+                statusBars.top,
+                binding.appbar.paddingRight,
+                binding.appbar.paddingBottom
+            )
+
+            // ✅ Push included layout bottom (button above nav bar)
+            binding.root.setPadding(
+                binding.includeKnowledgeGuruWebview.root.paddingLeft,
+                binding.includeKnowledgeGuruWebview.root.paddingTop,
+                binding.includeKnowledgeGuruWebview.root.paddingRight,
+                navBars.bottom
+            )
+
+            insets
+        }
+    }
 
     //region WebView Handling
     private fun settingWebview() {

@@ -117,6 +117,10 @@ open class WelcomeSyncContactActivityKotlin : BaseActivity() , View.OnClickListe
         binding = ActivityWelcomeSyncContactKotlinBinding.inflate(layoutInflater)
         setContentView(binding.root)
         binding.root.applySystemBarInsetsPadding()
+        //applyInsets()
+        // Apply padding for safe areas
+
+
 
         dialogAnim = Dialog(this)
 
@@ -199,6 +203,31 @@ open class WelcomeSyncContactActivityKotlin : BaseActivity() , View.OnClickListe
         }
 
         viewPage2Listener()
+    }
+
+
+    private fun applyInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+
+            // push content below status bar
+            binding.mainContent.setPadding(
+                binding.mainContent.paddingLeft,
+                systemBars.top,
+                binding.mainContent.paddingRight,
+                binding.mainContent.paddingBottom
+            )
+
+            // push footer above nav bar
+            binding.lyFooter.setPadding(
+                binding.lyFooter.paddingLeft,
+                binding.lyFooter.paddingTop,
+                binding.lyFooter.paddingRight,
+                systemBars.bottom
+            )
+
+            insets
+        }
     }
 
 

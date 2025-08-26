@@ -7,6 +7,9 @@
     tools:context=".view.knowledgeGuru.KnowledgeGuruWebviewActivity">
 
     <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+
+        android:background="@color/colorPrimaryDark"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">

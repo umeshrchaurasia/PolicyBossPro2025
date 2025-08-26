@@ -1,5 +1,6 @@
 package com.policyboss.policybosspro.core.viewModel.loginVM
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.policyboss.policybosspro.core.APIState
@@ -17,6 +18,7 @@ import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utility.Utility
 import com.policyboss.policybosspro.utils.Constant
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -220,6 +222,8 @@ class LoginViewModel @Inject constructor(
                         if(data.body()?.status?.uppercase().equals("SUCCESS"))
                         {
                             prefManager.saveLoginHorizonResponse(data.body())
+
+                             getUserConstant()
                             loginMutuableStateFlow.value = APIState.Success(data = data.body())
 
                             insert_notification_token(ss_id)
@@ -241,6 +245,40 @@ class LoginViewModel @Inject constructor(
         }
 
     }
+
+
+    //Mark : UserConstant req before we satrt sync after login api called
+    fun getUserConstant() = viewModelScope.launch {
+
+        val body = hashMapOf(
+            "app_version" to prefManager.getAppVersion(),
+            "device_code" to prefManager.getDeviceID(),
+            "ssid" to prefManager.getSSID(),
+            "fbaid" to prefManager.getFBAID()
+        )
+
+
+        try {
+            // Concurrent API calls
+            val UserConstatnDeferred = async { loginNewRepository.getUserConstant(body) }
+
+            val UserConstatnResponse = UserConstatnDeferred.await()
+
+            if (UserConstatnResponse?.isSuccessful() == true) {
+
+                Log.d(Constant.TAG, "User Constant Success: ${UserConstatnResponse.message()}")
+                UserConstatnResponse.body()?.let { prefManager.saveUserConstantResponse(it) }
+
+            }else{
+                Log.d(Constant.TAG, "Error occurred at User Constant : ${UserConstatnResponse?.message()}")
+            }
+
+        } catch (e: Exception) {
+            Log.e(Constant.TAG, "Error occurred: ${e.message}")
+        }
+
+    }
+
 
 
     fun getotpLoginHorizon(login_id: String) = viewModelScope.launch {

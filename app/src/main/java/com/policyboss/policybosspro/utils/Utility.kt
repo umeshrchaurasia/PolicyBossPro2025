@@ -178,10 +178,44 @@ object Utility {
     @JvmStatic
     fun loadWebViewUrlInBrowser(context: Context, url: String) {
         Log.d("URL", url)
-        val browserIntent = Intent(Intent.ACTION_VIEW).apply {
-            data = Uri.parse(url)
+//        val browserIntent = Intent(Intent.ACTION_VIEW).apply {
+//            data = Uri.parse(url)
+//        }
+//        context.startActivity(browserIntent)
+
+
+        try {
+            val uri = Uri.parse(url)
+
+            // Build the intent
+            val intent = Intent(Intent.ACTION_VIEW, uri).apply {
+                addCategory(Intent.CATEGORY_BROWSABLE)
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+
+            // Prefer Chrome if installed
+            val chromePackage = "com.android.chrome"
+            val pm = context.packageManager
+            val chromeInstalled = try {
+                pm.getPackageInfo(chromePackage, 0)
+                true
+            } catch (e: Exception) {
+                false
+            }
+
+            if (chromeInstalled) {
+                intent.setPackage(chromePackage) // Force Chrome
+                context.startActivity(intent)
+            } else {
+                // Otherwise, show chooser → guarantees browser selection
+                val chooser = Intent.createChooser(intent, "Open with browser")
+                context.startActivity(chooser)
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Toast.makeText(context, "Unable to open link in browser", Toast.LENGTH_LONG).show()
         }
-        context.startActivity(browserIntent)
     }
 
 

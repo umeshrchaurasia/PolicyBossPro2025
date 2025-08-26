@@ -1,12 +1,16 @@
 package com.policyboss.policybosspro.view.salesMaterial
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -54,11 +58,15 @@ class SalesMaterialActivity : BaseActivity() {
 
         // Opt into edge-to-edge drawing
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.statusBarColor = Color.TRANSPARENT
 
         binding = ActivitySalesMaterialBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.root.applySystemBarInsetsPadding()
+      //  binding.root.applySystemBarInsetsPadding()
+        // Apply insets properly
+        applyInsets()
+
 
         setSupportActionBar(binding.toolbar)
         supportActionBar!!.apply {
@@ -96,6 +104,22 @@ class SalesMaterialActivity : BaseActivity() {
 
 
    }
+
+    private fun applyInsets() {
+        // Push AppBar below status bar
+        ViewCompat.setOnApplyWindowInsetsListener(binding.appbar) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updatePadding(top = systemBars.top)
+            insets
+        }
+
+        // Prevent RecyclerView content from being hidden behind nav bar
+        ViewCompat.setOnApplyWindowInsetsListener(binding.rvSalesMaterial) { view, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            view.updatePadding(bottom = systemBars.bottom)
+            insets
+        }
+    }
 
     private fun setupSalesMaterialAdapter(salesProductList : List<SalesMateriaProdEntity>) {
 

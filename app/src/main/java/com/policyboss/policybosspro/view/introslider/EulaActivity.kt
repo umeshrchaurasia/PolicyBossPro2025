@@ -4,6 +4,9 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.analytics.WebEngageAnalytics
 import com.policyboss.policybosspro.databinding.ActivityEulaBinding
@@ -31,6 +34,8 @@ class EulaActivity : AppCompatActivity(), View.OnClickListener{
         super.onCreate(savedInstanceState)
         binding = ActivityEulaBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        applyInsets()
 
 
         setListener()
@@ -56,6 +61,24 @@ class EulaActivity : AppCompatActivity(), View.OnClickListener{
             }
         }
     }
+
+    private fun applyInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+            // push whole included layout inside safe area
+            binding.includedEula.root.setPadding(
+                binding.includedEula.root.paddingLeft,
+                statusBars.top,  // respect status bar
+                binding.includedEula.root.paddingRight,
+                navBars.bottom   // respect bottom gesture/nav bar
+            )
+
+            insets
+        }
+    }
+
 
     private fun setupWebView() {
         val settings = binding.includedEula.webView.settings

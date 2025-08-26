@@ -7,6 +7,7 @@
     tools:context=".view.syncContact.ui.WelcomeSyncContactActivityKotlin">
 
     <LinearLayout
+        android:id="@+id/mainContent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"

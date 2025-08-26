@@ -2,6 +2,7 @@ package com.policyboss.policybosspro.view.salesMaterial
 
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
@@ -10,7 +11,9 @@ import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.viewModels
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -97,11 +100,16 @@ class SalesDetailActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         // Opt into edge-to-edge drawing
         WindowCompat.setDecorFitsSystemWindows(window, false)
+        window.statusBarColor = Color.TRANSPARENT
+
         binding = ActivitySalesDetailBinding.inflate(layoutInflater)
         //region Toolbar Set
         setContentView(binding.root)
 
-        binding.root.applySystemBarInsetsPadding()
+       // binding.root.applySystemBarInsetsPadding()
+
+        applyInsets()
+
         setSupportActionBar(binding.toolbar)
 
         supportActionBar!!.apply {
@@ -205,6 +213,32 @@ class SalesDetailActivity : BaseActivity() {
 
         //endregion
 
+    }
+
+
+    private fun applyInsets(){
+
+        // Handle insets for status bar & nav bar
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+            binding.appbar.setPadding(
+                binding.appbar.paddingLeft,
+                statusBars.top,
+                binding.appbar.paddingRight,
+                binding.appbar.paddingBottom
+            )
+
+            binding.includeSalesDetail.root.setPadding(
+                binding.includeSalesDetail.root.paddingLeft,
+                binding.includeSalesDetail.root.paddingTop,
+                binding.includeSalesDetail.root.paddingRight,
+                navBars.bottom
+            )
+
+            insets
+        }
     }
 
     private fun apiCall(){
@@ -359,9 +393,12 @@ class SalesDetailActivity : BaseActivity() {
             pospDesg = it
         }
 
-        prefsManager.getUserConstantEntity()?.pospselfphoto?.takeIf { it.isNotBlank() }?.let {url ->
-            pospPhotoUrl = URL(url)
-        }
+        //region below commneted bec pospselfphoto not founded
+//        prefsManager.getUserConstantEntity()?.pospselfphoto?.takeIf { it.isNotBlank() }?.let {url ->
+//            pospPhotoUrl = URL(url)
+//        }
+        //endregion
+        pospPhotoUrl = URL(Constant.pospselfphoto)
 
     }
 
@@ -391,11 +428,13 @@ class SalesDetailActivity : BaseActivity() {
             fbaDesg = it
         }
 
+      //region below commneted bec pospselfphoto not founded
+    //        prefsManager.getUserConstantEntity()?.pospselfphoto?.takeIf { it.isNotBlank() }?.let {url ->
+    //            fbaPhotoUrl = URL(url)
+    //        }
+        // endregion
 
-        prefsManager.getUserConstantEntity()?.pospselfphoto?.takeIf { it.isNotBlank() }?.let {url ->
-            fbaPhotoUrl = URL(url)
-        }
-
+        fbaPhotoUrl = URL(Constant.pospselfphoto)
 
     }
 

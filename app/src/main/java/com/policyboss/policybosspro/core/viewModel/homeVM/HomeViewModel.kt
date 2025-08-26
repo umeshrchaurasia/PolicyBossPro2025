@@ -361,34 +361,6 @@ class HomeViewModel @Inject constructor(
     }
 
     //region Not in Used
-    fun getUserConstant(appVersion: String, deviceCode: String) = viewModelScope.launch {
-
-        var body = HashMap<String, String>()
-        body.put("app_version", appVersion)
-        body.put("device_code", deviceCode)
-        body.put("ssid", prefManager.getSSID())
-        body.put("fbaid", prefManager.getFBAID())
-
-
-
-        try {
-            // Concurrent API calls
-            val UserConstatnDeferred = async { homeRepository.getUserConstant(body) }
-
-            val UserConstatnResponse = UserConstatnDeferred.await()
-
-            if (UserConstatnResponse?.isSuccessful() == true) {
-
-                Log.d(Constant.TAG, "User Constant Success: ${UserConstatnResponse.message()}")
-            }else{
-                Log.d(Constant.TAG, "Error occurred at User Constant : ${UserConstatnResponse?.message()}")
-            }
-
-        } catch (e: Exception) {
-            Log.e(Constant.TAG, "Error occurred: ${e.message}")
-        }
-
-    }
 
     fun getDynamicDashboardMenu(appVersion: String, deviceCode: String) = viewModelScope.launch {
 

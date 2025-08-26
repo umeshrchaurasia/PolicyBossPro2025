@@ -13,6 +13,8 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.databinding.ActivityPrivacyWebViewBinding
 import com.policyboss.policybosspro.utils.NetworkUtils
@@ -33,6 +35,8 @@ class PrivacyWebViewActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityPrivacyWebViewBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        applyInsets()
 
         url = intent.getStringExtra("URL").orEmpty()
         name = intent.getStringExtra("NAME").orEmpty()
@@ -62,6 +66,32 @@ class PrivacyWebViewActivity : BaseActivity() {
             title = this@PrivacyWebViewActivity.title
         }
     }
+
+    private fun applyInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+            // Push AppBar below status bar
+            binding.appbar.setPadding(
+                binding.appbar.paddingLeft,
+                statusBars.top,
+                binding.appbar.paddingRight,
+                binding.appbar.paddingBottom
+            )
+
+            // Push WebView above navigation bar
+            binding.webView.setPadding(
+                binding.webView.paddingLeft,
+                binding.webView.paddingTop,
+                binding.webView.paddingRight,
+                navBars.bottom
+            )
+
+            insets
+        }
+    }
+
 
     override fun onStart() {
         super.onStart()

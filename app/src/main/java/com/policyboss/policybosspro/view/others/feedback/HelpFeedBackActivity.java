@@ -3,12 +3,17 @@ package com.policyboss.policybosspro.view.others.feedback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ScrollView;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.policyboss.policybosspro.R;
 import com.policyboss.policybosspro.analytics.WebEngageAnalytics;
 import com.policyboss.policybosspro.view.others.contactUS.ContactUsActivity;
@@ -23,6 +28,10 @@ public class HelpFeedBackActivity extends AppCompatActivity implements View.OnCl
 
     CardView cvContactUs, cvRaiseTicket, cvAboutUs, cvDisclosure ,cvChat;
 
+    AppBarLayout appBarLayout ;
+
+    View includedRoot;
+    View rootLayout ; // or your outermost layout
     @Override
     protected void onStart() {
         super.onStart();
@@ -40,6 +49,28 @@ public class HelpFeedBackActivity extends AppCompatActivity implements View.OnCl
         setTitle("HELP &  FEEDBACK");
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         initWidgets();
+
+        ViewCompat.setOnApplyWindowInsetsListener(rootLayout, (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+
+            // Status bar padding for toolbar/appbar
+            appBarLayout.setPadding(
+                    appBarLayout.getPaddingLeft(),
+                    systemBars.top,
+                    appBarLayout.getPaddingRight(),
+                    appBarLayout.getPaddingBottom()
+            );
+
+            // Navigation bar padding for ScrollView (bottom)
+            includedRoot.setPadding(
+                    includedRoot.getPaddingLeft(),
+                    includedRoot.getPaddingTop(),
+                    includedRoot.getPaddingRight(),
+                    systemBars.bottom
+            );
+
+            return insets;
+        });
         setListener();
     }
 
@@ -52,6 +83,13 @@ public class HelpFeedBackActivity extends AppCompatActivity implements View.OnCl
     }
 
     private void initWidgets() {
+
+        appBarLayout = findViewById(R.id.appbar);
+        rootLayout = findViewById(R.id.root_layout);
+
+        // ✅ reference the include root
+        includedRoot = findViewById(R.id.include_help_feed_back);
+
         cvContactUs = (CardView) findViewById(R.id.cvContactUs);
         cvRaiseTicket = (CardView) findViewById(R.id.cvRaiseTicket);
         cvAboutUs = (CardView) findViewById(R.id.cvAboutUs);

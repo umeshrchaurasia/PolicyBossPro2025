@@ -100,6 +100,10 @@ interface poilcyBossProLoginApi {
     suspend fun getusersignup(@Body body: HashMap<String,String>): Response<UserNewSignUpResponse?>
 
 
+    @Headers("token:" + Constant.token)
+    @POST("/Postfm/user-constant-pb")
+    suspend fun getUserConstant(@Body body: HashMap<String,String>): Response<UserConstantResponse?>?
+
     @GET("posps/dsas/view/{userId}")
     suspend fun getLoginDsasHorizonDetails( @Path("userId") userId: String): Response<LoginNewResponse_DSAS_Horizon>
 

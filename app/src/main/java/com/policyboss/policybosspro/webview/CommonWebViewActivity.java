@@ -2,6 +2,7 @@ package com.policyboss.policybosspro.webview;
 
 import static com.policyboss.policybosspro.utils.FileUtilNew.generateFileName;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
@@ -123,6 +124,7 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
     String name = "";
     String title = "";
     String dashBoardtype = "";
+    String loginViaSyncContact = "";
 
     String DOC_TYPE = "";
     ActivityResultLauncher<Intent> resultLauncher;
@@ -247,6 +249,13 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
 
             dashBoardtype = getIntent().getStringExtra("dashBoardtype");
         }
+        if (getIntent().getStringExtra("LoginViaSyncContact") != null) {
+
+            loginViaSyncContact = getIntent().getStringExtra("LoginViaSyncContact");
+
+            Log.d(Constant.TAG,"Status of Login Via Sync" +loginViaSyncContact  );
+        }
+
 
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -294,6 +303,34 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 
+        // This is the ideal location for it.
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true /* enabled by default */) {
+            @Override
+            public void handleOnBackPressed() {
+                // Check if the WebView can go back
+                if (webView.canGoBack()) {
+                    webView.goBack();
+                } else {
+
+                    if(loginViaSyncContact != null && loginViaSyncContact.equalsIgnoreCase("Y")){
+
+                        Intent intent = new Intent(CommonWebViewActivity.this, HomeActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        intent.putExtra("MarkTYPE", "FROM_HOME");
+
+                        startActivity(intent);
+                        finish();
+                    }else{
+                        setEnabled(false);
+                        getOnBackPressedDispatcher().onBackPressed();
+                    }
+                    // If not, disable the callback and let the default system behavior (finish()) happen.
+
+                }
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, callback);
 
 
 
@@ -504,6 +541,7 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
 
 
 
+
     // region Popup Method Interface
 
 
@@ -535,24 +573,25 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
         }
     }
 
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (event.getAction() == KeyEvent.ACTION_DOWN) {
-            switch (keyCode) {
-                case KeyEvent.KEYCODE_BACK:
-
-                    Log.i("BACK", "Back Triggered");
-                    if (webView.canGoBack()) {
-                        webView.goBack();
-                    } else {
-                        finish();
-                    }
-                    return true;
-            }
-
-        }
-        return super.onKeyDown(keyCode, event);
-    }
+    //005 temp
+//    @Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event) {
+//        if (event.getAction() == KeyEvent.ACTION_DOWN) {
+//            switch (keyCode) {
+//                case KeyEvent.KEYCODE_BACK:
+//
+//                    Log.i("BACK", "Back Triggered");
+//                    if (webView.canGoBack()) {
+//                        webView.goBack();
+//                    } else {
+//                        finish();
+//                    }
+//                    return true;
+//            }
+//
+//        }
+//        return super.onKeyDown(keyCode, event);
+//    }
 
 
     class PaymentInterface {
@@ -811,17 +850,22 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
         try{
             switch (item.getItemId()) {
                 case android.R.id.home:
-                    finish();
+
+                    if(loginViaSyncContact != null && loginViaSyncContact.equalsIgnoreCase("Y")){
+
+                        moveToHome();
+                    }else{
+
+                        finish();
+                    }
+
+
+
                     return true;
 
                 case R.id.action_home:
 
-                    Intent intent = new Intent(this, HomeActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                    intent.putExtra("MarkTYPE", "FROM_HOME");
-
-                    startActivity(intent);
-                    finish();
+                    moveToHome();
                     return true;
 
                 case R.id.action_raise:
@@ -867,6 +911,15 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
     }
 
 
+    private void moveToHome(){
+
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.putExtra("MarkTYPE", "FROM_HOME");
+
+        startActivity(intent);
+        finish();
+    }
     private void getSyncPaymentDetail(String transactionId) {
 
         showDialogMain();

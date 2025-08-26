@@ -14,7 +14,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
 import com.policyboss.demoandroidapp.Utility.ExtensionFun.applySystemBarInsetsPadding
@@ -77,7 +80,10 @@ class SalesShareActivity :BaseActivity() {
         binding = ActivitySalesShareBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        binding.root.applySystemBarInsetsPadding()
+
+
+        // ✅ Apply system bar insets
+        applyInsets()
 
         setSupportActionBar(binding.toolbar)
         supportActionBar!!.apply {
@@ -88,6 +94,12 @@ class SalesShareActivity :BaseActivity() {
         }
         // Initialize contentBinding for the included layout
         includedBinding = ContentSalesShareBinding.bind(binding.includeSalesShare.root)
+
+
+        // ✅ Status bar icon contrast (dark appbar → light icons)
+        val insetsController = WindowInsetsControllerCompat(window, window.decorView)
+        insetsController.isAppearanceLightStatusBars = false
+
 
         //endregion
 
@@ -121,6 +133,35 @@ class SalesShareActivity :BaseActivity() {
                 this@SalesShareActivity.finish()
             }
         })
+    }
+
+
+    /**
+     * ✅ Handles top (status bar) and bottom (nav bar) padding
+     */
+    private fun applyInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { _, insets ->
+            val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
+            val navBars = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+            // Push AppBar below status bar
+            binding.appbar.setPadding(
+                binding.appbar.paddingLeft,
+                statusBars.top,
+                binding.appbar.paddingRight,
+                binding.appbar.paddingBottom
+            )
+
+            // Push included content above nav bar
+            binding.includeSalesShare.root.setPadding(
+                binding.includeSalesShare.root.paddingLeft,
+                binding.includeSalesShare.root.paddingTop,
+                binding.includeSalesShare.root.paddingRight,
+                navBars.bottom
+            )
+
+            insets
+        }
     }
 
 
