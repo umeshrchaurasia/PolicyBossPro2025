@@ -247,6 +247,8 @@
 
 <!--  Mark Must hosted this link :         https://www.policyboss.com/.well-known/assetlinks.json-->
 
+<!--  Playstore SHA256 key :       B3:BF:E8:15:CD:09:BF:7A:3D:21:3C:5A:29:8B:48:BF:59:69:7F:8F:D6:A9:65:92:19:F3:53:1F:62:89:AD:CD-->
+
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
