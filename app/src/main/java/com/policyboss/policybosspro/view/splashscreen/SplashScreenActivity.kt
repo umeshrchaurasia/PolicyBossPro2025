@@ -118,6 +118,14 @@ class SplashScreenActivity : AppCompatActivity() {
 
     private fun handleDeepLink(intent: Intent?) {
 
+        //region test deeplink
+//        val url = "https://www.policyboss.com/deeplink/health-insurance?product_id=2&title=Health+Insurance"
+//
+//        val uri = Uri.parse(url)
+//        // Pass into your function
+//        processDeeplink(uri)
+        //endregion
+
         processDeeplink(intent?.data)
     }
 
@@ -131,6 +139,8 @@ class SplashScreenActivity : AppCompatActivity() {
 
             Log.d("DeepLink", "URI: $uri")
             Log.d("DeepLink", "Host = $host, Path = $path, ID = $productId, Title = $title")
+
+     //Note : Replace /deeplink/ from url bec we set deeplink url like https://www.policyboss.com/deeplink/...
 
             prefManager.setDeeplink(uri.toString())
             // Navigate or store as needed

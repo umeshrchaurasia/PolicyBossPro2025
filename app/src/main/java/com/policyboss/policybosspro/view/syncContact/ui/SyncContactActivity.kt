@@ -15,11 +15,15 @@ import android.view.View
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.activity.viewModels
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
@@ -34,8 +38,11 @@ import com.policyboss.demoandroidapp.Utility.ExtensionFun.showSnackbar
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.analytics.WebEngageAnalytics
+import com.policyboss.policybosspro.core.APIState
 
 import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantEntity
+import com.policyboss.policybosspro.core.viewModel.homeVM.HomeViewModel
+import com.policyboss.policybosspro.core.viewModel.loginVM.LoginViewModel
 import com.policyboss.policybosspro.databinding.ActivitySyncContactBinding
 import com.policyboss.policybosspro.databinding.DialogLoadingBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
@@ -44,13 +51,18 @@ import com.policyboss.policybosspro.utils.AppPermission.AppPermissionManager
 import com.policyboss.policybosspro.utils.AppPermission.PermissionHandler
 import com.policyboss.policybosspro.utils.Constant
 import com.policyboss.policybosspro.utils.NetworkUtils
+import com.policyboss.policybosspro.utils.showAlert
 import com.policyboss.policybosspro.utils.showSnackbar
+import com.policyboss.policybosspro.utils.showToast
+import com.policyboss.policybosspro.view.home.HomeActivity
 import com.policyboss.policybosspro.view.syncContact.worker.CallLogWorkManager
 import com.policyboss.policybosspro.view.syncContact.worker.ContactLogWorkManager
 import com.policyboss.policybosspro.webview.CommonWebViewActivity
 import com.webengage.sdk.android.WebEngage
 import dagger.hilt.android.AndroidEntryPoint
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -86,6 +98,7 @@ class SyncContactActivity : BaseActivity() {
     )
 
 
+    private val homeViewModel by viewModels<HomeViewModel>()
 
     private lateinit var permissionHandler: PermissionHandler
 
@@ -132,6 +145,8 @@ class SyncContactActivity : BaseActivity() {
         // Check or request permissions
         checkAndRequestPermissions()
 
+        observeUserConstant()
+
         // region old way
 //        if (!checkPermission()) {
 //            requestPermission()
@@ -147,6 +162,60 @@ class SyncContactActivity : BaseActivity() {
 
         //emdregion
 
+    }
+
+
+    // In SyncContactActivity.kt's onCreate or a dedicated observer function
+
+    private fun observeUserConstant() {
+
+
+        lifecycleScope.launch {
+
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+                launch {
+
+                    homeViewModel.userConstantDataStateFlow.collect { event ->
+
+                        event.contentIfNotHandled?.let {
+
+                            when (it) {
+                                is APIState.Empty -> {
+                                    hideLoading()
+                                }
+
+                                is APIState.Failure -> {
+                                    hideLoading()
+
+
+                                    Log.d(Constant.TAG, it.errorMessage.toString())
+                                }
+
+                                is APIState.Loading -> {
+                                    displayLoadingWithText("Fetching details...")
+
+                                }
+
+                                is APIState.Success -> {
+
+                                    hideLoading()
+                                    successAlert()
+
+
+                                }
+                            }
+
+
+                        }
+
+
+                    }
+                }
+
+
+            }
+        }
     }
 
 
@@ -620,18 +689,37 @@ class SyncContactActivity : BaseActivity() {
 
 
             this@SyncContactActivity.finish()
+            showSyncDashBoard()
+
+
+        }
+        alertDialog.setCancelable(false)
+        alertDialog.show()
+
+    }
+
+    private fun checkDataAndShowSuccessDialog() {
+        // 1. Check if the LeadDashUrl is already available and not empty.
+        val leadDashUrl = prefManager.getLeadDashUrl()
+
+        if (!leadDashUrl.isNullOrEmpty()) {
+            // Data is already here, we can show the dialog immediately.
+            successAlert()
+        } else {
+            // Data is missing. Call the API via the ViewModel to fetch it.
+            // The UI will be updated by the observer below.
+            homeViewModel.getUserConstant()
+        }
+    }
+    private fun showSyncDashBoard(){
+
+        if (!prefManager.getLeadDashUrl().isNullOrEmpty()) {
+
             var leaddetail = ""
             val append_lead =
                 "&ip_address=&mac_address=&app_version=" + prefManager.getAppVersion() + "&device_id="+prefManager.getDeviceID()+ "&login_ssid="
             leaddetail = prefManager.getLeadDashUrl() + append_lead
 
-//            startActivity(
-//                Intent(this, CommonWebViewActivity::class.java)
-//                .putExtra("URL", "" + leaddetail)
-//                .putExtra("NAME", "" + "Sync Contact DashBoard")
-//                .putExtra("TITLE", "" + "Sync Contact DashBoard")
-//                .putExtra("LoginViaSyncContact","Y")
-//            )
 
             val intent = Intent(this, CommonWebViewActivity::class.java)
                 .putExtra("URL", leaddetail)
@@ -645,13 +733,21 @@ class SyncContactActivity : BaseActivity() {
             }
 
             startActivity(intent)
+        }else{
 
+            val intent = Intent(this@SyncContactActivity, HomeActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
 
+            }
+
+            startActivity(intent)
+            finish()
         }
-        alertDialog.setCancelable(false)
-        alertDialog.show()
+
+
 
     }
+
     private fun updateProgrees(currentProg : Int , maxProg : Int){
 
         binding.includedSyncContact.progressBar!!.max = maxProg
@@ -678,7 +774,8 @@ class SyncContactActivity : BaseActivity() {
 
 
         trackSyncContactEvent();
-        successAlert()
+       //  successAlert()
+        checkDataAndShowSuccessDialog()
 
         binding.includedSyncContact.txtPercentServer.text ="100%"
         binding.includedSyncContact.progressBarServer!!.max = 100
@@ -691,7 +788,8 @@ class SyncContactActivity : BaseActivity() {
         if (isContactWorkFinished && isCallLogWorkFinished) {
             // Both tasks are finished, show the success alert
             trackSyncContactEvent();
-            successAlert()
+            //successAlert()
+            checkDataAndShowSuccessDialog()
 
         }
     }

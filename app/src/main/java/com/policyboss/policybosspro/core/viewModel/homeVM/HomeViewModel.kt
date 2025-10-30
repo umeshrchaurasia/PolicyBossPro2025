@@ -11,6 +11,7 @@ import com.policyboss.policybosspro.core.response.authToken.OauthTokenResponse
 import com.policyboss.policybosspro.core.response.home.ProductURLShareEntity
 import com.policyboss.policybosspro.core.response.home.UserCallingResponse
 import com.policyboss.policybosspro.core.response.master.MasterDataCombine
+import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantResponse
 import com.policyboss.policybosspro.core.response.salesMaterial.SalesMaterialProductDetailsResponse
 
 import com.policyboss.policybosspro.core.response.salesMaterial.SalesMaterialResponse
@@ -68,6 +69,11 @@ class HomeViewModel @Inject constructor(
     //endregion
 
 
+    //region Declaeration of UserConstant  State for SyncContact Check
+    private val _userConstantStateFlow = MutableStateFlow<Event<APIState<UserConstantResponse>>>(Event(APIState.Empty()))
+    val userConstantDataStateFlow: StateFlow<Event<APIState<UserConstantResponse>>> = _userConstantStateFlow
+
+    //endregion
 
     //region set  CurrentDashboard Entity for Sharing
     private var _currentDashboardEntity: DashboardMultiLangEntity? = null
@@ -157,6 +163,8 @@ class HomeViewModel @Inject constructor(
     }
 
     //endregion
+
+
 
     //regionDynamic List filter Logic : After Api called
     fun getInsurProductLangList(): List<DashboardMultiLangEntity> {
@@ -324,6 +332,38 @@ class HomeViewModel @Inject constructor(
     }
 
     //endregion
+
+
+    // Now, update your getUserConstant() function to wrap the result in an Event
+    fun getUserConstant() = viewModelScope.launch {
+        // Show loading state
+        _userConstantStateFlow.value = Event(APIState.Loading())
+
+        val body = hashMapOf(
+            "app_version" to prefManager.getAppVersion(),
+            "device_code" to prefManager.getDeviceID(),
+            "ssid" to prefManager.getSSID(),
+            "fbaid" to prefManager.getFBAID()
+        )
+
+        try {
+            val response = homeRepository.getUserConstant(body)// Assuming this is now a suspend fun in repo
+
+            if (response != null) {
+                if (response.isSuccessful && response.body()?.StatusNo == 0) {
+                    response.body()?.let { prefManager.saveUserConstantResponse(it) }
+                    // Emit Success Event
+                    _userConstantStateFlow.value = Event(APIState.Success(response.body()!!))
+                } else {
+                    // Emit Failure Event
+                    _userConstantStateFlow.value = Event(APIState.Failure("Failed to get user constants"))
+                }
+            }
+        } catch (e: Exception) {
+            // Emit Failure Event
+            _userConstantStateFlow.value = Event(APIState.Failure(e.message ?: "Something went wrong"))
+        }
+    }
 
 //userClickActionOnNotification
 

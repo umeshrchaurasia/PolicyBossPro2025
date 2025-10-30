@@ -1,6 +1,7 @@
 package com.policyboss.policybosspro.core.repository.loginRepository
 
 import com.policyboss.policybosspro.core.api.poilcyBossProLoginApi
+import com.policyboss.policybosspro.core.response.login.DevicetokenResponse
 import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
@@ -30,10 +31,18 @@ class LoginRepository @Inject constructor(
 
     }
 
-    suspend fun  insert_notification_token(body : HashMap<String,String>) = flow {
-        val response = apiService.insert_notification_token(body=body)
-        emit(response)
-    }.flowOn(Dispatchers.IO)
+    //DevicetokenResponse
+
+
+    suspend fun  insert_notification_token(body : HashMap<String,String>)  : Response<DevicetokenResponse?> {
+
+      return apiService.insert_notification_token(body=body)
+
+    }
+//    suspend fun  insert_notification_token(body : HashMap<String,String>) = flow {
+//        val response = apiService.insert_notification_token(body=body)
+//        emit(response)
+//    }.flowOn(Dispatchers.IO)
 
 
     suspend fun getLoginHorizonDetails(userId: String) = flow {

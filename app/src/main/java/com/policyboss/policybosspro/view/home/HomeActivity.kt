@@ -1150,6 +1150,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         if (!deeplinkValue.isNullOrEmpty()) {
 
             try {
+                val originalUri = Uri.parse(deeplinkValue)
                 val myUri = Uri.parse(deeplinkValue)
 
                 val prdID = myUri.getQueryParameter("product_id")
@@ -1276,7 +1277,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                         // Update deeplinkValue with appended parameters
                         val updatedDeeplinkValue = deeplinkValue + append
 
-                        Log.d("Deeplink URL", updatedDeeplinkValue.toString())
+                        Log.d("DeepLink", updatedDeeplinkValue.toString())
                         // Delayed execution using Coroutine
                         Handler(Looper.getMainLooper()).postDelayed({
                             startActivity(Intent(this, CommonWebViewActivity::class.java).apply {

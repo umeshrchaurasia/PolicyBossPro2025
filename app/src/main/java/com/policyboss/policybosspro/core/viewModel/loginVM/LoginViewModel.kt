@@ -19,10 +19,12 @@ import com.policyboss.policybosspro.utility.Utility
 import com.policyboss.policybosspro.utils.Constant
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import javax.inject.Inject
 
 
@@ -176,37 +178,41 @@ class LoginViewModel @Inject constructor(
 
 
     }
-    fun insert_notification_token(Ss_Id: String) = viewModelScope.launch {
-        var body = HashMap<String,String>()
-        body.put("Ss_Id",Ss_Id)
-        body.put("Device_Id",prefManager.getDeviceID())
-        body.put("Device_Name",prefManager.getDEVICE_NAME())
-        body.put("Token",prefManager.getToken())
 
-        insertTokenMutuableStateFlow.value = APIState.Loading()
+    //region Not in Used : above call via parallel call
+//    fun insert_notification_token(Ss_Id: String) = viewModelScope.launch {
+//        var body = HashMap<String,String>()
+//        body.put("Ss_Id",Ss_Id)
+//        body.put("Device_Id",prefManager.getDeviceID())
+//        body.put("Device_Name",prefManager.getDEVICE_NAME())
+//        body.put("Token",prefManager.getToken())
+//
+//        insertTokenMutuableStateFlow.value = APIState.Loading()
+//
+//        loginNewRepository.insert_notification_token(body)
+//            .catch {
+//                insertTokenMutuableStateFlow.value = APIState.Failure(errorMessage = Constant.NOData)
+//            }
+//            .collect{data ->
+//                if(data?.isSuccessful == true) {
+//                    if (data.body()?.Status == "SUCCESS") {
+//
+//                        insertTokenMutuableStateFlow.value = APIState.Success(data= data.body())
+//
+//                    } else
+//                    {
+//                        insertTokenMutuableStateFlow.value   = APIState.Failure(errorMessage = Constant.NOData)
+//                    }
+//                }
+//                else
+//                {
+//                    insertTokenMutuableStateFlow.value  = APIState.Failure(errorMessage = Constant.NOData)
+//                }
+//
+//            }
+//    }
 
-        loginNewRepository.insert_notification_token(body)
-            .catch {
-                insertTokenMutuableStateFlow.value = APIState.Failure(errorMessage = Constant.NOData)
-            }
-            .collect{data ->
-                if(data?.isSuccessful == true) {
-                    if (data.body()?.Status == "SUCCESS") {
-
-                        insertTokenMutuableStateFlow.value = APIState.Success(data= data.body())
-
-                    } else
-                    {
-                        insertTokenMutuableStateFlow.value   = APIState.Failure(errorMessage = Constant.NOData)
-                    }
-                }
-                else
-                {
-                    insertTokenMutuableStateFlow.value  = APIState.Failure(errorMessage = Constant.NOData)
-                }
-
-            }
-    }
+    //endregion
 
     fun  getLoginDetailHorizon(ss_id : String) = viewModelScope.launch {
 
@@ -223,10 +229,69 @@ class LoginViewModel @Inject constructor(
                         {
                             prefManager.saveLoginHorizonResponse(data.body())
 
-                             getUserConstant()
-                            loginMutuableStateFlow.value = APIState.Success(data = data.body())
+                            supervisorScope {
+                                    val userConstantDeferred = async {
+                                        runCatching {
+                                            val body = hashMapOf(
+                                                "app_version" to prefManager.getAppVersion(),
+                                                "device_code" to prefManager.getDeviceID(),
+                                                "ssid" to prefManager.getSSID(),
+                                                "fbaid" to prefManager.getFBAID()
+                                            )
+                                            loginNewRepository.getUserConstant(body)
+                                        }
+                                    }
 
-                            insert_notification_token(ss_id)
+                                    val insertTokenDeferred = async {
+                                        runCatching {
+                                            val body = hashMapOf(
+                                                "Ss_Id" to ss_id,
+                                                "Device_Id" to prefManager.getDeviceID(),
+                                                "Device_Name" to prefManager.getDEVICE_NAME(),
+                                                "Token" to prefManager.getToken()
+                                            )
+                                            loginNewRepository.insert_notification_token(body)
+                                        }
+                                    }
+
+                                    // ✅ Both awaited separately, even if one fails
+                                    val userConstantResult = userConstantDeferred.await()
+                                    val insertTokenResult = insertTokenDeferred.await()
+
+                                    // Handle individually
+                                    userConstantResult.onSuccess { response ->
+                                        if (response?.isSuccessful == true) {
+
+                                            response.body()?.let {
+
+                                                Log.d(Constant.TAG, "User Constant Success")
+                                                prefManager.saveUserConstantResponse(it)
+                                            }
+                                        }
+                                    }.onFailure { e ->
+                                        // log or handle error without stopping other
+                                        Log.d(Constant.TAG, "User Constant Failed")
+                                    }
+
+                                    insertTokenResult.onSuccess { response ->
+                                        if (response?.isSuccessful == true) {
+                                            val body = response.body()
+                                            if (body?.Status.equals("SUCCESS", ignoreCase = true)) {
+                                                Log.d(Constant.TAG, "Insert Token to Horizon is Success")
+                                            } else {
+                                                Log.d(Constant.TAG, "Insert Token Failed")
+                                            }
+                                        }
+                                    }.onFailure { e ->
+                                        // log or handle error without stopping other
+                                        Log.d(Constant.TAG, "Insert Token to Horizon is Failed")
+                                    }
+
+                                    // ✅ Finally update login state
+                                    loginMutuableStateFlow.value = APIState.Success(data = data.body())
+                                }
+
+
                         }
                         else{
                             loginMutuableStateFlow.value = APIState.Failure(errorMessage ="No Data Found")
@@ -247,37 +312,37 @@ class LoginViewModel @Inject constructor(
     }
 
 
-    //Mark : UserConstant req before we satrt sync after login api called
-    fun getUserConstant() = viewModelScope.launch {
-
-        val body = hashMapOf(
-            "app_version" to prefManager.getAppVersion(),
-            "device_code" to prefManager.getDeviceID(),
-            "ssid" to prefManager.getSSID(),
-            "fbaid" to prefManager.getFBAID()
-        )
-
-
-        try {
-            // Concurrent API calls
-            val UserConstatnDeferred = async { loginNewRepository.getUserConstant(body) }
-
-            val UserConstatnResponse = UserConstatnDeferred.await()
-
-            if (UserConstatnResponse?.isSuccessful() == true) {
-
-                Log.d(Constant.TAG, "User Constant Success: ${UserConstatnResponse.message()}")
-                UserConstatnResponse.body()?.let { prefManager.saveUserConstantResponse(it) }
-
-            }else{
-                Log.d(Constant.TAG, "Error occurred at User Constant : ${UserConstatnResponse?.message()}")
-            }
-
-        } catch (e: Exception) {
-            Log.e(Constant.TAG, "Error occurred: ${e.message}")
-        }
-
-    }
+    //Mark :  Not in Used :UserConstant  , call parallel called
+//    fun getUserConstant() = viewModelScope.launch {
+//
+//        val body = hashMapOf(
+//            "app_version" to prefManager.getAppVersion(),
+//            "device_code" to prefManager.getDeviceID(),
+//            "ssid" to prefManager.getSSID(),
+//            "fbaid" to prefManager.getFBAID()
+//        )
+//
+//
+//        try {
+//            // Concurrent API calls
+//            val UserConstatnDeferred = async { loginNewRepository.getUserConstant(body) }
+//
+//            val UserConstatnResponse = UserConstatnDeferred.await()
+//
+//            if (UserConstatnResponse?.isSuccessful() == true) {
+//
+//                Log.d(Constant.TAG, "User Constant Success: ${UserConstatnResponse.message()}")
+//                UserConstatnResponse.body()?.let { prefManager.saveUserConstantResponse(it) }
+//
+//            }else{
+//                Log.d(Constant.TAG, "Error occurred at User Constant : ${UserConstatnResponse?.message()}")
+//            }
+//
+//        } catch (e: Exception) {
+//            Log.e(Constant.TAG, "Error occurred: ${e.message}")
+//        }
+//
+//    }
 
 
 
