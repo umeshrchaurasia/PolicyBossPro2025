@@ -10,7 +10,8 @@ data class LoginNewResponse_DSAS_Horizon(
     val status: String ?,
     val user_type: String ?,
     val Ss_Id: String ?,
-    val SUB_USER : SUB_USER? = null
+    val SUB_USER : SUB_USER? = null,
+    val HR : Any? = null
 )
 
 data class EMP(
@@ -121,3 +122,4 @@ data class DEVICE(
     var Created_On: String = "",
     var Activated_On:  String="",
 )
+

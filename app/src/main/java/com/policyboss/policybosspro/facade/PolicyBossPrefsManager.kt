@@ -986,6 +986,27 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
     }
 
 
+    fun getDesignation() : String {
+
+        val response = getLoginHorizonResponse()
+
+
+
+        val hrDesignation = getLoginHorizonResponse()?.HR
+
+        return when (hrDesignation) {
+            is Map<*, *> -> hrDesignation["Designation"] as? String ?: ""
+            is String -> ""   // "NA"
+            null -> ""        // missing
+            else -> ""        // unexpected
+        }
+
+
+
+
+    }
+
+
 
 
 

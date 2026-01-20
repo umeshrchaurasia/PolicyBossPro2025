@@ -2,9 +2,12 @@ package com.policyboss.policybosspro.view.raiseTicketDialog;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
+import android.Manifest;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
@@ -33,8 +36,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.canhub.cropper.CropImageContractOptions;
 import com.policyboss.policybosspro.BaseActivity;
 import com.policyboss.policybosspro.BaseJavaActivity;
+
 import com.policyboss.policybosspro.R;
 import com.policyboss.policybosspro.core.oldWayApi.IResponseSubcriber;
 import com.policyboss.policybosspro.core.oldWayApi.controller.zoho.ZohoController;
@@ -89,6 +94,9 @@ public class RaiseTicketDialogActivity extends BaseJavaActivity implements BaseJ
     ActivityResultLauncher<String> galleryLauncher;
     ActivityResultLauncher<Uri> cameraLauncher;
 
+    ActivityResultLauncher<String> pdfLauncher; // For PDF
+    private ActivityResultLauncher<CropImageContractOptions> cropImageLauncher; // For Cropping
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,27 +129,13 @@ public class RaiseTicketDialogActivity extends BaseJavaActivity implements BaseJ
             }
         });
 
-        cameraLauncher = registerForActivityResult(new ActivityResultContracts.TakePicture(), result -> {
-            if (result) {
-                // binding.imgProfile.setImageURI(imageUri);
+     
 
-//                Intent intent = new Intent(RaiseTicketDialogActivity.this.getApplicationContext(),UcropperActivity.class);
-//
-//                intent.putExtra("SendImageData",imageUri.toString());
-//
-//
-//                startActivityForResult(intent, CAMERA_REQUEST);
-
-                if (result) {
-                    // Image was captured successfully, proceed to crop
-                    startCrop(imageUri);
-                }
-            } else {
-                // Handle failure or cancellation
+        cameraLauncher = registerForActivityResult(new ActivityResultContracts.TakePicture(), success -> {
+            if (success) {
+                startCrop(imageUri); // Proceed to crop
             }
         });
-
-
         //endregion
     }
     private void init()
@@ -259,38 +253,65 @@ public class RaiseTicketDialogActivity extends BaseJavaActivity implements BaseJ
 
     // region Camera & Gallery Popup For Raise Ticket
 
-    public void galleryCamPopUp(String randomID) {
-
-        PHOTO_File = "";
-        PHOTO_File = "fm_file" + "_" + randomID;
-        Log.i("RAISE_TICKET Uploding", PHOTO_File);
-
-        if (!checkPermission()) {
-
-            if (checkRationalePermission()) {
-                //Show Information about why you need the permission
-                requestPermission();
-
-            } else {
-                //Previously Permission Request was cancelled with 'Dont Ask Again',
-                // Redirect to Settings after showing Information about why you need the permission
-
-                //  permissionAlert(navigationView,"Need Call Permission","This app needs Call permission.");
-                openPopUp(webView, "Need  Permission", "This app needs all permissions.", "GRANT", true);
-
-
-            }
-        } else {
-
-            showCamerGalleryPopUp();
-        }
-    }
+//    public void galleryCamPopUp(String randomID) {
+//
+//        PHOTO_File = "";
+//        PHOTO_File = "fm_file" + "_" + randomID;
+//        Log.i("RAISE_TICKET Uploding", PHOTO_File);
+//
+//        if (!checkPermission()) {
+//
+//            if (checkRationalePermission()) {
+//                //Show Information about why you need the permission
+//                requestPermission();
+//
+//            } else {
+//                //Previously Permission Request was cancelled with 'Dont Ask Again',
+//                // Redirect to Settings after showing Information about why you need the permission
+//
+//                //  permissionAlert(navigationView,"Need Call Permission","This app needs Call permission.");
+//                openPopUp(webView, "Need  Permission", "This app needs all permissions.", "GRANT", true);
+//
+//
+//            }
+//        } else {
+//
+//            showCamerGalleryPopUp();
+//        }
+//    }
 
     private void startCropImageActivity(Uri imageUri) {
 //        CropImage.activity(imageUri)
 //                .setGuidelines(CropImageView.Guidelines.ON)
 //                .setMultiTouchEnabled(true)
 //                .start(this);
+    }
+
+    // region Camera & Gallery Popup For Raise Ticket
+
+    public void galleryCamPopUp(String randomID) {
+        PHOTO_File = "";
+        PHOTO_File = "fm_file" + "_" + randomID;
+        Log.i("RAISE_TICKET Uploding", PHOTO_File);
+
+        // ✅ FIX: REMOVED the "checkPermission" block here.
+        // We open the dialog immediately. We only check permission inside the "Camera" button.
+        showCamerGalleryPopUp();
+    }
+
+    // ✅ FIX: New clean method to check Camera Permission ONLY
+    private boolean hasCameraPermission() {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED;
+    }
+
+    // ✅ FIX: New clean method to Request Camera Permission ONLY
+    private void requestCameraPermission() {
+        ActivityCompat.requestPermissions(
+                this,
+                new String[]{Manifest.permission.CAMERA},
+                Constant.PERMISSION_CAMERA_STORAGE_CONSTANT
+        );
     }
 
     // region permission
@@ -339,109 +360,170 @@ public class RaiseTicketDialogActivity extends BaseJavaActivity implements BaseJ
         ActivityCompat.requestPermissions(this, perms, Constant.PERMISSION_CAMERA_STORAGE_CONSTANT);
     }
 
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+//
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        switch (requestCode) {
+//            case Constant.PERMISSION_CAMERA_STORAGE_CONSTANT:
+//                if (grantResults.length > 0) {
+//
+//                    //boolean writeExternal = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+//
+//                    boolean camera = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+//                    boolean writeExternal = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+//                    boolean readExternal = grantResults[2] == PackageManager.PERMISSION_GRANTED;
+//                    boolean minSdk29 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
+//
+//                    if (camera && (writeExternal || minSdk29) && readExternal) {
+//
+//                        showCamerGalleryPopUp();
+//
+//                    }
+//                }
+//                break;
+//
+//
+//        }
+//    }
+
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
-
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
-            case Constant.PERMISSION_CAMERA_STORAGE_CONSTANT:
-                if (grantResults.length > 0) {
 
-                    //boolean writeExternal = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-
-                    boolean camera = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                    boolean writeExternal = grantResults[1] == PackageManager.PERMISSION_GRANTED;
-                    boolean readExternal = grantResults[2] == PackageManager.PERMISSION_GRANTED;
-                    boolean minSdk29 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q;
-
-                    if (camera && (writeExternal || minSdk29) && readExternal) {
-
-                        showCamerGalleryPopUp();
-
-                    }
+        // ✅ FIX: Simplified logic. Only check if Camera is granted.
+        if (requestCode == Constant.PERMISSION_CAMERA_STORAGE_CONSTANT) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                launchCamera();
+                if(alertDialog != null && alertDialog.isShowing()){
+                    alertDialog.dismiss();
                 }
-                break;
-
-
+            } else {
+                Toast.makeText(this, "Camera permission is required.", Toast.LENGTH_SHORT).show();
+            }
         }
     }
-
     //endregion
 
     // region Camera Dialog
+//    private void showCamerGalleryPopUp() {
+//
+//        if (alertDialog != null && alertDialog.isShowing()) {
+//
+//            return;
+//        }
+//        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomDialog);
+//
+//        LinearLayout lyCamera, lyGallery, lyPdf;
+//        LayoutInflater inflater = this.getLayoutInflater();
+//
+//        final View dialogView = inflater.inflate(R.layout.layout_cam_gallery_pdf, null);
+//
+//        builder.setView(dialogView);
+//        alertDialog = builder.create();
+//        // set the custom dialog components - text, image and button
+//        lyCamera = (LinearLayout) dialogView.findViewById(R.id.lyCamera);
+//        lyGallery = (LinearLayout) dialogView.findViewById(R.id.lyGallery);
+//        lyPdf = (LinearLayout) dialogView.findViewById(R.id.lyPdf);
+//
+//        lyCamera.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                launchCamera();
+//                alertDialog.dismiss();
+//
+//            }
+//        });
+//
+//        lyGallery.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                openGallery();
+//                alertDialog.dismiss();
+//
+//            }
+//        });
+//        lyPdf.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                showFileChooser();
+//                alertDialog.dismiss();
+//
+//            }
+//        });
+//        alertDialog.setCancelable(true);
+//        alertDialog.show();
+//        //  alertDialog.getWindow().setLayout(900, 600);
+//
+//        // for user define height and width..
+//    }
+
+
+    // region Camera Dialog
     private void showCamerGalleryPopUp() {
-
         if (alertDialog != null && alertDialog.isShowing()) {
-
             return;
         }
         AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomDialog);
 
         LinearLayout lyCamera, lyGallery, lyPdf;
         LayoutInflater inflater = this.getLayoutInflater();
-
         final View dialogView = inflater.inflate(R.layout.layout_cam_gallery_pdf, null);
 
         builder.setView(dialogView);
         alertDialog = builder.create();
-        // set the custom dialog components - text, image and button
+
         lyCamera = (LinearLayout) dialogView.findViewById(R.id.lyCamera);
         lyGallery = (LinearLayout) dialogView.findViewById(R.id.lyGallery);
         lyPdf = (LinearLayout) dialogView.findViewById(R.id.lyPdf);
 
+        // 1. CAMERA - Check Permission HERE
         lyCamera.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                launchCamera();
-                alertDialog.dismiss();
-
+                if(hasCameraPermission()){
+                    launchCamera();
+                    alertDialog.dismiss();
+                } else {
+                    requestCameraPermission();
+                }
             }
         });
 
+        // 2. GALLERY - No Permission Needed (System Picker)
         lyGallery.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 openGallery();
                 alertDialog.dismiss();
-
             }
         });
+
+        // 3. PDF - No Permission Needed (System Picker)
         lyPdf.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showFileChooser();
                 alertDialog.dismiss();
-
             }
         });
+
         alertDialog.setCancelable(true);
         alertDialog.show();
-        //  alertDialog.getWindow().setLayout(900, 600);
-
-        // for user define height and width..
     }
-
     private void showFileChooser() {
-        // Create the ACTION_GET_CONTENT Intent
-        Intent getContentIntent = FileUtilNew.createGetContentIntent();    // Only For PDF Pls check createGetContentIntent() method
-        Intent intent = Intent.createChooser(getContentIntent, "Select a file");
-        startActivityForResult(intent, PICK_PDF_REQUEST);
-
-//        Intent intent = FileUtilNew.getCustomFileChooserIntent(FileUtilNew.DOC, FileUtilNew.PDF, FileUtilNew.XLS,FileUtilNew.TEXT,FileUtilNew.DOCX);
-//
-//        startActivityForResult(intent, PICK_PDF_REQUEST);
-
+        // ✅ FIX: Use the modern launcher for PDF
+        try {
+            pdfLauncher.launch("application/pdf");
+        } catch (Exception e){
+            Toast.makeText(this, "Unable to open file picker", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
     private void launchCamera() {
-
-
         String FileName = PHOTO_File;
-
-
         Docfile = createImageFile(FileName);
-
 
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
             imageUri = Uri.fromFile(Docfile);
@@ -449,16 +531,12 @@ public class RaiseTicketDialogActivity extends BaseJavaActivity implements BaseJ
             imageUri = FileProvider.getUriForFile(RaiseTicketDialogActivity.this,
                     getString(R.string.file_provider_authority), Docfile);
         }
-
-
         cameraLauncher.launch(imageUri);
     }
 
-
     private void openGallery() {
-
+        // ✅ FIX: Use the modern launcher for Gallery
         galleryLauncher.launch("image/*");
-
     }
 
     //endregion

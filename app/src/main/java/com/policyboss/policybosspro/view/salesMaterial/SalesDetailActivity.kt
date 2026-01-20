@@ -389,9 +389,12 @@ class SalesDetailActivity : BaseActivity() {
             pospMobNo = it
         }
 
-        prefsManager.getUserConstantEntity()?.pospselfdesignation?.takeIf { it.isNotBlank() }?.let {
+        prefsManager.getDesignation().let {
             pospDesg = it
         }
+//        prefsManager.getUserConstantEntity()?.pospselfdesignation?.takeIf { it.isNotBlank() }?.let {
+//            pospDesg = it
+//        }
 
         //region below commneted bec pospselfphoto not founded
 //        prefsManager.getUserConstantEntity()?.pospselfphoto?.takeIf { it.isNotBlank() }?.let {url ->
@@ -424,9 +427,13 @@ class SalesDetailActivity : BaseActivity() {
             fbaMobNo = it
         }
             // 05 temp
-        prefsManager.getUserConstantEntity()?.pospselfdesignation?.takeIf { it.isNotBlank() }?.let {
+
+        prefsManager.getDesignation().let {
             fbaDesg = it
         }
+//        prefsManager.getUserConstantEntity()?.pospselfdesignation?.takeIf { it.isNotBlank() }?.let {
+//            fbaDesg = it
+//        }
 
       //region below commneted bec pospselfphoto not founded
     //        prefsManager.getUserConstantEntity()?.pospselfphoto?.takeIf { it.isNotBlank() }?.let {url ->

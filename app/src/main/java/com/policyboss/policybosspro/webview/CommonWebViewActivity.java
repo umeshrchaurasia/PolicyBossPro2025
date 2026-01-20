@@ -947,25 +947,27 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
         PHOTO_File = "policyBoss_file" + "_" + document_id;
         Log.i("All Uploding", PHOTO_File);
 
-        if (!hasRequiredPermissions()) {
+ //        if (!hasRequiredPermissions()) {
+//
+//            if (checkRationalePermission()) {
+//                //Show Information about why you need the permission
+//                requestPermissions();
+//
+//            } else {
+//                //Previously Permission Request was cancelled with 'Dont Ask Again',
+//                // Redirect to Settings after showing Information about why you need the permission
+//
+//                //  permissionAlert(navigationView,"Need Call Permission","This app needs Call permission.");
+//                openPopUp(ivUser, "Need  Permission", "This app needs all permissions.", "GRANT", true);
+//
+//
+//            }
+//        } else {
+//
+//                showCameraGalleryPopUp();
+//        }
 
-            if (checkRationalePermission()) {
-                //Show Information about why you need the permission
-                requestPermissions();
-
-            } else {
-                //Previously Permission Request was cancelled with 'Dont Ask Again',
-                // Redirect to Settings after showing Information about why you need the permission
-
-                //  permissionAlert(navigationView,"Need Call Permission","This app needs Call permission.");
-                openPopUp(ivUser, "Need  Permission", "This app needs all permissions.", "GRANT", true);
-
-
-            }
-        } else {
-
-                showCameraGalleryPopUp();
-        }
+        showCameraGalleryPopUp();
     }
 
     // region Camera & Gallery Popup For Raise Ticket
@@ -977,25 +979,27 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
         PHOTO_File = "fm_file" + "_" + randomID;
         Log.i("RAISE_TICKET Uploding", PHOTO_File);
 
-        if (!hasRequiredPermissions()) {
+//        if (!hasRequiredPermissions()) {
+//
+//            if (checkRationalePermission()) {
+//                //Show Information about why you need the permission
+//                requestPermissions();
+//
+//            } else {
+//                //Previously Permission Request was cancelled with 'Dont Ask Again',
+//                // Redirect to Settings after showing Information about why you need the permission
+//
+//                //  permissionAlert(navigationView,"Need Call Permission","This app needs Call permission.");
+//                openPopUp(ivUser, "Need  Permission", "This app needs all permissions.", "GRANT", true);
+//
+//
+//            }
+//        } else {
+//
+//            showCameraGalleryPopUp();
+//        }
 
-            if (checkRationalePermission()) {
-                //Show Information about why you need the permission
-                requestPermissions();
-
-            } else {
-                //Previously Permission Request was cancelled with 'Dont Ask Again',
-                // Redirect to Settings after showing Information about why you need the permission
-
-                //  permissionAlert(navigationView,"Need Call Permission","This app needs Call permission.");
-                openPopUp(ivUser, "Need  Permission", "This app needs all permissions.", "GRANT", true);
-
-
-            }
-        } else {
-
-            showCameraGalleryPopUp();
-        }
+        showCameraGalleryPopUp();
     }
 
     private void startCropImageActivity(Uri imageUri) {
@@ -1072,30 +1076,64 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
     }
 
 
+    // Add these methods to CommonWebViewActivity
+
+    private boolean hasCameraPermission() {
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+                == PackageManager.PERMISSION_GRANTED;
+    }
+
+    private void requestCameraPermission() {
+        ActivityCompat.requestPermissions(
+                this,
+                new String[]{Manifest.permission.CAMERA},
+                Constant.PERMISSION_CAMERA_STORAGE_CONSTANT
+        );
+    }
+
+    // Update onRequestPermissionsResult to handle just Camera
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == Constant.PERMISSION_CAMERA_STORAGE_CONSTANT) {
-            if (grantResults.length > 0) {
-                boolean cameraGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                boolean storageGranted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
-                        ? grantResults[1] == PackageManager.PERMISSION_GRANTED
-                        : grantResults.length > 1 && grantResults[1] == PackageManager.PERMISSION_GRANTED;
-
-                if (cameraGranted && storageGranted) {
-                    showCameraGalleryPopUp();
-                } else {
-                    Toast.makeText(this, "Camera and Storage permissions are required.", Toast.LENGTH_SHORT).show();
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, launch camera immediately
+                launchCamera();
+                if(alertDialog != null && alertDialog.isShowing()) {
+                    alertDialog.dismiss();
                 }
+            } else {
+                Toast.makeText(this, "Camera permission is required to take photos.", Toast.LENGTH_SHORT).show();
             }
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
+
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        if (requestCode == Constant.PERMISSION_CAMERA_STORAGE_CONSTANT) {
+//            if (grantResults.length > 0) {
+//                boolean cameraGranted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+//                boolean storageGranted = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
+//                        ? grantResults[1] == PackageManager.PERMISSION_GRANTED
+//                        : grantResults.length > 1 && grantResults[1] == PackageManager.PERMISSION_GRANTED;
+//
+//                if (cameraGranted && storageGranted) {
+//                    showCameraGalleryPopUp();
+//                } else {
+//                    Toast.makeText(this, "Camera and Storage permissions are required.", Toast.LENGTH_SHORT).show();
+//                }
+//            }
+//        } else {
+//            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//        }
+//    }
+
     //endregion
 
     // region Camera Dialog
-    private void showCameraGalleryPopUp() {
+    private void showCameraGalleryPopUp1() {
 
         if (alertDialog != null && alertDialog.isShowing()) {
 
@@ -1146,6 +1184,56 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
         //  alertDialog.getWindow().setLayout(900, 600);
 
         // for user define height and width..
+    }
+
+    private void showCameraGalleryPopUp() {
+        if (alertDialog != null && alertDialog.isShowing()) {
+            return;
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.CustomDialog);
+        LinearLayout lyCamera, lyGallery, lyPdf;
+        LayoutInflater inflater = this.getLayoutInflater();
+        final View dialogView = inflater.inflate(R.layout.layout_cam_gallery_pdf, null);
+        builder.setView(dialogView);
+        alertDialog = builder.create();
+
+        lyCamera = (LinearLayout) dialogView.findViewById(R.id.lyCamera);
+        lyGallery = (LinearLayout) dialogView.findViewById(R.id.lyGallery);
+        lyPdf = (LinearLayout) dialogView.findViewById(R.id.lyPdf);
+
+        // 1. CAMERA CLICK - NEEDS PERMISSION
+        lyCamera.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (hasCameraPermission()) {
+                    launchCamera();
+                    alertDialog.dismiss();
+                } else {
+                    requestCameraPermission(); // Request ONLY camera
+                }
+            }
+        });
+
+        // 2. GALLERY CLICK - NO PERMISSION NEEDED (System Picker)
+        lyGallery.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openGallery(); // Uses ActivityResultContracts.GetContent() - Safe!
+                alertDialog.dismiss();
+            }
+        });
+
+        // 3. PDF CLICK - NO PERMISSION NEEDED (System Picker)
+        lyPdf.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showFileChooser(); // Uses Intent.ACTION_GET_CONTENT - Safe!
+                alertDialog.dismiss();
+            }
+        });
+
+        alertDialog.setCancelable(true);
+        alertDialog.show();
     }
 
     private void showFileChooser() {

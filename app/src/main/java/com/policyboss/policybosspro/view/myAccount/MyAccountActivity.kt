@@ -661,10 +661,10 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
     private fun startCamera() {
 
         // Camera Start Using Camera Launcher
-        imageUri = Utility.createImageUri(this@MyAccountActivity)
-        imageUri?.let {
-            cameraLauncher.launch(it)
-        }
+//        imageUri = Utility.createImageUri(this@MyAccountActivity)
+//        imageUri?.let {
+//            cameraLauncher.launch(it)
+//        }
     }
 
 
@@ -797,11 +797,11 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
 
     fun onCameraClick() {
 
-        startCamera()
+       // startCamera()
     }
     fun onGalleryClick() {
 
-        openGallery()
+      //  openGallery()
 
     }
 
