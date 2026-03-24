@@ -315,46 +315,46 @@ public class RaiseTicketDialogActivity extends BaseJavaActivity implements BaseJ
     }
 
     // region permission
-    private boolean checkPermission() {
+//    private boolean checkPermission() {
+//
+//        int camera = ActivityCompat.checkSelfPermission(getApplicationContext(), perms[0]);
+//
+//        int WRITE_EXTERNAL = ActivityCompat.checkSelfPermission(getApplicationContext(), perms[1]);
+//        int READ_EXTERNAL = ActivityCompat.checkSelfPermission(getApplicationContext(), perms[2]);
+//        int READ_MEDIA_IMAGE = ActivityCompat.checkSelfPermission(getApplicationContext(), perms[3]);
+//
+//        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
+//            return camera == PackageManager.PERMISSION_GRANTED
+//
+//                    && READ_MEDIA_IMAGE == PackageManager.PERMISSION_GRANTED;
+//
+//        }
+//        else if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+//            return camera == PackageManager.PERMISSION_GRANTED
+//
+//                    && READ_EXTERNAL == PackageManager.PERMISSION_GRANTED;
+//        }else{
+//            return camera == PackageManager.PERMISSION_GRANTED
+//                    &&  WRITE_EXTERNAL == PackageManager.PERMISSION_GRANTED
+//                    && READ_EXTERNAL == PackageManager.PERMISSION_GRANTED;
+//
+//        }
+//    }
 
-        int camera = ActivityCompat.checkSelfPermission(getApplicationContext(), perms[0]);
-
-        int WRITE_EXTERNAL = ActivityCompat.checkSelfPermission(getApplicationContext(), perms[1]);
-        int READ_EXTERNAL = ActivityCompat.checkSelfPermission(getApplicationContext(), perms[2]);
-        int READ_MEDIA_IMAGE = ActivityCompat.checkSelfPermission(getApplicationContext(), perms[3]);
-
-        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU){
-            return camera == PackageManager.PERMISSION_GRANTED
-
-                    && READ_MEDIA_IMAGE == PackageManager.PERMISSION_GRANTED;
-
-        }
-        else if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
-            return camera == PackageManager.PERMISSION_GRANTED
-
-                    && READ_EXTERNAL == PackageManager.PERMISSION_GRANTED;
-        }else{
-            return camera == PackageManager.PERMISSION_GRANTED
-                    &&  WRITE_EXTERNAL == PackageManager.PERMISSION_GRANTED
-                    && READ_EXTERNAL == PackageManager.PERMISSION_GRANTED;
-
-        }
-    }
-
-    private boolean checkRationalePermission() {
-
-        boolean camera = ActivityCompat.shouldShowRequestPermissionRationale(RaiseTicketDialogActivity.this, perms[0]);
-
-        boolean write_external = ActivityCompat.shouldShowRequestPermissionRationale(RaiseTicketDialogActivity.this, perms[1]);
-        boolean read_external = ActivityCompat.shouldShowRequestPermissionRationale(RaiseTicketDialogActivity.this, perms[2]);
-
-        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
-            return  camera ||  read_external;
-        }else{
-            return  camera ||write_external   || read_external;
-
-        }
-    }
+//    private boolean checkRationalePermission() {
+//
+//        boolean camera = ActivityCompat.shouldShowRequestPermissionRationale(RaiseTicketDialogActivity.this, perms[0]);
+//
+//        boolean write_external = ActivityCompat.shouldShowRequestPermissionRationale(RaiseTicketDialogActivity.this, perms[1]);
+//        boolean read_external = ActivityCompat.shouldShowRequestPermissionRationale(RaiseTicketDialogActivity.this, perms[2]);
+//
+//        if( Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q){
+//            return  camera ||  read_external;
+//        }else{
+//            return  camera ||write_external   || read_external;
+//
+//        }
+//    }
 
     private void requestPermission() {
         ActivityCompat.requestPermissions(this, perms, Constant.PERMISSION_CAMERA_STORAGE_CONSTANT);

@@ -7,6 +7,9 @@ object AppPermissionManager {
 
     // Permission sets based on Android version
 
+    //Mark : Camera
+    val camera = arrayOf(Manifest.permission.CAMERA)
+
     //Mark : Camera and Storage Permission
     val cameraAndStorage = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         arrayOf(Manifest.permission.CAMERA, Manifest.permission.READ_MEDIA_IMAGES)
@@ -35,6 +38,7 @@ object AppPermissionManager {
 
     // Permission groups for different features
     enum class PermissionType {
+        CAMERA,
         CAMERA_AND_STORAGE,
         STORAGE,
         CONTACTS_AND_CALL_LOG,
@@ -43,6 +47,7 @@ object AppPermissionManager {
 
     fun getPermissions(type: PermissionType): Array<String> {
         return when (type) {
+            PermissionType.CAMERA -> camera
             PermissionType.CAMERA_AND_STORAGE -> cameraAndStorage
             PermissionType.STORAGE -> storage
             PermissionType.CONTACTS_AND_CALL_LOG -> contactsAndCallLog

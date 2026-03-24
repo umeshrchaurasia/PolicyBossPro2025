@@ -77,21 +77,13 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission
-        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="28"
-        tools:ignore="ScopedStorage" />
-<!--    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />-->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" /> -->
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="com.policyboss.policybosspro.permission.MIPUSH_RECEIVE" />
-
-
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" /> <!-- For Workmanager Notification Permission -->
     <permission
         android:name="com.policyboss.policybosspro.permission.MIPUSH_RECEIVE"
@@ -109,11 +101,14 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".view.vehicleScanner.VehiclePlateReaderActivity"
+            android:name=".view.qrScanner.ScannerActivity"
             android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity"
             android:exported="false" />
-        <!-- Note:   android:theme="@style/Theme.PolicyBossProSplashScreen" create custom splash Screen -->
+        <activity
+            android:name=".view.vehicleScanner.VehiclePlateReaderActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            tools:ignore="LockedOrientationActivity" /> <!-- Note:   android:theme="@style/Theme.PolicyBossProSplashScreen" create custom splash Screen -->
         <activity
             android:name=".view.others.contactUS.ContactUsActivity"
             android:exported="false" />
@@ -245,10 +240,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- Mark Must hosted this link :         https://www.policyboss.com/.well-known/assetlinks.json -->
 
-<!--  Mark Must hosted this link :         https://www.policyboss.com/.well-known/assetlinks.json-->
 
-<!--  Playstore SHA256 key :       B3:BF:E8:15:CD:09:BF:7A:3D:21:3C:5A:29:8B:48:BF:59:69:7F:8F:D6:A9:65:92:19:F3:53:1F:62:89:AD:CD-->
+            <!-- Playstore SHA256 key :       B3:BF:E8:15:CD:09:BF:7A:3D:21:3C:5A:29:8B:48:BF:59:69:7F:8F:D6:A9:65:92:19:F3:53:1F:62:89:AD:CD -->
 
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
@@ -258,9 +253,8 @@
 
                 <data android:scheme="https" />
                 <data android:host="www.policyboss.com" />
-                <data android:pathPrefix="/deeplink"/>
+                <data android:pathPrefix="/deeplink" />
             </intent-filter>
-
         </activity> <!-- Theme is optional and only needed if default theme has no action bar. -->
         <activity
             android:name="com.canhub.cropper.CropImageActivity"
@@ -373,7 +367,8 @@ Notethis service must be added to version 2.2.5 or later
         -->
         <receiver
             android:name=".broadcast.SMSReaderBroadCastReceiver"
-            android:exported="true">
+            android:exported="false"
+            android:permission="com.google.android.gms.auth.api.phone.permission.SEND">
             <intent-filter>
                 <action android:name="com.google.android.gms.auth.api.phone.SMS_RETRIEVED" />
             </intent-filter>

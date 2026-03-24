@@ -20,3 +20,48 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
+####################################
+# GENERAL ATTRIBUTES (REQUIRED)
+####################################
+-keepattributes Signature
+-keepattributes *Annotation*
+-keepattributes EnclosingMethod
+-keepattributes InnerClasses
+
+####################################
+# GSON / RETROFIT (API MODELS)
+####################################
+# Keep fields for JSON parsing
+-keep class com.policyboss.policybosspro.core.model.** { <fields>; }
+-keep class com.policyboss.policybosspro.core.response.** { <fields>; }
+
+# Prevent Gson warnings
+-dontwarn sun.misc.**
+
+####################################
+# RAZORPAY SDK (MANDATORY)
+####################################
+-keep class com.razorpay.** { *; }
+-dontwarn com.razorpay.**
+
+####################################
+# WEBVIEW JAVASCRIPT INTERFACE
+####################################
+-keepclassmembers class * {
+    @android.webkit.JavascriptInterface <methods>;
+}
+
+####################################
+# KOTLIN SAFETY (RECOMMENDED)
+####################################
+-dontwarn kotlin.**
+-keep class kotlin.Metadata { *; }
+
+####################################
+# REMOVE LOGS (OPTIONAL BUT GOOD)
+####################################
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** v(...);
+    public static *** i(...);
+}

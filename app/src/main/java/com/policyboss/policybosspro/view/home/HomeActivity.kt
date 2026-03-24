@@ -109,6 +109,12 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import com.policyboss.policybosspro.view.qrScanner.ScannerActivity
+
 
 @AndroidEntryPoint
 class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, OnClickListener {
@@ -160,8 +166,9 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     private var currentSelectedItemId: Int = R.id.nav_home
 
-    //endregion
 
+
+    // region  Launcher
     private val notificationLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
@@ -173,6 +180,26 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         }
     }
 
+    private val scannerLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ){ result ->
+
+        if (result.resultCode == RESULT_OK) {
+            val msg = result.data?.getStringExtra("login_msg")
+
+            msg?.let {
+
+                lifecycleScope.launch {
+
+                    showSnackbar(binding.root,msg)
+                }
+
+
+            }
+        }
+    }
+
+     //endregion
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -424,6 +451,8 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
     //endregion
+
+
 
 //*************** DashBoard List Adapter Home/Dashboard Menu Action *****************************************
 
@@ -1137,7 +1166,6 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
     //endregion
 
-
     //region Handle DeepLink and Notification
 
     private fun deeplinkHandle() {
@@ -1435,6 +1463,8 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
 
     //endregion
+
+
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.dashboard_menu, menu)
 
@@ -1521,20 +1551,27 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
                 val intent = Intent(this, NotificationActivity::class.java)
                 notificationLauncher.launch(intent)
             }
+
+            R.id.action_qr_scanner -> {
+
+                val intent = Intent(this, ScannerActivity::class.java)
+               // startActivity(intent)
+                scannerLauncher.launch(intent)
+            }
         }
 
         return super.onOptionsItemSelected(item)
     }
 
 
-    fun shareCallingData(userCallingEntity: UserCallingEntity) {
+    private fun shareCallingData(userCallingEntity: UserCallingEntity) {
         val intentCalling = Intent(Intent.ACTION_DIAL).apply {
             data = Uri.parse("tel:${userCallingEntity.MobileNo}")
         }
         startActivity(intentCalling)
     }
 
-    fun shareEmailData(userCallingEntity: UserCallingEntity) {
+    private fun shareEmailData(userCallingEntity: UserCallingEntity) {
         UtilityNew.shareMailSmsList(
             context = this@HomeActivity,
             prdSubject = "",
@@ -1545,7 +1582,7 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     }
 
 
-    fun setonClickListner(){
+    private fun setonClickListner(){
 
         binding.navigationView.setNavigationItemSelectedListener(this)
         binding.tvKnowledge.setOnClickListener(this)

@@ -37,6 +37,7 @@ import java.text.SimpleDateFormat
 import java.util.ArrayList
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 /**
  * Created by Rahul on 10/06/2022.
@@ -90,7 +91,8 @@ class CallLogWorkManager (
 
     }
 
-    private suspend fun callLogTask() {
+    //old one
+    private suspend fun callLogTask1() {
 
         var strbody = Constant.CONTACT_LOG_DataSending
         var strResultbody = "Successfully Sending to Server.."
@@ -263,6 +265,73 @@ class CallLogWorkManager (
     }
 
 
+    private suspend fun callLogTask() {
+        val strbody = Constant.CONTACT_LOG_DataSending
+        val strResultbody = "Successfully Sending to Server.."
+
+        // Initial Notification
+        setForeground(createForegroundInfo(0, 0, strbody))
+
+        val fbaid = inputData.getInt(Constant.KEY_fbaid, 0)
+        val ssid = inputData.getString(Constant.KEY_ssid) ?: "0"
+        val parentid = inputData.getString(Constant.KEY_parentid) ?: "0"
+        val deviceID = inputData.getString(Constant.KEY_deviceid) ?: ""
+        val appVersion = inputData.getString(Constant.KEY_appversion) ?: ""
+
+        val tfbaid = if (parentid.isEmpty() || parentid == "0") fbaid.toString() else parentid
+        val tsub_fba_id = if (parentid.isEmpty() || parentid == "0") parentid else fbaid.toString()
+
+        withContext(Dispatchers.IO) {
+            val url = "https://horizon.policyboss.com:5443/sync_contacts/contact_call_history"
+
+            val callLogList = getCallDetails()
+            val totalSize = callLogList.size
+
+            if (totalSize == 0) return@withContext
+
+            val maxProgress = (totalSize / ProgressStep) + 1
+            var currentProgress = 1
+
+            // 🔴 CHANGE 2: Optimized Chunk Processing using indices and subList
+            for (i in callLogList.indices step ProgressStep) {
+
+                val end = kotlin.math.min(i + ProgressStep, totalSize)
+                val subLoglist = callLogList.subList(i, end) // Replaces expensive .filter
+
+                val callLogRequestEntity = CallLogRequestEntity(
+                    call_history = subLoglist,
+                    fba_id = tfbaid.toIntOrNull() ?: 0,
+                    sub_fba_id = tsub_fba_id.toIntOrNull() ?: 0,
+                    device_id = deviceID,
+                    app_version = appVersion,
+                    ss_id = ssid.toIntOrNull() ?: 0
+                )
+
+                val resultResp = RetroHelper.api.saveCallLog(url, callLogRequestEntity)
+
+                // 🔴 CHANGE 6: Improved API Failure Handling
+                if (resultResp?.isSuccessful == true) {
+                    Log.d(TAG, "Upload success batch $i")
+                    currentProgress++
+
+                    setProgress(workDataOf(
+                        Constant.CALL_LOG_Progress to currentProgress,
+                        Constant.CALL_LOG_MAXProgress to maxProgress
+                    ))
+
+                    setForeground(createForegroundInfo(
+                        maxProgress,
+                        currentProgress,
+                        if (currentProgress < maxProgress) strbody else strResultbody
+                    ))
+                } else {
+                    Log.e(TAG, "Upload failed batch $i: ${resultResp?.errorBody()?.string()}")
+                }
+            }
+        }
+    }
+
+
     fun bitmapToFile(context: Context, bitmap: Bitmap,): File? {
         val cacheDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
 
@@ -347,17 +416,12 @@ class CallLogWorkManager (
 
 
         /////////////////////////
+        val notificationBuilder: NotificationCompat.Builder =
+            NotificationCompat.Builder(applicationContext, id)
 
-        val notificationBuilder: NotificationCompat.Builder
 
-        notificationBuilder = NotificationCompat.Builder(applicationContext, id)
+        notificationBuilder.setSmallIcon(com.policyboss.policybosspro.R.drawable.pb_pro_logo)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            notificationBuilder.setSmallIcon(com.policyboss.policybosspro.R.drawable.pb_pro_logo)
-            notificationBuilder.color = applicationContext.getColor(com.policyboss.policybosspro.R.color.colorPrimary)
-        } else {
-            notificationBuilder.setSmallIcon(com.policyboss.policybosspro.R.drawable.pb_pro_logo)
-        }
 
         // .addAction(android.R.drawable.ic_delete, cancel, intent)
 
@@ -365,19 +429,31 @@ class CallLogWorkManager (
             .setContentTitle(title)
             .setTicker(title)
             .setContentText(body)
-            .setOngoing(false)
+            .setOngoing(true)
             .setProgress(maxProgress, progress, false)
 
             // .setContentIntent(notifyPendingIntent)
-            .setAutoCancel(true)
-
+            .setAutoCancel(false)
+            .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
 
 
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
 
-        return ForegroundInfo(1,
-            notificationBuilder.build(),
-            ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
+            ForegroundInfo(
+                1,
+                notificationBuilder.build(),
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+            )
+
+        } else {
+
+            ForegroundInfo(
+                1,
+                notificationBuilder.build()
+            )
+
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -388,28 +464,37 @@ class CallLogWorkManager (
         )
     }
 
+//    @RequiresApi(Build.VERSION_CODES.O)
+//    fun createChannel1(id: String, channelName: String) {
+//        if (Build.VERSION.SDK_INT >= 26) {
+//            val channel = NotificationChannel(
+//                id,
+//                channelName,
+//                NotificationManager.IMPORTANCE_LOW
+//            )
+//            channel.enableLights(true)
+//            channel.enableVibration(true)
+//            channel.lightColor = Color.BLUE
+//            channel.description = "PoliyBoss Pro"
+//            // Sets whether notifications posted to this channel appear on the lockscreen or not
+//            channel.lockscreenVisibility =
+//                Notification.VISIBILITY_PUBLIC // Notification.VISIBILITY_PRIVATE
+//            notificationManager.createNotificationChannel(channel)
+//        }
+//    }
+
     @RequiresApi(Build.VERSION_CODES.O)
     fun createChannel(id: String, channelName: String) {
-        if (Build.VERSION.SDK_INT >= 26) {
-            val channel = NotificationChannel(
-                id,
-                channelName,
-                NotificationManager.IMPORTANCE_DEFAULT
-            )
-            channel.enableLights(true)
-            channel.enableVibration(true)
-            channel.lightColor = Color.BLUE
-            channel.description = "PoliyBoss Pro"
-            // Sets whether notifications posted to this channel appear on the lockscreen or not
-            channel.lockscreenVisibility =
-                Notification.VISIBILITY_PUBLIC // Notification.VISIBILITY_PRIVATE
-            notificationManager.createNotificationChannel(channel)
+        val channel = NotificationChannel(id, channelName, NotificationManager.IMPORTANCE_LOW).apply {
+            lightColor = Color.BLUE
+            lockscreenVisibility = Notification.VISIBILITY_PUBLIC
         }
+        notificationManager.createNotificationChannel(channel)
     }
 
     //endregion
 
-    private  fun getCallDetails(): MutableList<CallLogEntity> {
+    private  fun getCallDetails1(): MutableList<CallLogEntity> {
 
         var formatter: SimpleDateFormat = SimpleDateFormat("dd-MMM-yyyy HH:mm:ss")
         var calenderMobDate = Calendar.getInstance()
@@ -527,6 +612,56 @@ class CallLogWorkManager (
 
     }
 
+    private fun getCallDetails(): MutableList<CallLogEntity> {
+        // 🔴 CHANGE 5: Cleaner Kotlin List Declaration
+        val callLogList = mutableListOf<CallLogEntity>()
+        val formatter = SimpleDateFormat("dd-MMM-yyyy HH:mm:ss", Locale.ENGLISH)
 
+        val calenderPrevDate = Calendar.getInstance().apply { add(Calendar.YEAR, -1) }
+
+        // 🔴 CHANGE 3: Handle Cursor Null Risk
+        val cursor = applicationContext.contentResolver.query(
+            CallLog.Calls.CONTENT_URI,
+            null, null, null, CallLog.Calls.DATE + " DESC"
+        ) ?: return callLogList
+
+        // 🔴 CHANGE 4: Use .use{} for Auto-Closing Cursor
+        cursor.use { it ->
+            val numberIdx = it.getColumnIndex(CallLog.Calls.NUMBER)
+            val typeIdx = it.getColumnIndex(CallLog.Calls.TYPE)
+            val dateIdx = it.getColumnIndex(CallLog.Calls.DATE)
+            val durationIdx = it.getColumnIndex(CallLog.Calls.DURATION)
+            val cachedNameIdx = it.getColumnIndex(CallLog.Calls.CACHED_NAME)
+
+            var count = 0
+            while (it.moveToNext()) {
+                count++
+                val phNumber = it.getString(numberIdx) ?: ""
+                val callType = it.getInt(typeIdx)
+                val callDate = it.getLong(dateIdx)
+                val callDuration = it.getString(durationIdx) ?: "0"
+                val pName = if (cachedNameIdx != -1) it.getString(cachedNameIdx) ?: "NA" else "NA"
+
+                val callDayTime = formatter.format(Date(callDate))
+                val mobDate = Date(callDate)
+
+                if (mobDate.after(calenderPrevDate.time)) {
+                    if (callDuration.toInt() > 0 && (callType == CallLog.Calls.INCOMING_TYPE || callType == CallLog.Calls.OUTGOING_TYPE)) {
+
+                        val dir = when (callType) {
+                            CallLog.Calls.OUTGOING_TYPE -> "OUTGOING"
+                            CallLog.Calls.INCOMING_TYPE -> "INCOMING"
+                            CallLog.Calls.MISSED_TYPE -> "MISSED"
+                            CallLog.Calls.REJECTED_TYPE -> "REJECTED"
+                            else -> "OTHER"
+                        }
+
+                        callLogList.add(CallLogEntity(phNumber, pName, dir, callDuration, callDayTime, count))
+                    }
+                }
+            }
+        }
+        return callLogList
+    }
 
 }

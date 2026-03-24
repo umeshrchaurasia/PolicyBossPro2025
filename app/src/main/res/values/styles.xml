@@ -348,6 +348,33 @@
 
     </style>
 
+<!--    BottomSheet Dialog-->
+
+    <style name="AppBottomSheetTheme" parent="Theme.Material3.Light.BottomSheetDialog">
+
+        <!-- Transparent background behind sheet -->
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:backgroundDimAmount">0.5</item>
+
+        <!-- Remove default white corners -->
+        <item name="bottomSheetStyle">@style/AppBottomSheetStyle</item>
+
+    </style>
+
+    <style name="AppBottomSheetStyle" parent="Widget.Material3.BottomSheet.Modal">
+
+        <item name="android:background">@android:color/transparent</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.App.BottomSheet</item>
+
+    </style>
+
+    <style name="ShapeAppearance.App.BottomSheet" parent="ShapeAppearance.Material3.LargeComponent">
+        <item name="cornerSizeTopLeft">24dp</item>
+        <item name="cornerSizeTopRight">24dp</item>
+        <item name="cornerFamily">rounded</item>
+    </style>
+
 
     <style name="Style.edittext" parent="@android:style/Widget.EditText">
         <!--<item name="android:background">@null</item>-->

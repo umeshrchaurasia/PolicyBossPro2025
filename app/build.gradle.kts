@@ -13,12 +13,15 @@ android {
     namespace = "com.policyboss.policybosspro"
     compileSdk = 35
 
+    // 🔴 ENSURE SAME NDK AS gradle.properties
+    ndkVersion = "26.1.10909125"
+
     defaultConfig {
         applicationId = "com.policyboss.policybosspro"
         minSdk = 24
         targetSdk = 35
-        versionCode = 55
-        versionName = "1.5.0.5"
+        versionCode = 57
+        versionName = "1.5.0.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -26,6 +29,12 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+
+            // ✅ Native debug symbols (Play Console readable crashes)
+            ndk {
+                debugSymbolLevel = "FULL"
+            }
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -146,13 +155,16 @@ dependencies {
 
 
     // Add CameraX dependencies
-    implementation ("androidx.camera:camera-core:1.4.2")
+    implementation ("androidx.camera:camera-core:1.5.3")
 
-    implementation ("androidx.camera:camera-camera2:1.4.2")
-    implementation ("androidx.camera:camera-lifecycle:1.4.2")
-    implementation("androidx.camera:camera-view:1.4.2")
+    implementation ("androidx.camera:camera-camera2:1.5.3")
+    implementation ("androidx.camera:camera-lifecycle:1.5.3")
+    implementation("androidx.camera:camera-view:1.5.3")
 
-   // Add Milkit dependency
+    // ML Kit Barcode Scanner
+    implementation ("com.google.mlkit:barcode-scanning:17.3.0")
+
+   // Add Milkit  Text Recognition dependency
 
     implementation("com.google.mlkit:text-recognition:16.0.1")
 

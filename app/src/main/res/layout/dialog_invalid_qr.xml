@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center_horizontal">
+
+    <ImageView
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:src="@drawable/ic_warning_24"
+        app:tint="#FF8A65" />
+
+<TextView
+    android:layout_marginTop="16dp"
+    android:text="Invalid QR code"
+    android:textSize="20sp"
+    android:fontFamily="@font/poppinsbold"
+
+    android:textStyle="bold"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"/>
+
+<TextView
+    android:layout_marginTop="8dp"
+    android:fontFamily="@font/poppinsregular"
+    android:text="The QR code you're trying to scan is incorrect. Please retry with a different code."
+    android:gravity="center"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"/>
+
+<Button
+    android:id="@+id/btnRetry"
+    style="@style/ButtonStyle.Colored"
+    android:layout_marginTop="24dp"
+    android:text="Retry"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"/>
+
+</LinearLayout>

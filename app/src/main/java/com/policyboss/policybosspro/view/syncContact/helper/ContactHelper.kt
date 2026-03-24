@@ -8,73 +8,156 @@ import android.net.Uri
 import android.os.Environment
 import android.os.ParcelFileDescriptor
 import android.provider.ContactsContract
-
+import android.util.Log
 
 
 // create by Rahul
 //For handling all field in contacts
 
 /*
- Note : we put all data in " myData MutableList "
-
-  1> DisplayName is main key of  myData MutableList
-
-  2> Other Field For eg contatcWebSiteMapList all has MutableMap<String, MutableList<String>> ie key & value pair
-   where  we set DisplayName as key and List of Phone is Value
-
-  3> Mainly we get the vale from map and again put the value on the map basis on key which is DisplayName { this give benefits that we
-  can maintain a list of record again same key }
-
-
-     var websiteList  = contatcWebSiteMapList.get(displayName) // using the key ie Display Name and get All Element of Phone
-        if(websiteList == null){
-            websiteList = ArrayList<String>()
-        }
-         val webSiteUrl = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Website.URL))
-
-        websiteList.add(webSiteUrl.toString().trim())
-        contatcWebSiteMapList.put(displayName,websiteList)
-        **************************************************
-       //VVIMP : 1>  contatcWebSiteMapList  **First Time by default its give null value to websiteList. **
-       bec first time key doesnot have any value { we later added it manually..}
-       so our list is null. hence we first initialize it  websiteList = ArrayList<String>() .
-
-       2> val webSiteUrl = cursor.getString(c.....)
-        after getting webSiteUrl we add field webSiteUrl to our List ie websiteList now our List has one data.
-
-        VVIMP
-       3> Now This websiteList agin we put to contatcWebSiteMapList ie displayName is key and websiteList its value.
-
-         contatcWebSiteMapList.put(displayName,websiteList)
-
-        2> when we come second time ie device has two website at same Id details
-            var websiteList = contatcWebSiteMapList.get(displayName)
-         contatcWebSiteMapList Second Time return the websiteList. which has one recods and its a list.
-         Basically we has a key which is "displayName" and give value which is List of wevite
-
-         3> this process was repeated depends on count of website that particular contact Id has and our List Size is increased.
-
-         4> Finally We have myData List which has Field 'DisplayName' and contatcWebSiteMapList which has key 'DisplayName'
-
-        **************************************************
-
-
-  4>      // Add WebSite
-                    contactWebSiteMapList.forEach{ website ->
-
-                        if(myData.displayName.equals(website.key)){
-
-                            myData.websites = website.value
-                        }
-                    }
-
-              so we can assign data to myData's  websites field  by using  website.key which has value as  'websiteList'
-         **************************************************
-
-
 
  */
+
+
+
+
+
+
 object ContactHelper {
+    private const val TAG = "CONTACT_HELPER"
+    private const val MAX_SIZE = 150
+
+    @JvmStatic
+    fun getContact(context: Context): MutableList<ModelContact> {
+        // Use a Map to group all data by Display Name instantly
+        val contactMap = mutableMapOf<String, ModelContact>()
+
+        val uri = ContactsContract.Data.CONTENT_URI
+        val selection = "${ContactsContract.Data.HAS_PHONE_NUMBER} > 0"
+        val sortOrder = "${ContactsContract.Data.DISPLAY_NAME} ASC"
+
+        val cursor = context.contentResolver.query(uri, null, selection, null, sortOrder)
+
+        cursor?.use { c ->
+            // Pre-fetch column indices for performance
+            val mimeTypeIdx = c.getColumnIndex(ContactsContract.Data.MIMETYPE)
+            val displayNameIdx = c.getColumnIndex(ContactsContract.Data.DISPLAY_NAME)
+            val data1Idx = c.getColumnIndex(ContactsContract.Data.DATA1)
+            val data2Idx = c.getColumnIndex(ContactsContract.Data.DATA2)
+            val data3Idx = c.getColumnIndex(ContactsContract.Data.DATA3)
+
+            // Name-specific indices
+            val givenIdx = c.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME)
+            val middleIdx = c.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.MIDDLE_NAME)
+            val familyIdx = c.getColumnIndex(ContactsContract.CommonDataKinds.StructuredName.FAMILY_NAME)
+
+            while (c.moveToNext()) {
+                val name = if (displayNameIdx >= 0) c.getString(displayNameIdx) ?: "Unknown" else "Unknown"
+                val mimeType = if (mimeTypeIdx >= 0) c.getString(mimeTypeIdx) ?: "" else ""
+
+                // Get or Create the object for this name (O(1) Speed)
+                val contact = contactMap.getOrPut(name) { ModelContact(displayName = name) }
+
+                try {
+                    when (mimeType) {
+                        ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE -> {
+                            contact.givenName = if (givenIdx >= 0) c.getString(givenIdx) ?: "" else ""
+                            contact.middleName = if (middleIdx >= 0) c.getString(middleIdx) ?: "" else ""
+                            contact.familyName = if (familyIdx >= 0) c.getString(familyIdx) ?: "" else ""
+                        }
+
+                        ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE -> {
+                            val num = if (data1Idx >= 0) c.getString(data1Idx) ?: "" else ""
+                            val typeInt = if (data2Idx >= 0) c.getInt(data2Idx) else 0
+                            contact.phoneNumbers.add(PhoneData(
+                                number = num,
+                                normalizedNumber = num.replace("[^0-9]".toRegex(), "").takeLast(10),
+                                type = getPhoneLabel(typeInt)
+                            ))
+                        }
+
+//                        ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE -> {
+//                            val email = if (data1Idx >= 0) c.getString(data1Idx) ?: "" else ""
+//                            contact.emails.add(EmailData(address = email, type = "HOME"))
+//                        }
+                        ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE -> {
+
+                            val email = if (data1Idx >= 0) c.getString(data1Idx) ?: "" else ""
+                            val typeInt = if (data2Idx >= 0) c.getInt(data2Idx) else 0
+
+                            contact.emails.add(
+                                EmailData(
+                                    address = email,
+                                    type = getEmailLabel(typeInt)
+                                )
+                            )
+                        }
+
+                        ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE -> {
+                            contact.companyName = if (data1Idx >= 0) c.getString(data1Idx) ?: "" else ""
+                            contact.companyTitle = if (data3Idx >= 0) c.getString(data3Idx) ?: "" else ""
+                        }
+
+                        ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE -> {
+                            contact.note = if (data1Idx >= 0) c.getString(data1Idx) else ""
+                        }
+
+                        ContactsContract.CommonDataKinds.Nickname.CONTENT_ITEM_TYPE -> {
+                            contact.nickname = if (data1Idx >= 0) c.getString(data1Idx) ?: "" else ""
+                        }
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, "Row error: ${e.message}")
+                }
+            }
+        }
+
+        // Return the values as a List for your office server
+        return contactMap.values.toMutableList()
+    }
+
+    fun getEmailLabel(type: Int): String {
+        return when (type) {
+            ContactsContract.CommonDataKinds.Email.TYPE_HOME -> "HOME"
+            ContactsContract.CommonDataKinds.Email.TYPE_WORK -> "WORK"
+            ContactsContract.CommonDataKinds.Email.TYPE_OTHER -> "OTHER"
+            else -> "OTHER"
+        }
+    }
+    private fun getPhoneLabel(type: Int): String {
+        return when (type) {
+            ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE -> "MOBILE"
+            ContactsContract.CommonDataKinds.Phone.TYPE_WORK -> "WORK"
+            ContactsContract.CommonDataKinds.Phone.TYPE_HOME -> "HOME"
+            else -> "OTHER"
+        }
+    }
+
+    // --- YOUR EXACT OFFICE MODELS ---
+    data class ModelContact(var displayName: String? = "") {
+        var givenName: String = ""; var middleName: String = ""; var familyName: String = ""
+        var phoneNumbers: MutableList<PhoneData> = mutableListOf()
+        var nickname: String = ""; var companyName: String = ""; var companyTitle: String = ""
+        var companyDepartment: String = ""
+        var emails: MutableList<EmailData> = mutableListOf()
+        var addresses: MutableList<AddressData> = mutableListOf()
+        var websites: MutableList<String> = mutableListOf()
+        var relations: MutableList<RelationData> = mutableListOf()
+        var events: MutableList<EventData> = mutableListOf()
+        var note: String? = null
+    }
+
+    data class PhoneData(var normalizedNumber: String = "", var number: String = "", var type: String = "")
+    data class EmailData(var address: String = "", var type: String = "")
+    data class AddressData(var formattedAddress: String = "", var type: String = "")
+    data class NameData(var displayName: String = "", var givenName: String = "", var middleName: String = "", var familyName: String = "")
+    data class CompanyData(var companyName: String = "", var companyTitle: String = "", var companyDepartment: String = "")
+    data class RelationData(var relationName: String = "", var relationLabel: String = "")
+    data class EventData(var type: String = "", var startDate: String = "")
+}
+
+
+object ContactHelperOLD {
 
          val maxSize = 150
          val maxStandardSize = 100
@@ -140,7 +223,7 @@ object ContactHelper {
 //                        + "(" + ContactsContract.Data.MIMETYPE + "='" + ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE + "')"),
 //                null, ORDER
 
-                
+
                 (ContactsContract.Data.HAS_PHONE_NUMBER + ">0" + " AND "
 
                 + "(" + ContactsContract.Data.MIMETYPE + "='" + ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE + "' OR "
@@ -236,7 +319,7 @@ object ContactHelper {
  //                  Log.d(Constant.TAG_SAVING_CONTACT_LOG,it)
 //                }
 
-                
+
                 /******************************************************************************************************
                   Once we get All field we have to add  maually on the main List
                 ****************************************************************************************************** */
@@ -380,7 +463,7 @@ object ContactHelper {
 
     private fun setName(cursor: Cursor, displayName : String, givenName : String,middleName : String,familyName : String ,  contactNameMapList: MutableMap<String, MutableList<NameData>>) {
 
-        
+
         /********************** displayName work as KEY ************/
 
         var nameList  = contactNameMapList.get(displayName) // using the key ie Display Name and get All Element of Phone
