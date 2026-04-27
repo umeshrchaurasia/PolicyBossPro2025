@@ -33,6 +33,7 @@ import com.policyboss.policybosspro.utils.Constant
 import com.policyboss.policybosspro.view.syncContact.helper.ContactHelper
 import com.policyboss.policybosspro.view.syncContact.ui.SyncContactActivity
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
@@ -41,6 +42,16 @@ import java.io.FileWriter
 /**
  * Created by Rahul on 10/06/2022.
  */
+
+
+
+
+
+
+
+
+
+
 
 class ContactLogWorkManager(
     val context: Context,
@@ -80,290 +91,6 @@ class ContactLogWorkManager(
 
     }
 
-    private suspend fun callContactTask1() : Int {
-
-        var ContactCount = 0
-
-
-
-        //region Comment : Not In Used
-        var strbody = Constant.CONTACT_LOG_DataFetching
-        var strResultbody = "Successfully fetch the data.."
-        setForeground(createForegroundInfo(0, 0, strbody))
-
-        //endregion
-
-
-        // region getting Input Data
-        val fbaid = inputData.getInt(Constant.KEY_fbaid, 0)
-        val ssid = inputData.getString(Constant.KEY_ssid)
-        val parentid = inputData.getString(Constant.KEY_parentid)
-        val deviceID = inputData.getString(Constant.KEY_deviceid) ?: ""
-        val appversion = inputData.getString(Constant.KEY_appversion) ?: ""
-
-        var tfbaid = ""
-        var tsub_fba_id = ""
-        var getAllContactDetails :  MutableList<ContactHelper.ModelContact> = mutableListOf()
-
-        if (parentid.isNullOrEmpty() || parentid.equals("0")) {
-
-            tfbaid = fbaid.toString()
-            tsub_fba_id = parentid.toString()
-
-        } else {
-            tfbaid = parentid.toString()
-            tsub_fba_id = fbaid.toString()
-        }
-
-        //endregion
-        //  delay(2000)
-
-        withContext(Dispatchers.IO) {
-
-            var url =  "https://horizon.policyboss.com:5443/sync_contacts" + "/contact_entry"
-
-
-            var contactlist = getContactList()
-
-            // region  05 temp commented for Testing for Increase the Contact List
-//            val contactlist: MutableList<ContactlistEntity> = mutableListOf()
-//
-//            for (i in 1..8) {
-//
-//             //Assuming getContactList() returns a ContactlistEntity
-//                contactlist.addAll(getContactList())
-//            }
-            //endregion
-
-            ContactCount = contactlist.size
-            Log.d(TAG, "Total Contact Size ${contactlist.size}")
-
-
-            //region ForegroundService and Background
-
-            var remainderProgress = 0
-            var maxProgress = 0
-            var currentProgress = 0
-            var defaultProgress = 1
-            maxProgress = contactlist!!.size / ProgressStep
-
-            remainderProgress = contactlist!!.size % ProgressStep
-            maxProgress = maxProgress + defaultProgress
-            currentProgress = defaultProgress
-            if (remainderProgress > 0) {
-                maxProgress = maxProgress + 1
-            }
-
-            // Log.d(TAG, "maxProgress ${maxProgress}")
-            setForeground(createForegroundInfo(maxProgress, currentProgress, strbody))
-            val workProgessDefault = workDataOf(
-                Constant.CONTACT_LOG_Progress to currentProgress,
-                Constant.CONTACT_LOG_MAXProgress to maxProgress,
-                // Constant.CONTACT_LOG_Data_SIZE to contactlist.size
-            )
-            setProgress(workProgessDefault)
-
-
-            //endregion
-
-            var subcontactlist: List<ContactlistEntity>
-
-            if (contactlist != null && contactlist!!.size > 0) {
-
-                try{
-
-                    getAllContactDetails =  ContactHelper.getContact(context.applicationContext)
-
-
-//                    var data = Gson().toJson(getAllContactDetails)
-//                    Log.d(Constant.TAG_SAVING_CONTACT_LOG,data )
-//
-
-                }catch (ex :Exception ){
-                    Log.d(Constant.TAG_SAVING_CONTACT_LOG,ex.toString() )
-                }
-
-
-                // 005 temp commented
-
-                for (i in 0..contactlist!!.size - 1 step ProgressStep) {
-
-                    Log.d(TAG, "CallLog for 1 Contact Number of data jumped ${i}")
-
-                    subcontactlist = contactlist!!.filter { it.id > i && it.id <= (ProgressStep + i) }
-
-
-                    // region calling to server
-
-
-                    val contactRequestEntity = ContactLeadRequestEntity(
-                        fbaid = tfbaid,
-                        ssid = ssid!!,
-                        sub_fba_id = tsub_fba_id,
-                        contactlist = subcontactlist,
-                        raw_data = Gson().toJson(getAllContactDetails),
-                        device_id = deviceID,
-                        app_version = appversion
-                    )
-
-
-                    Log.d(Constant.TAG_SAVING_CONTACT_LOG, Gson().toJson(getAllContactDetails) )
-
-
-                    val resultResp = RetroHelper.api.saveContactLead(url, contactRequestEntity)
-
-                    if (resultResp?.isSuccessful == true) {
-
-
-                        Log.d(TAG, "Response Done Contact : ${i}")
-
-                        //region send Notification Progress
-
-
-                        currentProgress = currentProgress + 1
-                        val workProgess = workDataOf(Constant.CONTACT_LOG_Progress to currentProgress,
-                            Constant.CONTACT_LOG_MAXProgress to maxProgress)
-                        setProgress(workProgess)
-                        if (currentProgress < maxProgress) {
-                            setForeground(
-                                createForegroundInfo(
-                                    maxProgress = maxProgress,
-                                    progress = currentProgress,
-                                    strbody = strbody
-                                )
-                            )
-
-                        } else {
-                            setForeground(
-                                createForegroundInfo(
-                                    maxProgress = maxProgress,
-                                    progress = currentProgress,
-                                    strbody = strResultbody
-                                )
-                            )
-
-                        }
-                        //endregion
-                        // delay(8000)
-
-                    }
-                    else{
-
-                        Log.d(TAG, resultResp.toString())
-                    }
-
-
-                    //endregion
-
-
-
-
-                }
-
-
-
-
-            }
-
-        }
-
-        return ContactCount
-    }
-
-    private  fun getContactList1(): MutableList<ContactlistEntity> {
-
-        var contactlist: MutableList<ContactlistEntity> = ArrayList<ContactlistEntity>()
-        var templist: MutableList<String> = ArrayList<String>()
-        var phones: Cursor? = null
-
-
-        val PROJECTION = arrayOf(
-            ContactsContract.RawContacts._ID,
-            ContactsContract.Contacts.DISPLAY_NAME,
-            ContactsContract.CommonDataKinds.Phone.PHOTO_URI,
-            ContactsContract.CommonDataKinds.Phone.NUMBER,
-            ContactsContract.CommonDataKinds.Photo.CONTACT_ID,
-            ContactsContract.Data.MIMETYPE,
-            ContactsContract.Data.DATA1
-        )
-
-        val uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI
-        val filter =
-            "" + ContactsContract.Contacts.HAS_PHONE_NUMBER + " > 0 and " + ContactsContract.CommonDataKinds.Phone.TYPE + "=" + ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE
-        val order =
-            ContactsContract.Contacts.DISPLAY_NAME + " ASC"// LIMIT " + limit + " offset " + lastId + "";
-
-        phones = applicationContext.contentResolver.query(uri, PROJECTION, filter, null, order)
-
-
-
-
-        ///////////////////////////
-
-
-        val regex = Regex("[^.0-9]")
-
-        phones.let {
-
-            if (phones != null && phones!!.getCount() > 0) {
-                try {
-                    var i = 1
-                    while (phones.moveToNext()) {
-
-
-                        var name =
-                            "" + phones.getString(
-                                phones.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME) ?: 0
-                            )
-                        var phoneNumber =
-                            "" + phones.getString(
-                                phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
-                                    ?: 0
-                            )
-
-                        //  phoneNumber = phoneNumber.trim().replace("[^0-9\\s+]", "");   // remove Special character and Space
-
-                        phoneNumber = regex.replace(phoneNumber, "") // works
-                        //.replace("\\s".toRegex(), "")
-
-                        if (phoneNumber.length >= 10) {
-
-                            phoneNumber = phoneNumber.takeLast(10)
-                            // check whether the number alreday added to list or not
-
-                            if (!templist!!.contains(phoneNumber)) {
-                                templist?.add(phoneNumber)
-
-                                val selectUser = ContactlistEntity(
-                                    name = name,
-                                    mobileno = phoneNumber,
-                                    id = i
-                                )
-                                // Log.i(TAG, "Key ID: " + i + " Name: " + name + " Mobile: " + phoneNumber + "\n");
-                                contactlist.add(selectUser)
-
-                            }
-
-
-                        }
-
-
-                    }
-                } catch (e: InterruptedException) {
-                    e.printStackTrace()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-
-            }
-        }
-
-
-
-        return contactlist
-
-
-    }
 
 
     private suspend fun callContactTask(): Int = withContext(Dispatchers.IO) {
@@ -372,6 +99,9 @@ class ContactLogWorkManager(
 
         // 1. Fetch data
         val contactlist = getContactList()
+
+        //Note : For Heavy Text
+       // val contactlist = getContactListTest()
         if (contactlist.isEmpty()) return@withContext 0
 
         // 2. Prepare Meta Data
@@ -384,11 +114,26 @@ class ContactLogWorkManager(
         val tfbaid = if (parentid.isEmpty() || parentid == "0") fbaid.toString() else parentid
         val tsub_fba_id = if (parentid.isEmpty() || parentid == "0") parentid else fbaid.toString()
 
+        //region Direct way commented
         // 3. Optimization: Generate RAW JSON ONCE, not inside the loop
-        val rawDataJson = try {
-            val rawDetails = ContactHelper.getContact(context.applicationContext)
-            Gson().toJson(rawDetails)
-        } catch (e: Exception) { "" }
+//        val rawDataJson = try {
+//            val rawDetails = ContactHelper.getContact(context.applicationContext)
+//            Gson().toJson(rawDetails)
+//        } catch (e: Exception) { "" }
+        //endregion
+
+        val contactCount = contactlist.size
+
+       // val rawDataJson: String? = null  //For Default Set Null
+        val rawDataJson: String? = if (contactCount > 3000) {
+            Log.w(TAG, "Heavy user ($contactCount), skipping raw_data")
+            null
+        } else {
+            Log.d(TAG, "Generating Raw Data")
+            generateRawDataSafely()
+
+        }
+
 
         // region For Testing Purpose
 //        if (rawDataJson.isNotEmpty()) {
@@ -425,7 +170,7 @@ class ContactLogWorkManager(
                 sub_fba_id = tsub_fba_id,
                 contactlist = subBatch,
                 // OPTIMIZATION: Send raw_data ONLY with the first batch to save data
-                raw_data = if (i == 0) rawDataJson else "",  // raw_data = rawDataJson, // Reusing the string
+                raw_data = if (i == 0) rawDataJson ?: "" else "",  // raw_data = rawDataJson, // Reusing the string
 
                 device_id = deviceID,
                 app_version = appversion
@@ -497,6 +242,25 @@ class ContactLogWorkManager(
             }
         }
         return contactList
+    }
+
+    private fun generateRawDataSafely(): String? {
+        return try {
+          //  val raw = ContactHelper.getContact(applicationContext)
+
+            val raw =   ContactHelper.getDummyRawContacts(applicationContext, multiplier = 10) // ~6k
+
+            if (raw.size > 3000) return null
+
+            val json = Gson().toJson(raw)
+
+            if (json.length > 1_000_000) return null
+
+            json
+        } catch (e: Exception) {
+            Log.e(TAG, "raw_data failed: ${e.message}")
+            null
+        }
     }
 
 
@@ -780,4 +544,138 @@ class ContactLogWorkManager(
             }
         }
     }
+
+
+    private  fun getContactList1(): MutableList<ContactlistEntity> {
+
+        var contactlist: MutableList<ContactlistEntity> = ArrayList<ContactlistEntity>()
+        var templist: MutableList<String> = ArrayList<String>()
+        var phones: Cursor? = null
+
+
+        val PROJECTION = arrayOf(
+            ContactsContract.RawContacts._ID,
+            ContactsContract.Contacts.DISPLAY_NAME,
+            ContactsContract.CommonDataKinds.Phone.PHOTO_URI,
+            ContactsContract.CommonDataKinds.Phone.NUMBER,
+            ContactsContract.CommonDataKinds.Photo.CONTACT_ID,
+            ContactsContract.Data.MIMETYPE,
+            ContactsContract.Data.DATA1
+        )
+
+        val uri = ContactsContract.CommonDataKinds.Phone.CONTENT_URI
+        val filter =
+            "" + ContactsContract.Contacts.HAS_PHONE_NUMBER + " > 0 and " + ContactsContract.CommonDataKinds.Phone.TYPE + "=" + ContactsContract.CommonDataKinds.Phone.TYPE_MOBILE
+        val order =
+            ContactsContract.Contacts.DISPLAY_NAME + " ASC"// LIMIT " + limit + " offset " + lastId + "";
+
+        phones = applicationContext.contentResolver.query(uri, PROJECTION, filter, null, order)
+
+
+
+
+        ///////////////////////////
+
+
+        val regex = Regex("[^.0-9]")
+
+        phones.let {
+
+            if (phones != null && phones!!.getCount() > 0) {
+                try {
+                    var i = 1
+                    while (phones.moveToNext()) {
+
+
+                        var name =
+                            "" + phones.getString(
+                                phones.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME) ?: 0
+                            )
+                        var phoneNumber =
+                            "" + phones.getString(
+                                phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                                    ?: 0
+                            )
+
+                        //  phoneNumber = phoneNumber.trim().replace("[^0-9\\s+]", "");   // remove Special character and Space
+
+                        phoneNumber = regex.replace(phoneNumber, "") // works
+                        //.replace("\\s".toRegex(), "")
+
+                        if (phoneNumber.length >= 10) {
+
+                            phoneNumber = phoneNumber.takeLast(10)
+                            // check whether the number alreday added to list or not
+
+                            if (!templist!!.contains(phoneNumber)) {
+                                templist?.add(phoneNumber)
+
+                                val selectUser = ContactlistEntity(
+                                    name = name,
+                                    mobileno = phoneNumber,
+                                    id = i
+                                )
+                                // Log.i(TAG, "Key ID: " + i + " Name: " + name + " Mobile: " + phoneNumber + "\n");
+                                contactlist.add(selectUser)
+
+                            }
+
+
+                        }
+
+
+                    }
+                } catch (e: InterruptedException) {
+                    e.printStackTrace()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+
+            }
+        }
+
+
+
+        return contactlist
+
+
+    }
+
+
+    private fun getContactListTest(multiplier: Int = 4): MutableList<ContactlistEntity> {
+
+        val originalList = getContactList()
+
+        if (originalList.isEmpty()) return originalList
+
+        val testList = mutableListOf<ContactlistEntity>()
+        var idCounter = 1
+
+        repeat(multiplier) { round ->
+
+            for (contact in originalList) {
+
+                // 🔹 Create slightly modified number (last digit change)
+                val newNumber = try {
+                    val base = contact.mobileno.dropLast(1)
+                    val lastDigit = ((contact.mobileno.last().digitToInt() + round) % 10)
+                    base + lastDigit
+                } catch (e: Exception) {
+                    contact.mobileno // fallback
+                }
+
+                testList.add(
+                    ContactlistEntity(
+                        name = "${contact.name}_$round", // avoid same name
+                        mobileno = newNumber,
+                        id = idCounter++
+                    )
+                )
+            }
+        }
+
+        Log.d(TAG, "Test contacts generated: ${testList.size}")
+        return testList
+    }
+
 }

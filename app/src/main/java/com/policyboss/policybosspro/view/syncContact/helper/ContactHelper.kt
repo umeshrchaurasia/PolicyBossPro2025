@@ -154,6 +154,60 @@ object ContactHelper {
     data class CompanyData(var companyName: String = "", var companyTitle: String = "", var companyDepartment: String = "")
     data class RelationData(var relationName: String = "", var relationLabel: String = "")
     data class EventData(var type: String = "", var startDate: String = "")
+
+
+    fun getDummyRawContacts(
+        context: Context,
+        multiplier: Int = 5 // 600 * 5 = 3000
+    ): MutableList<ContactHelper.ModelContact> {
+
+        val original = ContactHelper.getContact(context)
+
+        if (original.isEmpty()) return original
+
+        val result = mutableListOf<ContactHelper.ModelContact>()
+
+        repeat(multiplier) { round ->
+
+            for (contact in original) {
+
+                val newContact = ContactHelper.ModelContact(
+                    displayName = "${contact.displayName}_$round"
+                ).apply {
+
+                    givenName = contact.givenName
+                    middleName = contact.middleName
+                    familyName = contact.familyName
+                    nickname = contact.nickname
+                    companyName = contact.companyName
+                    companyTitle = contact.companyTitle
+                    note = contact.note
+
+                    // 🔹 Clone phone numbers with slight change
+                    phoneNumbers = contact.phoneNumbers.map {
+                        val base = it.normalizedNumber.dropLast(1)
+                        val lastDigit = ((it.normalizedNumber.lastOrNull()?.digitToIntOrNull() ?: 0 + round) % 10)
+                        it.copy(
+                            number = base + lastDigit,
+                            normalizedNumber = base + lastDigit
+                        )
+                    }.toMutableList()
+
+                    // 🔹 Emails (optional tweak)
+                    emails = contact.emails.map {
+                        it.copy(address = "${round}_${it.address}")
+                    }.toMutableList()
+                }
+
+                result.add(newContact)
+            }
+        }
+
+        Log.d("TEST", "Dummy RAW contacts generated: ${result.size}")
+        return result
+    }
+
+
 }
 
 
@@ -1031,8 +1085,6 @@ object ContactHelperOLD {
 
     )
     //endregion
-
-
 
 
 
