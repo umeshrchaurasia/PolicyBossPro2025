@@ -16,15 +16,16 @@ import com.policyboss.demoandroidapp.Utility.ExtensionFun.applySystemBarInsetsPa
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.analytics.WebEngageAnalytics
 import com.policyboss.policybosspro.databinding.ActivityKnowledgeGuruBinding
+import com.policyboss.policybosspro.databinding.ActivitySalesShareBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.webengage.sdk.android.WebEngage
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class KnowledgeGuruActivity : BaseActivity(), OnClickListener {
+class KnowledgeGuruActivity : BaseActivity<ActivityKnowledgeGuruBinding>(), OnClickListener {
 
-    private lateinit var binding: ActivityKnowledgeGuruBinding
+    //private lateinit var binding: ActivityKnowledgeGuruBinding
 
     @Inject
     lateinit var prefsManager: PolicyBossPrefsManager
@@ -95,6 +96,9 @@ class KnowledgeGuruActivity : BaseActivity(), OnClickListener {
         binding.includeKnowledgeGuru.insurance.setOnClickListener(this)
 
     }
+
+    override fun getViewBinding() = ActivityKnowledgeGuruBinding.inflate(layoutInflater)
+
 
 
     override fun onStart() {

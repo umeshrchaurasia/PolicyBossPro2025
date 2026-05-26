@@ -13,6 +13,7 @@ object Constant {
     const val token = "1234567890"
     const val TAG = "POLICYBOSS"
 
+    const val WEB_LOGIN_MSG= "WEB_LOGIN_MESSAGE"
     const val enable_pro_signupurl	=	"https://www.policyboss.com/posp/registration?v=240709"
     const val enable_pro_pospurl	=	"https://www.policyboss.com/posp-form?product_id=1&ClientID=2&v=20231102"
 
@@ -22,6 +23,9 @@ object Constant {
     //   public static String URL = "https://qa.mgfm.in";
     //UAT
     //public static String URL = "https://uat.mgfm.in";
+
+    const val SECRET_KEY =	 "SECRET-HZ07QRWY-JIBT-XRMQ-ZP95-J0RWP3DYRACW"
+    const val CLIENT_KEY =	"CLIENT-CNTP6NYE-CU9N-DUZW-CSPI-SH1IS4DOVHB9"
 
 
     val URL : String = "URL"

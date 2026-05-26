@@ -22,6 +22,7 @@ import com.policyboss.policybosspro.core.response.salesMaterial.CompanyEntity
 import com.policyboss.policybosspro.core.response.salesMaterial.SalesMateriaProdEntity
 import com.policyboss.policybosspro.core.viewModel.homeVM.HomeViewModel
 import com.policyboss.policybosspro.core.viewModel.salesMaterialVM.SalesMaterialViewNodel
+import com.policyboss.policybosspro.databinding.ActivitySalesDetailBinding
 
 import com.policyboss.policybosspro.databinding.ActivitySalesMaterialBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
@@ -33,9 +34,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SalesMaterialActivity : BaseActivity() {
+class SalesMaterialActivity : BaseActivity<ActivitySalesMaterialBinding>() {
 
-    private lateinit var binding: ActivitySalesMaterialBinding
+   // private lateinit var binding: ActivitySalesMaterialBinding
     private lateinit var salesMaterialAdapter: SalesMaterialAdapter
 
     @Inject
@@ -53,6 +54,8 @@ class SalesMaterialActivity : BaseActivity() {
         weAnalytics.screenNavigated("SalesMaterial Screen")
     }
 
+    override fun getViewBinding() = ActivitySalesMaterialBinding.inflate(layoutInflater)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -60,8 +63,8 @@ class SalesMaterialActivity : BaseActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.statusBarColor = Color.TRANSPARENT
 
-        binding = ActivitySalesMaterialBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+//        binding = ActivitySalesMaterialBinding.inflate(layoutInflater)
+//        setContentView(binding.root)
 
       //  binding.root.applySystemBarInsetsPadding()
         // Apply insets properly

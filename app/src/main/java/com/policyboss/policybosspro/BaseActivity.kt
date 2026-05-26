@@ -24,29 +24,47 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.viewbinding.ViewBinding
 import com.policyboss.policybosspro.databinding.LayoutCommonWebviewPopupBinding
+import com.policyboss.policybosspro.databinding.NetworkErrorLayoutBinding
 import com.policyboss.policybosspro.databinding.ProgressdialogLoadingBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utility.Utility
+import com.policyboss.policybosspro.utils.networkManager.ConnectivityObserver
+
+import com.policyboss.policybosspro.utils.networkManager.NetworkConnectivityObserver
+import com.policyboss.policybosspro.view.noNetwork.NoInternetDialogFragment
+
 import com.policyboss.policybosspro.view.others.incomePotential.IncomePotentialActivity
 
 import com.policyboss.policybosspro.webview.CommonWebViewActivity
 import java.util.regex.Pattern
-import javax.inject.Inject
 
 import com.policyboss.policybosspro.view.syncContact.ui.WelcomeSyncContactActivityKotlin
-import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
 
-open class BaseActivity() : AppCompatActivity() {
+abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
 
-    private lateinit var dialog: Dialog
-    private var dialogNoInterNet: AlertDialog? = null
+
+    private lateinit var connectivityObserver: ConnectivityObserver
+    private var progressDialog: Dialog? = null
+    private var progressBinding: ProgressdialogLoadingBinding? = null
+
+    lateinit var binding: VB
 
     private lateinit var webviewDialog: Dialog
     private lateinit var webviewDialogMarketing: Dialog
+
 
 
    // private var netWorkErrorLayoutBinding: NetworkErrorLayoutBinding? = null
@@ -61,45 +79,105 @@ open class BaseActivity() : AppCompatActivity() {
                 "[a-zA-Z0-9][a-zA-Z0-9\\-]{0,25}" +
                 ")+"
     )
+
+    abstract fun getViewBinding(): VB
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_base)
+      //  setContentView(R.layout.activity_base)
+
+        // 1. Initialize binding FIRST
+        binding = getViewBinding() // Initialize the generic binding
+
+        // 2. Set the content view
+        setContentView(binding.root)
+
+        //hide keyboard whenever activity launched.
+        this.window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+
+      // 4. Initialize Network Dialog Manager
+        // NOTE: You are using ConnectivityObserver here, which is different from
+        // the NetworkDialogManager we built earlier.
+        // If you are using the NetworkMonitor singleton we created, use NetworkDialogManager.
+        connectivityObserver = NetworkConnectivityObserver(applicationContext)
+
+        observeNetwork()
+    }
+
+
+    private fun observeNetwork() {
+
+        lifecycleScope.launch {
+
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+
+                connectivityObserver.observe()
+                    .collectLatest { status ->
+
+                        when (status) {
+
+                            ConnectivityObserver.Status.Available -> {
+                                hideNoInternetDialog()
+                            }
+
+                            ConnectivityObserver.Status.Lost,
+                            ConnectivityObserver.Status.Unavailable -> {
+                                showNoInternetDialog()
+                            }
+
+                            ConnectivityObserver.Status.Losing -> {
+                                Unit
+                            }
+                        }
+                    }
+            }
+        }
     }
 
     //region progress dialog
 
     open fun displayLoadingWithText(
-        text: String? = "Loading...",
+        text: String = "Loading...",
+        cancelable: Boolean = false,
+    ) {
 
-        cancelable: Boolean? = false,
-    ) { // function -- context(parent (reference))
-
-        var loadingLayout: ProgressdialogLoadingBinding? = null
         try {
-            if (!this::dialog.isInitialized) {
-                dialog = Dialog(this@BaseActivity)
-               dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-                if (dialog.window != null) {
 
-                    dialog.window!!.setBackgroundDrawable(ColorDrawable(0))
+            // Initialize dialog once
+            if (progressDialog == null) {
 
+                progressDialog = Dialog(this).apply {
+
+                    requestWindowFeature(
+                        Window.FEATURE_NO_TITLE
+                    )
+
+                    window?.setBackgroundDrawable(
+                        ColorDrawable(Color.TRANSPARENT)
+                    )
+
+                    progressBinding =
+                        ProgressdialogLoadingBinding.inflate(
+                            layoutInflater
+                        )
+
+                    setContentView(progressBinding!!.root)
                 }
-                loadingLayout = ProgressdialogLoadingBinding.inflate(layoutInflater)
-                dialog.setContentView(loadingLayout.root)
-                dialog.setCancelable(cancelable ?: false)
-
             }
 
-            loadingLayout?.txtMessage?.text = text
+            // Update loading text
+            progressBinding?.txtMessage?.text = text
 
+            progressDialog?.setCancelable(cancelable)
 
-            //hide keyboard
-            //view.context.hideKeyboard(view)
+            // Show dialog safely
+            if (
+                progressDialog?.isShowing == false &&
+                !isFinishing &&
+                !isDestroyed
+            ) {
 
-            dialog.let {
-                if (!it.isShowing) {
-                    it.show()
-                }
+                progressDialog?.show()
             }
 
         } catch (e: Exception) {
@@ -108,13 +186,16 @@ open class BaseActivity() : AppCompatActivity() {
     }
 
     open fun hideLoading() {
+
         try {
-            if (this::dialog.isInitialized && dialog.isShowing) {
-                dialog.dismiss()
+            if (progressDialog?.isShowing == true) {
+                progressDialog?.dismiss()
             }
         } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
+
 
     //endregion
 
@@ -159,6 +240,48 @@ open class BaseActivity() : AppCompatActivity() {
 
     //endregion
 
+
+
+
+    private fun showNoInternetDialog() {
+
+
+        val tag = NoInternetDialogFragment.TAG
+
+        val fragment =
+            supportFragmentManager.findFragmentByTag(tag)
+
+        if (
+            fragment == null &&
+            !supportFragmentManager.isStateSaved
+        ) {
+
+            NoInternetDialogFragment()
+                .show(
+                    supportFragmentManager,
+                    tag
+                )
+        }
+    }
+
+    private fun hideNoInternetDialog() {
+
+        val fragment =
+            supportFragmentManager.findFragmentByTag(
+                NoInternetDialogFragment.TAG
+            ) as? DialogFragment
+
+        fragment?.dismissAllowingStateLoss()
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        hideNoInternetDialog()
+        hideLoading() // Ensure dialog is dismissed when activity dies
+        progressDialog = null
+        progressBinding = null
+    }
 
     //region Features: Send Sms,Send Mail, Dialer
     fun sendSms(mobNumber: String) {

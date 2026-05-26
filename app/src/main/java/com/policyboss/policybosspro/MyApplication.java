@@ -18,6 +18,7 @@ import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.messaging.FirebaseMessaging;
 
 import com.policyboss.policybosspro.analytics.AnalyticsTrackers;
+
 import com.webengage.sdk.android.WebEngage;
 import com.webengage.sdk.android.WebEngageActivityLifeCycleCallbacks;
 import com.webengage.sdk.android.WebEngageConfig;
@@ -49,7 +50,6 @@ public class MyApplication extends Application {
         FirebaseApp.initializeApp(this);
         super.onCreate();
      //   Fabric.with(this, new Crashlytics());       // temp 05 commented
-
 
 
         //region google analytics Initialization

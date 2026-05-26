@@ -48,13 +48,18 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 
 
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager;
 import com.policyboss.policybosspro.utility.Utility;
 import com.policyboss.policybosspro.utils.DBPersistanceController;
+import com.policyboss.policybosspro.utils.networkManager.javaBase.JavaConnectivityObserver;
+import com.policyboss.policybosspro.utils.networkManager.javaBase.JavaNetworkConnectivityObserver;
 import com.policyboss.policybosspro.view.login.LoginActivity;
 
+import com.policyboss.policybosspro.view.noNetwork.NoInternetDialogFragment;
 import com.policyboss.policybosspro.view.syncContact.ui.WelcomeSyncContactActivityKotlin;
 import com.policyboss.policybosspro.webview.CommonWebViewActivity;
 
@@ -81,6 +86,9 @@ import com.policyboss.policybosspro.BuildConfig;
 
 public class BaseJavaActivity extends AppCompatActivity {
 
+
+    private JavaConnectivityObserver
+            connectivityObserver;
 
     ProgressDialog dialog;
     int height = 200;
@@ -262,6 +270,144 @@ public class BaseJavaActivity extends AppCompatActivity {
 
         }
 
+    }
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        startNetworkObserver();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        stopNetworkObserver();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        hideNoInternetDialog();
+    }
+    // =========================================================
+    // START OBSERVER
+    // =========================================================
+
+    private void startNetworkObserver() {
+
+        connectivityObserver =
+                new JavaNetworkConnectivityObserver(
+                        getApplicationContext()
+                );
+
+        connectivityObserver.startObserving(
+                status -> {
+
+                    switch (status) {
+
+                        case Available:
+
+                            hideNoInternetDialog();
+
+                            onInternetAvailable();
+
+                            break;
+
+                        case Losing:
+
+                            onInternetLosing();
+
+                            break;
+
+                        case Lost:
+                        case Unavailable:
+
+                            showNoInternetDialog();
+
+                            onInternetLost();
+
+                            break;
+                    }
+                }
+        );
+    }
+
+    // =========================================================
+    // STOP OBSERVER
+    // =========================================================
+
+    private void stopNetworkObserver() {
+
+        if (connectivityObserver != null) {
+
+            connectivityObserver.stopObserving();
+        }
+    }
+    // =========================================================
+    // CALLBACKS
+    // =========================================================
+
+    protected void onInternetAvailable() {
+
+    }
+
+    protected void onInternetLost() {
+
+    }
+
+    protected void onInternetLosing() {
+
+    }
+
+    // =========================================================
+    // SHOW DIALOG
+    // =========================================================
+
+    private void showNoInternetDialog() {
+
+        String tag =
+                NoInternetDialogFragment.TAG;
+
+        Fragment fragment =
+                getSupportFragmentManager()
+                        .findFragmentByTag(tag);
+
+        if (
+                fragment == null
+                        &&
+                        !getSupportFragmentManager()
+                                .isStateSaved()
+        ) {
+
+            new NoInternetDialogFragment()
+                    .show(
+                            getSupportFragmentManager(),
+                            tag
+                    );
+        }
+    }
+
+    // =========================================================
+    // HIDE DIALOG
+    // =========================================================
+
+    private void hideNoInternetDialog() {
+
+        Fragment fragment =
+                getSupportFragmentManager()
+                        .findFragmentByTag(
+                                NoInternetDialogFragment.TAG
+                        );
+
+        if (fragment instanceof DialogFragment) {
+
+            ((DialogFragment) fragment)
+                    .dismissAllowingStateLoss();
+        }
     }
 
 

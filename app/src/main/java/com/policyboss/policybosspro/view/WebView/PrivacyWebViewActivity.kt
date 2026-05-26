@@ -17,12 +17,13 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.databinding.ActivityPrivacyWebViewBinding
+import com.policyboss.policybosspro.databinding.ActivitySalesDetailBinding
 import com.policyboss.policybosspro.utils.NetworkUtils
 import com.webengage.sdk.android.WebEngage
 
-class PrivacyWebViewActivity : BaseActivity() {
+class PrivacyWebViewActivity : BaseActivity<ActivityPrivacyWebViewBinding>() {
 
-    private lateinit var binding: ActivityPrivacyWebViewBinding
+   // private lateinit var binding: ActivityPrivacyWebViewBinding
     private lateinit var countDownTimer: CountDownTimer
     private var url: String = ""
     private var name: String = ""
@@ -31,10 +32,13 @@ class PrivacyWebViewActivity : BaseActivity() {
         var isActive: Boolean = false
     }
 
+
+    override fun getViewBinding() = ActivityPrivacyWebViewBinding.inflate(layoutInflater)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityPrivacyWebViewBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+//        binding = ActivityPrivacyWebViewBinding.inflate(layoutInflater)
+//        setContentView(binding.root)
 
         applyInsets()
 

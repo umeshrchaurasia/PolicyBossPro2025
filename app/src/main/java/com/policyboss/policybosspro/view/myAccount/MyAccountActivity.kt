@@ -39,6 +39,7 @@ import com.policyboss.policybosspro.core.APIState
 import com.policyboss.policybosspro.core.response.profile.AccountDtlEntity
 import com.policyboss.policybosspro.core.viewModel.profile.ProfileViewModel
 import com.policyboss.policybosspro.databinding.ActivityMyAccountBinding
+import com.policyboss.policybosspro.databinding.ActivitySalesShareBinding
 import com.policyboss.policybosspro.databinding.ContentMyaccountBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utility.Utility
@@ -56,10 +57,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class MyAccountActivity : BaseActivity() , View.OnClickListener{
+class MyAccountActivity : BaseActivity<ActivityMyAccountBinding>(), View.OnClickListener{
 
     //region Decleration
-    private lateinit var binding: ActivityMyAccountBinding
+   // private lateinit var binding: ActivityMyAccountBinding
 
     // Initialize contentBinding for the included layout
     private lateinit var includedBinding: ContentMyaccountBinding // For the included layout
@@ -129,6 +130,7 @@ class MyAccountActivity : BaseActivity() , View.OnClickListener{
 
 
 
+    override fun getViewBinding() = ActivityMyAccountBinding.inflate(layoutInflater)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

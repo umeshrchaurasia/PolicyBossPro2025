@@ -1,17 +1,17 @@
 package com.policyboss.policybosspro.core.repository.homeRepository
 
 import com.policyboss.policybosspro.core.api.poilcyBossProHomeApi
-import com.policyboss.policybosspro.core.response.home.ProductURLShareResponse
-import com.policyboss.policybosspro.core.response.home.UsersignupResponse
+import com.policyboss.policybosspro.core.requestbuilder.qrScanner.QRCodePRERequest
+import com.policyboss.policybosspro.core.requestbuilder.qrScanner.QRCodeRequest
 import com.policyboss.policybosspro.core.response.horizonResponse.horizonSyncDetails.HorizonsyncDetailsResponse
 import com.policyboss.policybosspro.core.response.master.dynamicDashboard.MenuMasterResponse
 import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantResponse
 import com.policyboss.policybosspro.core.response.notification.NotificationUpdateResponse
+import com.policyboss.policybosspro.core.response.qrScanner.QRCodeResponse
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import retrofit2.Response
-import retrofit2.http.Url
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -93,4 +93,28 @@ class HomeRepository @Inject constructor(
 
 
 
+    suspend fun verifyQRScannerQR(
+        request: QRCodePRERequest
+    ): Response<QRCodeResponse> {
+
+        return apiService.verifyQRScanner(
+            request = request
+        )
+    }
+
+    suspend fun verifyQRLogin(
+        token: String,
+        request: QRCodeRequest
+    ) = flow {
+
+        val response = apiService.verifyQRLogin(
+
+            token =  token,
+
+            request = request
+        )
+
+        emit(response)
+
+    }.flowOn(Dispatchers.IO)
 }

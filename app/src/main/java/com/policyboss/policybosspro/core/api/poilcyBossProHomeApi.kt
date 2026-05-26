@@ -1,5 +1,7 @@
 package com.policyboss.policybosspro.core.api
 
+import com.policyboss.policybosspro.core.requestbuilder.qrScanner.QRCodePRERequest
+import com.policyboss.policybosspro.core.requestbuilder.qrScanner.QRCodeRequest
 import com.policyboss.policybosspro.core.response.authToken.OauthTokenResponse
 import com.policyboss.policybosspro.core.response.home.ProductURLShareResponse
 import com.policyboss.policybosspro.core.response.home.UserCallingResponse
@@ -7,6 +9,7 @@ import com.policyboss.policybosspro.core.response.horizonResponse.horizonSyncDet
 import com.policyboss.policybosspro.core.response.master.dynamicDashboard.MenuMasterResponse
 import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantResponse
 import com.policyboss.policybosspro.core.response.notification.NotificationUpdateResponse
+import com.policyboss.policybosspro.core.response.qrScanner.QRCodeResponse
 import com.policyboss.policybosspro.core.response.salesMaterial.SalesMaterialProductDetailsResponse
 
 import com.policyboss.policybosspro.core.response.salesMaterial.SalesMaterialResponse
@@ -78,6 +81,29 @@ interface poilcyBossProHomeApi {
     @POST("/auth_tokens/generate_web_auth_token")
     suspend fun getOauthToken( @Body body : HashMap<String,String> ): Response<OauthTokenResponse>
 
+
+    /****************************************************************************************
+     *   QRScanner API
+     *************************************************************************************/
+
+    @POST("logins/token-status")
+    suspend fun verifyQRScanner(
+
+        @Body
+        request: QRCodePRERequest
+
+    ): Response<QRCodeResponse>
+
+    @POST("logins/token-status/{token}")
+    suspend fun verifyQRLogin(
+
+        @Path("token")
+        token: String,
+
+        @Body
+        request: QRCodeRequest
+
+    ): Response<QRCodeResponse>
 
 
 }

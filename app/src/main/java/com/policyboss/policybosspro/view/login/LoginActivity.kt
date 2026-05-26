@@ -37,6 +37,7 @@ import com.policyboss.policybosspro.analytics.WebEngageAnalytics
 import com.policyboss.policybosspro.broadcast.SMSReaderBroadCastReceiver
 import com.policyboss.policybosspro.core.APIState
 import com.policyboss.policybosspro.core.viewModel.loginVM.LoginViewModel
+import com.policyboss.policybosspro.databinding.ActivityHomeBinding
 import com.policyboss.policybosspro.databinding.ActivityLoginBinding
 import com.policyboss.policybosspro.databinding.LayoutLoginViaotpBinding
 import com.policyboss.policybosspro.databinding.LayoutLoginViapasswordBinding
@@ -61,9 +62,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class LoginActivity : BaseActivity(), View.OnClickListener {
+class LoginActivity : BaseActivity<ActivityLoginBinding>(), View.OnClickListener {
 
-    private lateinit var binding: ActivityLoginBinding
 
     //region Declaration
 
@@ -114,13 +114,15 @@ class LoginActivity : BaseActivity(), View.OnClickListener {
     private var intentFilter: IntentFilter? = null
     private var smsReceiver: SMSReaderBroadCastReceiver? = null
 
+    override fun getViewBinding() = ActivityLoginBinding.inflate(layoutInflater)
+
 
     //endregion
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityLoginBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+       // binding = ActivityLoginBinding.inflate(layoutInflater)
+     //   setContentView(binding.root)
 
         val appSignatureHashHelper = AppSignatureHashHelper(this)
         Log.d(Constant.TAG, "HashKey: " + appSignatureHashHelper.appSignatures[0])

@@ -56,7 +56,7 @@ import kotlinx.coroutines.withContext
 
 
 @AndroidEntryPoint
-open class WelcomeSyncContactActivityKotlin : BaseActivity() , View.OnClickListener {
+open class WelcomeSyncContactActivityKotlin : AppCompatActivity() , View.OnClickListener {
 
     lateinit var binding: ActivityWelcomeSyncContactKotlinBinding
 

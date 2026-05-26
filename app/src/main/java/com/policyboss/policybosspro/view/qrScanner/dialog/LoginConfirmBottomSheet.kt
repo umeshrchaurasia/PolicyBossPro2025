@@ -81,8 +81,8 @@ class LoginConfirmBottomSheet : BottomSheetDialogFragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.tvLocation.text = "$location"
-        binding.tvIp.text = "$ip"
-        binding.tvDevice.text = " $device"
+        binding.tvIpAddress.text = "$ip"
+        binding.tvWebDevice.text = " $device"
 
         binding.btnCancel.setOnClickListener {
             onCancelClick?.invoke()

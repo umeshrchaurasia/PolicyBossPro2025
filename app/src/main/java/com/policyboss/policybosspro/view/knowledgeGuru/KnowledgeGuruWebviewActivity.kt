@@ -28,6 +28,7 @@ import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.databinding.ActivityKnowledgeGuruBinding
 import com.policyboss.policybosspro.databinding.ActivityKnowledgeGuruWebviewBinding
+import com.policyboss.policybosspro.databinding.ActivitySalesDetailBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utils.Constant
 import com.policyboss.policybosspro.utils.NetworkUtils
@@ -37,9 +38,9 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class KnowledgeGuruWebviewActivity : BaseActivity() {
+class KnowledgeGuruWebviewActivity : BaseActivity<ActivityKnowledgeGuruWebviewBinding>() {
 
-    private lateinit var binding: ActivityKnowledgeGuruWebviewBinding
+   // private lateinit var binding: ActivityKnowledgeGuruWebviewBinding
     private lateinit var backPressedCallback: OnBackPressedCallback
 
     @Inject
@@ -52,14 +53,16 @@ class KnowledgeGuruWebviewActivity : BaseActivity() {
 
     private var countDownTimer: CountDownTimer? = null
 
+    override fun getViewBinding() = ActivityKnowledgeGuruWebviewBinding.inflate(layoutInflater)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // Opt into edge-to-edge drawing
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        binding = ActivityKnowledgeGuruWebviewBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+      //  binding = ActivityKnowledgeGuruWebviewBinding.inflate(layoutInflater)
+      //  setContentView(binding.root)
 
         applyInsets()
        // binding.root.applySystemBarInsetsPadding()

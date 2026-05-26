@@ -17,16 +17,16 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class ChangePaswordActivity : BaseActivity(), OnClickListener {
+class ChangePaswordActivity : BaseActivity<ActivityChangePaswordBinding>(), OnClickListener {
 
-    private lateinit var binding: ActivityChangePaswordBinding
+   // private lateinit var binding: ActivityChangePaswordBinding
 
     @Inject
     lateinit var prefsManager: PolicyBossPrefsManager
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityChangePaswordBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+//        binding = ActivityChangePaswordBinding.inflate(layoutInflater)
+//        setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
         supportActionBar!!.apply {
@@ -49,6 +49,8 @@ class ChangePaswordActivity : BaseActivity(), OnClickListener {
         binding.btnChangePassword.setOnClickListener(this)
 
     }
+
+    override fun getViewBinding() = ActivityChangePaswordBinding.inflate(layoutInflater)
 
     override fun onStart() {
         super.onStart()

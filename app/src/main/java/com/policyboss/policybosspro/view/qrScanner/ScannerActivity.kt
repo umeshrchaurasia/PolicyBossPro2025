@@ -1,15 +1,12 @@
 package com.policyboss.policybosspro.view.qrScanner
 
 
-import android.Manifest
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
+import androidx.activity.viewModels
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
@@ -17,22 +14,24 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
-import com.policyboss.policybosspro.R
+import com.policyboss.policybosspro.BaseActivity
+import com.policyboss.policybosspro.core.APIState
+import com.policyboss.policybosspro.core.viewModel.homeVM.HomeViewModel
+import com.policyboss.policybosspro.databinding.ActivitySalesDetailBinding
 import com.policyboss.policybosspro.databinding.ActivityScannerBinding
 import com.policyboss.policybosspro.utils.AppPermission.AppPermissionManager
 import com.policyboss.policybosspro.utils.AppPermission.PermissionHandler
+import com.policyboss.policybosspro.utils.Constant
 import com.policyboss.policybosspro.utils.ExtensionFun.dp
 import com.policyboss.policybosspro.utils.showToast
 import com.policyboss.policybosspro.view.qrScanner.dialog.InvalidQrBottomSheet
 import com.policyboss.policybosspro.view.qrScanner.dialog.LoginConfirmBottomSheet
 import com.policyboss.policybosspro.view.qrScanner.helper.QRAnalyzer
-import kotlinx.coroutines.Dispatchers
+import com.policyboss.policybosspro.view.qrScanner.model.QRParser
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
@@ -140,13 +139,41 @@ BottomSheet
  */
 
 
+/*
 
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+********************* Flow of App  *********************
 
-class ScannerActivity : AppCompatActivity() {
+    Scan QR
+       ↓
+    Open Confirm BottomSheet
+       ↓
+    User Click Confirm
+       ↓
+    Call API
+       ↓
+    Show loader INSIDE ScannerActivity
+       ↓
+    API Success
+       ↓
+    Close BottomSheet
+       ↓
+    setResult(RESULT_OK)
+       ↓
+    finish()
+       ↓
+    HomeActivity receives callback
+       ↓
+    Show Snackbar
 
-    private lateinit var binding: ActivityScannerBinding
+ */
+
+@AndroidEntryPoint
+class ScannerActivity : BaseActivity<ActivityScannerBinding>() {
+
+    //private val homeViewModel: HomeViewModel by viewModels()
+    private val homeViewModel by viewModels<HomeViewModel>()
+
+   // private lateinit var binding: ActivityScannerBinding
 
     private lateinit var cameraExecutor: ExecutorService
 
@@ -175,13 +202,15 @@ class ScannerActivity : AppCompatActivity() {
             }
         }
 
+    override fun getViewBinding() = ActivityScannerBinding.inflate(layoutInflater)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setupEdgeToEdge()
 
-        binding = ActivityScannerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+//        binding = ActivityScannerBinding.inflate(layoutInflater)
+//        setContentView(binding.root)
 
         applyStatusBarInsets()
 
@@ -190,6 +219,9 @@ class ScannerActivity : AppCompatActivity() {
         permissionHandler = PermissionHandler(this)
 
         checkCameraPermission()
+
+        //Handle API Response
+        observerResponse()
 
         binding.btnClose.setOnClickListener{
 
@@ -315,6 +347,8 @@ class ScannerActivity : AppCompatActivity() {
         }
     }
 
+
+
     /** Fake API call */
     private fun demoApiCall() {
 
@@ -325,7 +359,7 @@ class ScannerActivity : AppCompatActivity() {
             getConfirmSheet()?.dismiss()
 
             val intent = Intent().apply {
-                putExtra("login_msg", "Success Data..")
+                putExtra(Constant.WEB_LOGIN_MSG, "Success Data..")
             }
 
             setResult(RESULT_OK, intent)
@@ -334,51 +368,74 @@ class ScannerActivity : AppCompatActivity() {
         }
     }
 
+
+
+
     /** Show valid QR confirmation sheet */
-    /**
-     * SUCCESS PATH: Confirm QR and notify HomeActivity
-     */
+//    /**
+//     * SUCCESS PATH: Confirm QR and notify HomeActivity
+//     */
     private fun showValidQrSheet(result: String) {
 
-        // 1️⃣ UI-level protection (race condition)
-        //2️⃣ FragmentManager protection
+        if (isSheetShowing.get() || getConfirmSheet() != null)
+            return
 
-        if (isSheetShowing.get() || getConfirmSheet() != null) return
+        val qrData = QRParser.parse(result)
 
-         isSheetShowing.set(true)
+        if (qrData == null) {
+
+            showInvalidQrSheet()
+            return
+        }
+        homeViewModel.verifyQRScannerQR(
+            qrData.token
+        )
+        Log.d(Constant.TAG,"Token ${ qrData.token}" )
+        Log.d(Constant.TAG,"IP  ${qrData.ipAddress}" )
+        Log.d(Constant.TAG,"WebAddress ${qrData.webDevice}")
+
+        isSheetShowing.set(true)
 
         val sheet = LoginConfirmBottomSheet.newInstance(
+
             location = "Mumbai, IN",
-            ip = "49.248.9.46",
-            device = result
+
+            ip = qrData.ipAddress,
+
+            device = qrData.webDevice
+
         ).apply {
 
-            // FIX: Make non-cancelable via touch/backpress
             isCancelable = false
 
             onConfirmClick = {
 
-                demoApiCall()
+                homeViewModel.verifyQRLogin(
+                    qrData.token
+                )
             }
         }
 
-
-
         sheet.onCancelClick = {
-           // isQrHandled.set(false)
-           // qrAnalyzer?.resume()
 
             isSheetShowing.set(false)
 
             val intent = Intent().apply {
-                putExtra("login_msg", "Login cancelled")
+
+                putExtra(
+                    Constant.WEB_LOGIN_MSG,
+                    "Login cancelled"
+                )
             }
 
-            setResult(RESULT_CANCELED, intent)
+            setResult(
+                RESULT_CANCELED,
+                intent
+            )
 
             sheet.dismissAllowingStateLoss()
 
-            finish() // ✅ EXIT scanner
+            finish()
         }
 
         sheet.show(
@@ -450,6 +507,82 @@ class ScannerActivity : AppCompatActivity() {
 //            isSheetShowing.set(false)
 //        }
     }
+
+    //region Observer
+
+    private fun observerResponse(){
+
+
+        lifecycleScope.launch {
+            homeViewModel.qrLoginStateFlow.collect{  event->
+
+                event.contentIfNotHandled?.let {
+
+                    when (it) {
+
+                        is APIState.Loading -> {
+                            displayLoadingWithText()
+                        }
+                        is APIState.Empty -> {
+
+                            hideLoading()
+                        }
+
+                        is APIState.Failure -> {
+                            hideLoading()
+
+
+                            val intent = Intent().apply {
+
+                                putExtra(
+                                    Constant.WEB_LOGIN_MSG,
+                                    it.data?.Msg ?: "Login Failed!!"
+                                )
+                            }
+
+                            setResult(
+                                RESULT_OK,
+                                intent
+                            )
+
+                            finish()
+
+
+
+                        }
+
+
+
+                        is APIState.Success -> {
+                            hideLoading()
+
+                            getConfirmSheet()?.dismissAllowingStateLoss()
+
+                            val intent = Intent().apply {
+
+                                putExtra(
+                                    Constant.WEB_LOGIN_MSG,
+                                    it.data?.Msg ?: "Login successful"
+                                )
+                            }
+
+                            setResult(
+                                RESULT_OK,
+                                intent
+                            )
+
+                            finish()
+
+                        }
+
+
+                    }
+                }
+
+            }
+        }
+    }
+    //endregion
 
     override fun onResume() {
         super.onResume()

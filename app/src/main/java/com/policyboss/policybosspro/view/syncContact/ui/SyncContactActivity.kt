@@ -43,6 +43,7 @@ import com.policyboss.policybosspro.core.APIState
 import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantEntity
 import com.policyboss.policybosspro.core.viewModel.homeVM.HomeViewModel
 import com.policyboss.policybosspro.core.viewModel.loginVM.LoginViewModel
+import com.policyboss.policybosspro.databinding.ActivitySalesShareBinding
 import com.policyboss.policybosspro.databinding.ActivitySyncContactBinding
 import com.policyboss.policybosspro.databinding.DialogLoadingBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
@@ -66,9 +67,9 @@ import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
-class SyncContactActivity : BaseActivity() {
+class SyncContactActivity : BaseActivity<ActivitySyncContactBinding>() {
 
-    lateinit var binding: ActivitySyncContactBinding
+   // lateinit var binding: ActivitySyncContactBinding
 
 
     private lateinit var dialogAnim : Dialog
@@ -105,6 +106,9 @@ class SyncContactActivity : BaseActivity() {
     @Inject
     lateinit var prefManager:PolicyBossPrefsManager
 
+    override fun getViewBinding() = ActivitySyncContactBinding.inflate(layoutInflater)
+
+
     override fun onStart() {
         super.onStart()
         val weAnalytics = WebEngage.get().analytics()
@@ -116,8 +120,8 @@ class SyncContactActivity : BaseActivity() {
         // Opt into edge-to-edge drawing
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        binding = ActivitySyncContactBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+//        binding = ActivitySyncContactBinding.inflate(layoutInflater)
+//        setContentView(binding.root)
 
         applyInsets()
 

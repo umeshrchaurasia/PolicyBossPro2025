@@ -113,15 +113,16 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
+import com.policyboss.policybosspro.utils.ExtensionFun.showCustomSnackbar
 import com.policyboss.policybosspro.view.qrScanner.ScannerActivity
 
 
 @AndroidEntryPoint
-class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedListener, OnClickListener {
+class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavigationItemSelectedListener, OnClickListener {
 
 
     //region Declare variables
-    private lateinit var binding: ActivityHomeBinding
+    //private lateinit var binding: ActivityHomeBinding
     private lateinit var dashboardAdapter: DashboardRowAdapter
     private lateinit var shareProdDialog: AlertDialog
     private var mySyncPopUpAlert: AlertDialog? = null
@@ -185,13 +186,18 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
     ){ result ->
 
         if (result.resultCode == RESULT_OK) {
-            val msg = result.data?.getStringExtra("login_msg")
+            val msg = result.data?.getStringExtra(Constant.WEB_LOGIN_MSG)
 
             msg?.let {
 
                 lifecycleScope.launch {
 
-                    showSnackbar(binding.root,msg)
+                   // showSnackbar(binding.root,msg)
+                    showCustomSnackbar(
+                        binding.root,
+                        msg,
+                        isSuccess = true
+                    )
                 }
 
 
@@ -201,6 +207,9 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
 
      //endregion
 
+
+    override fun getViewBinding() = ActivityHomeBinding.inflate(layoutInflater)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -208,8 +217,8 @@ class HomeActivity : BaseActivity(), NavigationView.OnNavigationItemSelectedList
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.statusBarColor = Color.TRANSPARENT
 
-        binding = ActivityHomeBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+      //  binding = ActivityHomeBinding.inflate(layoutInflater)
+       // setContentView(binding.root)
 
 
 

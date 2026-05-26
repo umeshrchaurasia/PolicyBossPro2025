@@ -21,6 +21,7 @@ import com.policyboss.policybosspro.core.response.salesMaterial.SalesMateriaProd
 import com.policyboss.policybosspro.core.viewModel.contactusVM.ContactUsViewModel
 import com.policyboss.policybosspro.core.viewModel.salesMaterialVM.SalesMaterialViewNodel
 import com.policyboss.policybosspro.databinding.ActivityContactUsBinding
+import com.policyboss.policybosspro.databinding.ActivitySalesDetailBinding
 import com.policyboss.policybosspro.databinding.ActivitySalesMaterialBinding
 import com.policyboss.policybosspro.databinding.ContentContactUsBinding
 import com.policyboss.policybosspro.databinding.ContentNotificationBinding
@@ -34,9 +35,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ContactUsActivity : BaseActivity() {
+class ContactUsActivity : BaseActivity<ActivityContactUsBinding>() {
 
-    private lateinit var binding: ActivityContactUsBinding
+   // private lateinit var binding: ActivityContactUsBinding
 
     // Initialize contentBinding for the included layout
     private lateinit var includedBinding: ContentContactUsBinding// For the included layout
@@ -54,11 +55,13 @@ class ContactUsActivity : BaseActivity() {
     private lateinit var contactUsAdapter: ContactUsAdapter
 
 
+    override fun getViewBinding() = ActivityContactUsBinding.inflate(layoutInflater)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityContactUsBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+//        binding = ActivityContactUsBinding.inflate(layoutInflater)
+//        setContentView(binding.root)
 
         setSupportActionBar(binding.toolbar)
         supportActionBar!!.apply {

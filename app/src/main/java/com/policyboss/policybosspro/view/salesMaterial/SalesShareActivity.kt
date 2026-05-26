@@ -27,6 +27,7 @@ import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.core.response.salesMaterial.DocEntity
 import com.policyboss.policybosspro.core.response.salesMaterial.SalesMateriaProdEntity
 import com.policyboss.policybosspro.core.viewModel.salesMaterialVM.SalesMaterialViewNodel
+import com.policyboss.policybosspro.databinding.ActivityChangePaswordBinding
 import com.policyboss.policybosspro.databinding.ActivitySalesShareBinding
 import com.policyboss.policybosspro.databinding.ContentSalesShareBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
@@ -40,11 +41,11 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class SalesShareActivity :BaseActivity() {
+class SalesShareActivity :BaseActivity<ActivitySalesShareBinding>() {
 
 
     //region Decleration
-    private lateinit var binding: ActivitySalesShareBinding
+   // private lateinit var binding: ActivitySalesShareBinding
 
     // Initialize contentBinding for the included layout
     private lateinit var includedBinding: ContentSalesShareBinding // For the included layout
@@ -70,6 +71,8 @@ class SalesShareActivity :BaseActivity() {
 
     //endregion
 
+    override fun getViewBinding() = ActivitySalesShareBinding.inflate(layoutInflater)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -77,8 +80,8 @@ class SalesShareActivity :BaseActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         //region Toolbar Handling
-        binding = ActivitySalesShareBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+       // binding = ActivitySalesShareBinding.inflate(layoutInflater)
+      //  setContentView(binding.root)
 
 
 

@@ -20,6 +20,7 @@ import com.policyboss.policybosspro.core.APIState
 import com.policyboss.policybosspro.core.response.notification.NotificationEntity
 import com.policyboss.policybosspro.core.viewModel.NotificationVM.NotifyViewModel
 import com.policyboss.policybosspro.databinding.ActivityNotificationBinding
+import com.policyboss.policybosspro.databinding.ActivitySalesShareBinding
 import com.policyboss.policybosspro.databinding.ContentNotificationBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utils.Constant
@@ -30,9 +31,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class NotificationActivity : BaseActivity() {
+class NotificationActivity : BaseActivity<ActivityNotificationBinding>() {
 
-    private lateinit var binding: ActivityNotificationBinding
+   // private lateinit var binding: ActivityNotificationBinding
 
     // Initialize contentBinding for the included layout
     private lateinit var includedBinding: ContentNotificationBinding // For the included layout
@@ -49,14 +50,16 @@ class NotificationActivity : BaseActivity() {
     private lateinit var notificationAdapter: NotificationAdapter
 
 
+    override fun getViewBinding() = ActivityNotificationBinding.inflate(layoutInflater)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        binding = ActivityNotificationBinding.inflate(layoutInflater)
-        //region Toolbar Set
-        setContentView(binding.root)
+//        binding = ActivityNotificationBinding.inflate(layoutInflater)
+//        //region Toolbar Set
+//        setContentView(binding.root)
 
        // binding.root.applySystemBarInsetsPadding()
         applyInsets()

@@ -29,6 +29,7 @@ import com.policyboss.policybosspro.core.viewModel.SalesMaterialType
 
 import com.policyboss.policybosspro.core.viewModel.salesMaterialVM.SalesMaterialViewNodel
 import com.policyboss.policybosspro.databinding.ActivitySalesDetailBinding
+import com.policyboss.policybosspro.databinding.ActivitySalesShareBinding
 import com.policyboss.policybosspro.databinding.ContentSalesDetailBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utils.BitmapUtility
@@ -45,11 +46,11 @@ import javax.inject.Inject
   Note : we used CustomImageView having aspect ratio : 1.5 for displaying Image in GridLayour
  */
 @AndroidEntryPoint
-class SalesDetailActivity : BaseActivity() {
+class SalesDetailActivity : BaseActivity<ActivitySalesDetailBinding>() {
 
 
     //region Decleration
-    private lateinit var binding: ActivitySalesDetailBinding
+    //private lateinit var binding: ActivitySalesDetailBinding
 
     // Initialize contentBinding for the included layout
     private lateinit var includedBinding: ContentSalesDetailBinding // For the included layout
@@ -95,6 +96,7 @@ class SalesDetailActivity : BaseActivity() {
 
     //endregion
 
+    override fun getViewBinding() = ActivitySalesDetailBinding.inflate(layoutInflater)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,9 +104,9 @@ class SalesDetailActivity : BaseActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         window.statusBarColor = Color.TRANSPARENT
 
-        binding = ActivitySalesDetailBinding.inflate(layoutInflater)
+       // binding = ActivitySalesDetailBinding.inflate(layoutInflater)
         //region Toolbar Set
-        setContentView(binding.root)
+      //  setContentView(binding.root)
 
        // binding.root.applySystemBarInsetsPadding()
 

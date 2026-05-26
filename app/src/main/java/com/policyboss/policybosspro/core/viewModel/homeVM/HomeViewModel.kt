@@ -7,11 +7,14 @@ import com.policyboss.policybosspro.core.APIState
 import com.policyboss.policybosspro.core.Event
 import com.policyboss.policybosspro.core.model.homeDashboard.DashboardMultiLangEntity
 import com.policyboss.policybosspro.core.repository.homeRepository.HomeRepository
+import com.policyboss.policybosspro.core.requestbuilder.qrScanner.QRCodePRERequest
+import com.policyboss.policybosspro.core.requestbuilder.qrScanner.QRCodeRequest
 import com.policyboss.policybosspro.core.response.authToken.OauthTokenResponse
 import com.policyboss.policybosspro.core.response.home.ProductURLShareEntity
 import com.policyboss.policybosspro.core.response.home.UserCallingResponse
 import com.policyboss.policybosspro.core.response.master.MasterDataCombine
 import com.policyboss.policybosspro.core.response.master.userConstant.UserConstantResponse
+import com.policyboss.policybosspro.core.response.qrScanner.QRCodeResponse
 import com.policyboss.policybosspro.core.response.salesMaterial.SalesMaterialProductDetailsResponse
 
 import com.policyboss.policybosspro.core.response.salesMaterial.SalesMaterialResponse
@@ -24,6 +27,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -92,6 +97,20 @@ class HomeViewModel @Inject constructor(
 
     //endregion
 
+
+    // =========================================================
+    // QR LOGIN STATE
+    // =========================================================
+
+    private val qrLoginMutableFlow :
+            MutableStateFlow<Event<APIState<QRCodeResponse>>> =
+        MutableStateFlow(
+            Event(APIState.Empty())
+        )
+
+    val qrLoginStateFlow :
+            StateFlow<Event<APIState<QRCodeResponse>>>
+        get() = qrLoginMutableFlow
 
 
 
@@ -164,6 +183,125 @@ class HomeViewModel @Inject constructor(
 
     //endregion
 
+    fun verifyQRScannerQR(
+        token: String
+    ) {
+
+        viewModelScope.launch {
+
+            try {
+
+                val request = QRCodePRERequest(
+
+                    token_id = token,
+
+                    secret_key = Constant.SECRET_KEY,
+
+                    client_key = Constant.CLIENT_KEY,
+
+                    status = "SCANNED",
+
+                    update_by = "token"
+                )
+
+                val response =
+                    homeRepository.verifyQRScannerQR(
+                        request = request
+                    )
+
+                Log.d(
+                    Constant.TAG,
+                    "verifyQRScannerQR Success"
+                )
+
+            } catch (e: Exception) {
+
+                Log.e(
+                    Constant.TAG,
+                    "verifyQRScannerQR Error: ${e.message}"
+                )
+            }
+        }
+    }
+
+    fun verifyQRLogin(
+        token: String
+    ) = viewModelScope.launch {
+
+        val request = QRCodeRequest(
+
+            status = "VERIFIED",
+
+            ss_id = prefManager.getSSID(),
+
+            token_id = token,
+
+            update_by = "token",
+
+            secret_key = Constant.SECRET_KEY,
+
+            client_key = Constant.CLIENT_KEY
+        )
+
+        qrLoginMutableFlow.value =
+            Event(APIState.Loading())
+
+        homeRepository.verifyQRLogin(
+
+            token = token,
+
+            request = request
+
+        ).catch {
+
+            qrLoginMutableFlow.value =
+                Event(
+                    APIState.Failure(
+                        it.message ?: Constant.Fail
+                    )
+                )
+
+        }.collect {
+
+            if (it.isSuccessful) {
+
+                if (
+                    it.body() != null &&
+                    it.body()?.Status.equals(
+                        "SUCCESS",
+                        true
+                    )
+                ) {
+
+                    qrLoginMutableFlow.value =
+                        Event(
+                            APIState.Success(
+                                it.body()
+                            )
+                        )
+
+                } else {
+
+                    qrLoginMutableFlow.value =
+                        Event(
+                            APIState.Failure(
+                                it.body()?.Msg
+                                    ?: Constant.ErrorMessage
+                            )
+                        )
+                }
+
+            } else {
+
+                qrLoginMutableFlow.value =
+                    Event(
+                        APIState.Failure(
+                            it.message()
+                        )
+                    )
+            }
+        }
+    }
 
 
     //regionDynamic List filter Logic : After Api called
