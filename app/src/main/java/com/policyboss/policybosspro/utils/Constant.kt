@@ -110,6 +110,10 @@ object Constant {
     const val   NOTIFICATION_PROGRESS = "NOTIFICATION_PROGRESS"
     const val   NOTIFICATION_MAX = "NOTIFICATION_MAX"
     const val   NOTIFICATION_MESSAGE = "NOTIFICATION_MESSAGE"
+
+    const val   ALL_USER =  "all_users"
+
+
     const val SHARED_KEY_PUSH_NOTIFY = "SHARED_KEY_PUSH_NOTIFY"
 
     const val   PUSH_LOGIN_PAGE = "pushloginPage"

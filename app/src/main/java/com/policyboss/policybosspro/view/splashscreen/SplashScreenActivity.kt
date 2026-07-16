@@ -153,7 +153,9 @@ class SplashScreenActivity : AppCompatActivity() {
             // First fetch token
 
             initAuthReceiver()
-            val token = getToken()
+            getToken()
+
+            subscribeToAllUsers()
 
              handleDeepLink(intent)
 
@@ -249,6 +251,8 @@ class SplashScreenActivity : AppCompatActivity() {
 
        // Fetch the FCM token in the background
        lifecycleScope.launch(Dispatchers.IO) {
+
+           // 1. Existing Logic: Fetch and save the unique device token
            FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
                if (task.isSuccessful) {
                    val token = task.result
@@ -262,9 +266,43 @@ class SplashScreenActivity : AppCompatActivity() {
                    Log.e("FCMToken", "Fetching FCM token failed", task.exception)
                }
            }
+
+
        }
 
    }
+
+
+    private fun subscribeToAllUsers() {
+
+        if (prefManager.isSubscribedToAllUsers()) {
+            Log.d("FCM", "Already subscribed to ${Constant.ALL_USER}")
+            return
+        }
+
+        FirebaseMessaging.getInstance()
+            .subscribeToTopic(Constant.ALL_USER)   // Topic Logic : Here subscribeToTopic all_users
+            .addOnCompleteListener { task ->
+
+                if (task.isSuccessful) {
+
+                    prefManager.setSubscribedToAllUsers(true)
+
+                    Log.d(
+                        "FCM",
+                        "Successfully subscribed to ${Constant.ALL_USER}"
+                    )
+
+                } else {
+
+                    Log.e(
+                        "FCM",
+                        "Topic subscription failed",
+                        task.exception
+                    )
+                }
+            }
+    }
 
     private fun initAuthReceiver(){
 

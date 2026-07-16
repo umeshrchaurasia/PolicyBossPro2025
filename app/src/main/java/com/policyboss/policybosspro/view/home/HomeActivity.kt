@@ -1387,13 +1387,15 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
 
                     prefsManager.clearNotification()
 
-                } else {
-
                 }
             }
             // region User already logged in and app is in foreground/background
             else if (notifyEntity != null) {
                 when (notifyEntity.notifyFlag?.trim()) {
+
+                    "HM" -> {
+
+                    }
                     "NL" -> {
                         val intent = Intent(this, NotificationActivity::class.java)
                         startActivity(intent)
@@ -1420,9 +1422,8 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
                         }
                     }
                 }
-            } else {
-
             }
+
         }
         // endregion
     }
@@ -1440,7 +1441,8 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
             "CB" -> {
                 Utility.loadWebViewUrlInBrowser(this, webURL)
             }
-            else -> {
+
+            "DB" -> {
                 if (webURL.trim().isEmpty() || title.trim().isEmpty()) {
                     return
                 }
@@ -1465,6 +1467,10 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
                         .putExtra("NAME", title)
                         .putExtra("TITLE", title)
                 )
+            }
+
+            else ->{
+
             }
         }
     }

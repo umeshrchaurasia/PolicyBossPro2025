@@ -14,10 +14,12 @@ import android.util.Log
 import androidx.activity.viewModels
 import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.core.model.notification.NotifyEntity
+import com.policyboss.policybosspro.core.repository.loginRepository.LoginRepository
 import com.policyboss.policybosspro.core.repository.notificationRepository.INotificationRepository
 import com.policyboss.policybosspro.core.viewModel.NotificationVM.NotifyViewModel
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
@@ -26,6 +28,9 @@ import com.policyboss.policybosspro.utils.Constant
 import com.policyboss.policybosspro.view.home.HomeActivity
 import com.webengage.sdk.android.WebEngage
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 import java.io.InputStream
 import java.net.HttpURLConnection
@@ -51,6 +56,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     @Inject
     lateinit var prefManager: PolicyBossPrefsManager
+
+    @Inject
+    lateinit var loginRepository: LoginRepository
     @Inject
     lateinit var notificationRepository: INotificationRepository
 
@@ -221,14 +229,89 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         WebEngage.get().setRegistrationID(token)
+
+        prefManager.setToken(token)
+
+        FirebaseMessaging.getInstance().subscribeToTopic(Constant.ALL_USER)
+
+        // Update Horizon only if user is logged in
+        if (prefManager.getSSID().isNotBlank()) {
+            updateNotificationToken(token)
+        }
+    }
+
+    private fun updateNotificationToken(token: String) {
+
+        CoroutineScope(Dispatchers.IO).launch {
+
+            try {
+
+                val body = hashMapOf(
+                    "Ss_Id" to prefManager.getSSID(),
+                    "Device_Id" to prefManager.getDeviceID(),
+                    "Device_Name" to prefManager.getDEVICE_NAME(),
+                    "Token" to token
+                )
+
+                val response =
+                    loginRepository.insert_notification_token(body)
+
+                if (response.isSuccessful &&
+                    response.body()?.Status.equals("SUCCESS", true)
+                ) {
+
+                    Log.d(TAG, "Notification token updated successfully")
+
+                } else {
+
+                    Log.e(TAG, "Failed to update notification token")
+
+                }
+
+            } catch (e: Exception) {
+
+                Log.e(TAG, "Error updating notification token", e)
+            }
+        }
     }
 
     private fun getBitmapFromUrl(imageUrl: String): Bitmap? {
+        if (imageUrl.isBlank()) return null
+
+        var connection: HttpURLConnection? = null
+
+        return try {
+            val url = URL(imageUrl)
+            connection = url.openConnection() as HttpURLConnection
+
+            connection.doInput = true
+            connection.connectTimeout = 10_000
+            connection.readTimeout = 10_000
+            connection.connect()
+
+            connection.inputStream.use { input ->
+                BitmapFactory.decodeStream(input)
+            }
+
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to load notification image", e)
+            null
+        } finally {
+            connection?.disconnect()
+        }
+    }
+
+    private fun getBitmapFromUrlOLD (imageUrl: String): Bitmap? {
         return try {
             if (imageUrl.isBlank()) return null
             val url = URL(imageUrl)
             val connection = url.openConnection() as HttpURLConnection
             connection.doInput = true
+
+            // 🚀 CRITICAL FIX: Add strict timeouts so the FCM thread never freezes
+            connection.connectTimeout = 1000 // 1 seconds to connect
+            connection.readTimeout = 1000    // 1 seconds to read data
+
             connection.connect()
             val input: InputStream = connection.inputStream
             BitmapFactory.decodeStream(input)

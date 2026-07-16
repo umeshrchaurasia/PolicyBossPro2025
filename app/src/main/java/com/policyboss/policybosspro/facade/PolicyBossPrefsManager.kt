@@ -87,7 +87,10 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         private const val app_Version = "policybossproAppVersion"
 
         private const val USER_CONSTANT_RESPONSE_KEY = "UserConstantResponseKey"
+
+        private const val IS_SUBSCRIBED_ALL_USERS = "is_subscribed_all_users"
     }
+
 
 
 
@@ -161,6 +164,14 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
 
     fun isFirstTimeLaunch(): Boolean {
         return pref.getBoolean(IS_FIRST_TIME_LAUNCH, true)
+    }
+
+    fun setSubscribedToAllUsers(isSubscribed: Boolean) {
+        editor.putBoolean(IS_SUBSCRIBED_ALL_USERS, isSubscribed).apply()
+    }
+
+    fun isSubscribedToAllUsers(): Boolean {
+        return pref.getBoolean(IS_SUBSCRIBED_ALL_USERS, false)
     }
 
 
