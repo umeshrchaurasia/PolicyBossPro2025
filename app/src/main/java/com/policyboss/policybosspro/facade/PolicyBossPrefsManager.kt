@@ -317,12 +317,12 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
     //region Deeplink
     fun setDeeplink(strDeepLink: String): Boolean {
 
-        //Note : Replace /deeplink/ from url bec we set url like https://www.policyboss.com/deeplink/...
+        //Note : // Safely removes "/deeplink/" or "/deeplink" (if it's immediately followed by '?') ...
         /*
         <data android:host="www.policyboss.com" />
                 <data android:pathPrefix="/deeplink"/>
          */
-        val cleanUrl = strDeepLink.replaceFirst("/deeplink/", "/")
+        val cleanUrl =strDeepLink.replace(Regex("/deeplink/?"), "/")
 
         editor.remove(DeepLink).apply()
         return editor.putString(DeepLink, cleanUrl).commit()

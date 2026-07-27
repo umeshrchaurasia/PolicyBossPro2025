@@ -11,7 +11,7 @@ plugins {
 
 android {
     namespace = "com.policyboss.policybosspro"
-    compileSdk = 35
+    compileSdk = 36
 
     // 🔴 ENSURE SAME NDK AS gradle.properties
     ndkVersion = "26.1.10909125"
@@ -19,9 +19,9 @@ android {
     defaultConfig {
         applicationId = "com.policyboss.policybosspro"
         minSdk = 24
-        targetSdk = 35
-        versionCode = 58
-        versionName = "1.5.0.8"
+        targetSdk = 36
+        versionCode = 59
+        versionName = "1.5.0.9"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

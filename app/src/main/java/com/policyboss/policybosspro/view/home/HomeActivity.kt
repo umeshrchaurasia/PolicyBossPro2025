@@ -115,6 +115,8 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import com.policyboss.policybosspro.utils.ExtensionFun.showCustomSnackbar
 import com.policyboss.policybosspro.view.qrScanner.ScannerActivity
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 
 @AndroidEntryPoint
@@ -159,6 +161,8 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
 
 
     private lateinit var permissionHandler: PermissionHandler
+
+    private var hasRequestedNotificationThisSession = false
     //for Notification Counter
 
     private  var  textNotifyItemCount : TextView? = null
@@ -286,7 +290,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
         setupNavigationViewTheme()
 
         permissionHandler = PermissionHandler(this)
-        requestNotificationPermission()
+        //requestNotificationPermission()
 
 
         //region Handle OnBackPressed()
@@ -403,7 +407,15 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
     override fun onResume() {
         super.onResume()
 
+        // ✅ ONLY ASK HERE
+        if (!hasRequestedNotificationThisSession) {
+            hasRequestedNotificationThisSession = true
 
+            lifecycleScope.launch {
+                delay(800.milliseconds)
+                requestNotificationPermission()
+            }
+        }
     }
 
     private fun setupNavigationViewTheme() {
@@ -1177,37 +1189,256 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
 
     //region Handle DeepLink and Notification
 
+
+    // region comment Old Deeplink
+//    private fun deeplinkHandle() {
+//        val deeplinkValue = prefsManager.getDeepLink()
+//
+//        val subSSID = prefsManager.getSUBUserSSId()
+//        val subFBAID = prefsManager.getSUBUserFBAID()
+//
+//
+//        if (!deeplinkValue.isNullOrEmpty()) {
+//
+//            try {
+//
+//                val myUri = Uri.parse(deeplinkValue)
+//
+//                val prdID = myUri.getQueryParameter("product_id")
+//                val titleValue = myUri.getQueryParameter("title") ?: ""
+//
+//                Title = titleValue
+//
+//                when (prdID) {
+//
+//                    //id 500 from Home Page
+//                    "500" ->{
+//                        return
+//                    }
+//                    "41" -> startActivity(Intent(this, WelcomeSyncContactActivityKotlin::class.java))
+//                    "501" -> startActivity(Intent(this, MyAccountActivity::class.java))
+//                    "502" -> {
+//                        val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+//                            putExtra("URL", prefsManager.getEnableProPOSPurl() +
+//                                    "&app_version=" + prefsManager.getAppVersion() +
+//                                    "&device_code=" + Utility.getDeviceID(this@HomeActivity) +
+//                                    "&ssid=" + prefsManager.getSSID() +
+//                                    "&fbaid=" + prefsManager.getFBAID() +
+//                                    "&sub_fba_id=${subFBAID}" +
+//                                    "&sub_ss_id=${subSSID}" )
+//                            putExtra("NAME", "Posp Enrollment")
+//                            putExtra("TITLE", "Posp Enrollment")
+//                        }
+//                        startActivity(intent)
+//                    }
+//                    "503" -> startActivity(Intent(this, NotificationActivity::class.java))
+//                    "504" -> startActivity(Intent(this, SalesMaterialActivity::class.java))
+//                    "505" -> {
+//
+//                        //Sync Contact Dashboard
+//                        startLeadDetailActivity()
+//                    }
+//                    "506" -> {
+//
+//                        //RaiseTicket Handling
+//                        val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+//                            putExtra("URL", prefsManager.getRaiseTickitUrl() +
+//                                    "&mobile_no=" + prefsManager.getMobileNo() +
+//                                    "&UDID=" + prefsManager.getUserId() +
+//                                    "&app_version=" + prefsManager.getAppVersion() +
+//                                    "&device_code=" + Utility.getDeviceID(this@HomeActivity) +
+//                                    "&ssid=" + prefsManager.getSSID() +
+//                                    "&fbaid=" + prefsManager.getFBAID())
+//                            putExtra("NAME", "RAISE_TICKET")
+//                            putExtra("TITLE", "RAISE TICKET")
+//                        }
+//                        startActivity(intent)
+//                    }
+//                    "507" -> {
+//                        //manage support Dialog
+//                        if (!NetworkUtils.isNetworkAvailable(this)) {
+//                            this.showSnackbar(binding.root,getString(R.string.noInternet))
+//                            return
+//                        }
+//                        prefsManager.getUserConstantEntity()?.let { user ->
+//                            if (user.MangMobile != null && user.ManagName != null) {
+//                                if (callingDetailDialog?.isShowing == true) {
+//                                    return
+//                                } else {
+//                                    //************* call User Details Api //*************
+//                                    viewModel.getUserCallingDetail()
+//                                }
+//                            }
+//                        }
+//                    }
+//                    "508" -> {
+//                        //Calculator Activity
+//                        startActivity(Intent(this, IncomePotentialActivity::class.java))
+//                    }
+//                    "509" -> {
+//                        //Calculator Activity
+//                        startActivity(Intent(this, IncomePotentialActivity::class.java))
+//                    }
+//                    "551" ->{
+//                        // SalesMaterial : Motor Insurance
+//
+//                        val intent = Intent(this, SalesMaterialActivity::class.java).apply {
+//                            putExtra(Constant.Deeplink_PRODUCT_ID, "2") // Ensure "2" is a valid String
+//                        }
+//                        startActivity(intent)
+//
+//                    }
+//                    "552" ->{
+//                        // SalesMaterial : "Health Insurance
+//                        val intent = Intent(this, SalesMaterialActivity::class.java).apply {
+//                            putExtra(Constant.Deeplink_PRODUCT_ID, "1") // Ensure "2" is a valid String
+//                        }
+//                        startActivity(intent)
+//
+//                    }
+//                    "553" ->{
+//                        // SalesMaterial : "Term Insurance"
+//                        val intent = Intent(this, SalesMaterialActivity::class.java).apply {
+//                            putExtra(Constant.Deeplink_PRODUCT_ID, "6") // Ensure "2" is a valid String
+//                        }
+//                        startActivity(intent)
+//
+//                    }
+//                    "554" ->{
+//                        // SalesMaterial : "Travel Insurance"
+//
+//                        val intent = Intent(this, SalesMaterialActivity::class.java).apply {
+//                            putExtra(Constant.Deeplink_PRODUCT_ID, "8") // Ensure "2" is a valid String
+//                        }
+//                        startActivity(intent)
+//
+//                    }
+//                    else -> {
+//                        val ipAddress = try {
+//                            getLocalIpAddress()?: ""  // Replace with actual logic to get IP address
+//                        } catch (e: Exception) {
+//                            "0.0.0.0"
+//                        }
+//
+//                        val append = "&ss_id=${prefsManager.getSSID()}&fba_id=${prefsManager.getFBAID()}" +
+//                                "&sub_fba_id=${subFBAID}&ip_address=$ipAddress&mac_address=$ipAddress" +
+//                                "&app_version=${prefsManager.getAppVersion()}&device_id=${Utility.getDeviceID(this)}" +
+//                                "&login_ssid=&sub_ss_id=${subSSID}"
+//
+//                        // Update deeplinkValue with appended parameters
+//                        val updatedDeeplinkValue = deeplinkValue + append
+//
+//                        Log.d("DeepLink", updatedDeeplinkValue.toString())
+//                        // Delayed execution using Coroutine
+//                        Handler(Looper.getMainLooper()).postDelayed({
+//                            startActivity(Intent(this, CommonWebViewActivity::class.java).apply {
+//                                putExtra("URL", updatedDeeplinkValue)
+//                                putExtra("NAME", Title)
+//                                putExtra("TITLE", Title)
+//                            })
+//                        }, 100)
+//                    }
+//                }
+//            } catch (ex: Exception) {
+//                Log.d("Deeplink", ex.toString())
+//            } finally {
+//                prefsManager.clearDeeplink() // Clear deeplink at the end
+//            }
+//        }
+//    }
+
+    //endregion
+
     private fun deeplinkHandle() {
         val deeplinkValue = prefsManager.getDeepLink()
 
         val subSSID = prefsManager.getSUBUserSSId()
         val subFBAID = prefsManager.getSUBUserFBAID()
 
-
         if (!deeplinkValue.isNullOrEmpty()) {
-
             try {
-                val originalUri = Uri.parse(deeplinkValue)
                 val myUri = Uri.parse(deeplinkValue)
 
                 val prdID = myUri.getQueryParameter("product_id")
                 val titleValue = myUri.getQueryParameter("title") ?: ""
 
+                // Extract the 'url' parameter (Expect it for DB and WB, but gracefully handle if null/empty)
+                val extractedUrl = myUri.getQueryParameter("url") ?: ""
+
                 Title = titleValue
 
-                when (prdID) {
+                // Pre-fetch common device details to avoid repeating code
+                val ipAddress = try { getLocalIpAddress() ?: "0.0.0.0" } catch (e: Exception) { "0.0.0.0" }
+                val deviceId = Utility.getDeviceID(this@HomeActivity)
+                val appVersion = "policyboss-${BuildConfig.VERSION_NAME}"
+                val parentSsid = ""
 
-                    //id 500 from Home Page
-                    "500" ->{
-                        return
+                when (prdID?.uppercase()) { // Use uppercase to safely handle "sl", "SL", "db", "DB"
+
+                    // region Dynamic WebViews (DB & WB) - Matches Notification Logic
+                    "DB" -> {
+                        if (extractedUrl.isNotBlank()) {
+
+                            // Smart Append: Check if the extracted URL already has a '?' to decide between '?' and '&'
+                            val separator = if (extractedUrl.contains("?")) "&" else "?"
+
+                            val appendParams = "${separator}ss_id=${prefsManager.getSSID()}" +
+                                    "&fba_id=${prefsManager.getFBAID()}&sub_fba_id=$subFBAID" +
+                                    "&ip_address=$ipAddress&mac_address=$ipAddress" +
+                                    "&app_version=${prefsManager.getAppVersion()}" +
+                                    "&device_id=$deviceId&product_id=$prdID&login_ssid=&sub_ss_id=$subSSID"
+
+                            val finalWebUrl = extractedUrl + appendParams
+
+                            startActivity(Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+                                putExtra("URL", finalWebUrl)
+                                putExtra("NAME", titleValue.ifEmpty { "PolicyBoss" })
+                                putExtra("TITLE", titleValue.ifEmpty { "PolicyBoss" })
+                            })
+                        }
                     }
-                    "41" -> startActivity(Intent(this, WelcomeSyncContactActivityKotlin::class.java))
-                    "501" -> startActivity(Intent(this, MyAccountActivity::class.java))
+
+                    "WB" -> {
+                        if (extractedUrl.isNotBlank()) {
+                            // WB opens the URL directly without appending session parameters
+                            startActivity(Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+                                putExtra("URL", extractedUrl)
+                                putExtra("NAME", titleValue.ifEmpty { "PolicyBoss" })
+                                putExtra("TITLE", titleValue.ifEmpty { "PolicyBoss" })
+                            })
+                        }
+                    }
+                    // endregion
+
+                    // region Native Deep Links (IDs, Menus, App Activities)
+                    "1" -> {
+                        val motorUrl = prefsManager.getFourWheelerUrl() + buildUrlAppend(ipAddress, deviceId, appVersion, 1, parentSsid)
+                        openCommonWebView(motorUrl, "Motor Insurance", "Motor Insurance", Constant.INSURANCE_TYPE)
+                    }
+                    "2" -> {
+                        val healthUrl = prefsManager.getHealthurl() + buildUrlAppend(ipAddress, deviceId, appVersion, 2, parentSsid)
+                        openCommonWebView(healthUrl, "Health Insurance", "Health Insurance", Constant.INSURANCE_TYPE)
+                    }
+                    "10" -> {
+                        val bikeUrl = prefsManager.getTwoWheelerUrl() + buildUrlAppend(ipAddress, deviceId, appVersion, 10, parentSsid)
+                        openCommonWebView(bikeUrl, "Two Wheeler Insurance", "Two Wheeler Insurance", Constant.INSURANCE_TYPE)
+                    }
+
+                    "SY", "41" -> {
+                        startActivity(Intent(this@HomeActivity, WelcomeSyncContactActivityKotlin::class.java))
+                    }
+                    // endregion
+
+                    // region Existing 500 and 550 Series Logic
+                    "500","HM" -> return
+                    "501" -> startActivity(Intent(this@HomeActivity, MyAccountActivity::class.java))
                     "502" -> {
+
+                       // PospEnrollment
                         val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
                             putExtra("URL", prefsManager.getEnableProPOSPurl() +
                                     "&app_version=" + prefsManager.getAppVersion() +
-                                    "&device_code=" + Utility.getDeviceID(this@HomeActivity) +
+                                    "&device_code=" + deviceId +
                                     "&ssid=" + prefsManager.getSSID() +
                                     "&fbaid=" + prefsManager.getFBAID() +
                                     "&sub_fba_id=${subFBAID}" +
@@ -1217,22 +1448,18 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
                         }
                         startActivity(intent)
                     }
-                    "503" -> startActivity(Intent(this, NotificationActivity::class.java))
-                    "504" -> startActivity(Intent(this, SalesMaterialActivity::class.java))
-                    "505" -> {
-
-                        //Sync Contact Dashboard
-                        startLeadDetailActivity()
-                    }
+                    "503" -> startActivity(Intent(this@HomeActivity, NotificationActivity::class.java))
+                    "504","SL" -> startActivity(Intent(this@HomeActivity, SalesMaterialActivity::class.java))
+                    "505" -> startLeadDetailActivity()
                     "506" -> {
 
-                        //RaiseTicket Handling
+                       // ********** RAISE_TICKET  **********
                         val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
                             putExtra("URL", prefsManager.getRaiseTickitUrl() +
                                     "&mobile_no=" + prefsManager.getMobileNo() +
                                     "&UDID=" + prefsManager.getUserId() +
                                     "&app_version=" + prefsManager.getAppVersion() +
-                                    "&device_code=" + Utility.getDeviceID(this@HomeActivity) +
+                                    "&device_code=" + deviceId +
                                     "&ssid=" + prefsManager.getSSID() +
                                     "&fbaid=" + prefsManager.getFBAID())
                             putExtra("NAME", "RAISE_TICKET")
@@ -1241,83 +1468,36 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
                         startActivity(intent)
                     }
                     "507" -> {
-                        //manage support Dialog
                         if (!NetworkUtils.isNetworkAvailable(this)) {
-                            this.showSnackbar(binding.root,getString(R.string.noInternet))
+                            this.showSnackbar(binding.root, getString(R.string.noInternet))
                             return
                         }
                         prefsManager.getUserConstantEntity()?.let { user ->
                             if (user.MangMobile != null && user.ManagName != null) {
-                                if (callingDetailDialog?.isShowing == true) {
-                                    return
-                                } else {
-                                    //************* call User Details Api //*************
+                                if (callingDetailDialog?.isShowing != true) {
                                     viewModel.getUserCallingDetail()
                                 }
                             }
                         }
                     }
-                    "508" -> {
-                        //Calculator Activity
-                        startActivity(Intent(this, IncomePotentialActivity::class.java))
-                    }
-                    "509" -> {
-                        //Calculator Activity
-                        startActivity(Intent(this, IncomePotentialActivity::class.java))
-                    }
-                    "551" ->{
-                        // SalesMaterial : Motor Insurance
+                    "508", "509" -> startActivity(Intent(this@HomeActivity, IncomePotentialActivity::class.java))
+                    "551" -> startActivity(Intent(this@HomeActivity, SalesMaterialActivity::class.java).apply { putExtra(Constant.Deeplink_PRODUCT_ID, "2") })
+                    "552" -> startActivity(Intent(this@HomeActivity, SalesMaterialActivity::class.java).apply { putExtra(Constant.Deeplink_PRODUCT_ID, "1") })
+                    "553" -> startActivity(Intent(this@HomeActivity, SalesMaterialActivity::class.java).apply { putExtra(Constant.Deeplink_PRODUCT_ID, "6") })
+                    "554" -> startActivity(Intent(this@HomeActivity, SalesMaterialActivity::class.java).apply { putExtra(Constant.Deeplink_PRODUCT_ID, "8") })
+                    // endregion
 
-                        val intent = Intent(this, SalesMaterialActivity::class.java).apply {
-                            putExtra(Constant.Deeplink_PRODUCT_ID, "2") // Ensure "2" is a valid String
-                        }
-                        startActivity(intent)
-
-                    }
-                    "552" ->{
-                        // SalesMaterial : "Health Insurance
-                        val intent = Intent(this, SalesMaterialActivity::class.java).apply {
-                            putExtra(Constant.Deeplink_PRODUCT_ID, "1") // Ensure "2" is a valid String
-                        }
-                        startActivity(intent)
-
-                    }
-                    "553" ->{
-                        // SalesMaterial : "Term Insurance"
-                        val intent = Intent(this, SalesMaterialActivity::class.java).apply {
-                            putExtra(Constant.Deeplink_PRODUCT_ID, "6") // Ensure "2" is a valid String
-                        }
-                        startActivity(intent)
-
-                    }
-                    "554" ->{
-                        // SalesMaterial : "Travel Insurance"
-
-                        val intent = Intent(this, SalesMaterialActivity::class.java).apply {
-                            putExtra(Constant.Deeplink_PRODUCT_ID, "8") // Ensure "2" is a valid String
-                        }
-                        startActivity(intent)
-
-                    }
                     else -> {
-                        val ipAddress = try {
-                            getLocalIpAddress()?: ""  // Replace with actual logic to get IP address
-                        } catch (e: Exception) {
-                            "0.0.0.0"
-                        }
-
+                        // Fallback to legacy behavior if ID is completely unrecognized
                         val append = "&ss_id=${prefsManager.getSSID()}&fba_id=${prefsManager.getFBAID()}" +
                                 "&sub_fba_id=${subFBAID}&ip_address=$ipAddress&mac_address=$ipAddress" +
-                                "&app_version=${prefsManager.getAppVersion()}&device_id=${Utility.getDeviceID(this)}" +
+                                "&app_version=${prefsManager.getAppVersion()}&device_id=$deviceId" +
                                 "&login_ssid=&sub_ss_id=${subSSID}"
 
-                        // Update deeplinkValue with appended parameters
                         val updatedDeeplinkValue = deeplinkValue + append
 
-                        Log.d("DeepLink", updatedDeeplinkValue.toString())
-                        // Delayed execution using Coroutine
                         Handler(Looper.getMainLooper()).postDelayed({
-                            startActivity(Intent(this, CommonWebViewActivity::class.java).apply {
+                            startActivity(Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
                                 putExtra("URL", updatedDeeplinkValue)
                                 putExtra("NAME", Title)
                                 putExtra("TITLE", Title)
@@ -1328,7 +1508,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
             } catch (ex: Exception) {
                 Log.d("Deeplink", ex.toString())
             } finally {
-                prefsManager.clearDeeplink() // Clear deeplink at the end
+                prefsManager.clearDeeplink() // Ensure it is cleared so it doesn't fire again on rotation/resume
             }
         }
     }

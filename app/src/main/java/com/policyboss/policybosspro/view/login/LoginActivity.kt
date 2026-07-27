@@ -136,9 +136,9 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), View.OnClickListener
         //region displaying the response which we get from above API
 
 
-        if (!checkPermission()) {
-            requestPermission()
-        }
+//        if (!checkPermission()) {
+//            requestPermission()
+//        }
 
         //region declaration
         observe()
@@ -1282,67 +1282,115 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), View.OnClickListener
 
     //endregion
 
-    //region permission
-    //region permission
+    //region permission Should not be call at Login according to google guidlines
+
+    // 1. Generate the list dynamically based on Android Version
+    private fun getRequiredPermissions(): Array<String> {
+        val permissions = mutableListOf(
+            android.Manifest.permission.CAMERA,
+            android.Manifest.permission.READ_CONTACTS,
+            android.Manifest.permission.READ_CALL_LOG
+        )
+
+        // Only add POST_NOTIFICATIONS if the phone is Android 13 (API 33) or higher
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            permissions.add(android.Manifest.permission.POST_NOTIFICATIONS)
+        }
+
+        return permissions.toTypedArray()
+    }
+
+    // 2. Check all permissions safely
     private fun checkPermission(): Boolean {
-        // Index 0: Camera
-        val camera = ActivityCompat.checkSelfPermission(applicationContext, perms[0])
-
-        // Index 1: Read Contacts
-        val read_contacts = ActivityCompat.checkSelfPermission(applicationContext, perms[1])
-
-        // Index 2: Read Call Log
-        val read_call_log = ActivityCompat.checkSelfPermission(applicationContext, perms[2])
-
-        // Index 3: Post Notifications (FIX: Only check on Android 13+)
-        var post_notification = PackageManager.PERMISSION_GRANTED // Default to "Granted" for older phones
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            post_notification = ActivityCompat.checkSelfPermission(applicationContext, perms[3])
+        for (permission in getRequiredPermissions()) {
+            if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                return false // If even one is denied, return false
+            }
         }
-
-        // Return true only if ALL are granted
-        return camera == PackageManager.PERMISSION_GRANTED &&
-                read_contacts == PackageManager.PERMISSION_GRANTED &&
-                read_call_log == PackageManager.PERMISSION_GRANTED &&
-                post_notification == PackageManager.PERMISSION_GRANTED
+        return true // All granted
     }
 
-    private fun checkRationale() {
-        if (checkRationalePermission()) {
-            //Show Information about why you need the permission
-            requestPermission()
-        } else {
-
-        }
-    }
-
+    // 3. Check rationale safely
     private fun checkRationalePermission(): Boolean {
-        // Index 0: Camera
-        val camera = ActivityCompat.shouldShowRequestPermissionRationale(this@LoginActivity, perms[0])
-
-        // Index 1: Read Contacts
-        val read_contacts = ActivityCompat.shouldShowRequestPermissionRationale(this@LoginActivity, perms[1])
-
-        // Index 2: Read Call Log
-        val read_call_log = ActivityCompat.shouldShowRequestPermissionRationale(this@LoginActivity, perms[2])
-
-        // Index 3: Post Notifications (Only check this on Android 13+)
-        var post_notification = false
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            post_notification = ActivityCompat.shouldShowRequestPermissionRationale(this@LoginActivity, perms[3])
+        for (permission in getRequiredPermissions()) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this, permission)) {
+                return true // Return true if any permission needs an explanation
+            }
         }
-
-        // Return true if ANY permission needs an explanation
-        return camera || read_contacts || read_call_log || post_notification
+        return false
     }
 
+    // 4. Request only the valid permissions
     private fun requestPermission() {
         ActivityCompat.requestPermissions(
             this,
-            perms,
+            getRequiredPermissions(), // Passes the safe, OS-specific list
             Constant.PERMISSION_CAMERA_STORAGE_CONSTANT
         )
     }
+
+    //endregion
+
+    //region permission OLD way
+//    private fun checkPermission(): Boolean {
+//        // Index 0: Camera
+//        val camera = ActivityCompat.checkSelfPermission(applicationContext, perms[0])
+//
+//        // Index 1: Read Contacts
+//        val read_contacts = ActivityCompat.checkSelfPermission(applicationContext, perms[1])
+//
+//        // Index 2: Read Call Log
+//        val read_call_log = ActivityCompat.checkSelfPermission(applicationContext, perms[2])
+//
+//        // Index 3: Post Notifications (FIX: Only check on Android 13+)
+//        var post_notification = PackageManager.PERMISSION_GRANTED // Default to "Granted" for older phones
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//            post_notification = ActivityCompat.checkSelfPermission(applicationContext, perms[3])
+//        }
+//
+//        // Return true only if ALL are granted
+//        return camera == PackageManager.PERMISSION_GRANTED &&
+//                read_contacts == PackageManager.PERMISSION_GRANTED &&
+//                read_call_log == PackageManager.PERMISSION_GRANTED &&
+//                post_notification == PackageManager.PERMISSION_GRANTED
+//    }
+//
+//    private fun checkRationale() {
+//        if (checkRationalePermission()) {
+//            //Show Information about why you need the permission
+//            requestPermission()
+//        } else {
+//
+//        }
+//    }
+//
+//    private fun checkRationalePermission(): Boolean {
+//        // Index 0: Camera
+//        val camera = ActivityCompat.shouldShowRequestPermissionRationale(this@LoginActivity, perms[0])
+//
+//        // Index 1: Read Contacts
+//        val read_contacts = ActivityCompat.shouldShowRequestPermissionRationale(this@LoginActivity, perms[1])
+//
+//        // Index 2: Read Call Log
+//        val read_call_log = ActivityCompat.shouldShowRequestPermissionRationale(this@LoginActivity, perms[2])
+//
+//        // Index 3: Post Notifications (Only check this on Android 13+)
+//        var post_notification = false
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//            post_notification = ActivityCompat.shouldShowRequestPermissionRationale(this@LoginActivity, perms[3])
+//        }
+//
+//        // Return true if ANY permission needs an explanation
+//        return camera || read_contacts || read_call_log || post_notification
+//    }
+//
+//    private fun requestPermission() {
+//        ActivityCompat.requestPermissions(
+//            this,
+//            perms,
+//            Constant.PERMISSION_CAMERA_STORAGE_CONSTANT
+//        )
+//    }
 
 
 

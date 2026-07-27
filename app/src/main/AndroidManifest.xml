@@ -100,9 +100,7 @@
         android:theme="@style/Theme.Policybossprov34"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
-        <activity
-            android:name=".view.syncContact.ui.SyncContactNEWActivity"
-            android:exported="false" />
+
         <activity
             android:name=".view.qrScanner.ScannerActivity"
             android:exported="false"

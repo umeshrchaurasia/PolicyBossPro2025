@@ -40,6 +40,8 @@ import com.policyboss.policybosspro.core.requestbuilder.syncContact.SaveCheckbox
 import com.policyboss.policybosspro.core.response.horizonResponse.sync_contact_agree
 import com.policyboss.policybosspro.databinding.ActivityWelcomeSyncContactKotlinBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
+import com.policyboss.policybosspro.utils.AppPermission.AppPermissionManager
+import com.policyboss.policybosspro.utils.AppPermission.PermissionHandler
 import com.policyboss.policybosspro.utils.Constant
 import com.policyboss.policybosspro.utils.NetworkUtils
 import com.policyboss.policybosspro.view.myAccount.MyAccountActivity
@@ -97,6 +99,9 @@ open class WelcomeSyncContactActivityKotlin : AppCompatActivity() , View.OnClick
     @Inject
     lateinit var prefManager : PolicyBossPrefsManager
 
+    // Inject/Initialize modern PermissionHandler
+    private lateinit var permissionHandler: PermissionHandler
+
     var perms = arrayOf(
         "android.permission.READ_CONTACTS",
         "android.permission.READ_CALL_LOG"
@@ -120,7 +125,8 @@ open class WelcomeSyncContactActivityKotlin : AppCompatActivity() , View.OnClick
         //applyInsets()
         // Apply padding for safe areas
 
-
+        // Initialize PermissionHandler
+        permissionHandler = PermissionHandler(this)
 
         dialogAnim = Dialog(this)
 
@@ -535,7 +541,7 @@ open class WelcomeSyncContactActivityKotlin : AppCompatActivity() , View.OnClick
 
 
 
-    private suspend fun savecheckboxdetails(){
+     suspend fun savecheckboxdetails(){
 
         lifecycleScope.launch {
             withContext(Dispatchers.IO) {
@@ -600,6 +606,8 @@ open class WelcomeSyncContactActivityKotlin : AppCompatActivity() , View.OnClick
 
     }
 
+
+
     //endregion
     override fun onClick(view: View?) {
 
@@ -614,24 +622,27 @@ open class WelcomeSyncContactActivityKotlin : AppCompatActivity() , View.OnClick
                     if (current < layouts.size) {
                         //move to next screen
                         viewPager.currentItem = current
-                    } else {
+                    }
+                    else {
+
+                        requestContactPermissionsAndProceed()
 
                         // For Submit : Get Started
-                        CoroutineScope(Dispatchers.IO).launch {
-                            try { //showDialog()
-
-                                savecheckboxdetails()
-
-                            } catch (e: Exception) {
-
-                                withContext(Dispatchers.Main) {
-                                    //   viewPager.visibility = View.VISIBLE
-                                    //   cancelAnimDialog()
-                                }
-                            }
-                        }
-                        trackSyncContactEvent("Get Started on Sync Contacts")
-                        startActivity(Intent(this, SyncContactActivity::class.java))
+//                        CoroutineScope(Dispatchers.IO).launch {
+//                            try { //showDialog()
+//
+//                                savecheckboxdetails()
+//
+//                            } catch (e: Exception) {
+//
+//                                withContext(Dispatchers.Main) {
+//                                    //   viewPager.visibility = View.VISIBLE
+//                                    //   cancelAnimDialog()
+//                                }
+//                            }
+//                        }
+//                        trackSyncContactEvent("Get Started on Sync Contacts")
+//                        startActivity(Intent(this, SyncContactActivity::class.java))
 
                     }
                 } else {
@@ -639,7 +650,7 @@ open class WelcomeSyncContactActivityKotlin : AppCompatActivity() , View.OnClick
                 }
 
 
-                //  }
+
             }
 
             //   R.id.btn_skip -> startActivity(Intent(this, SyncContactActivity::class.java))
@@ -699,37 +710,57 @@ open class WelcomeSyncContactActivityKotlin : AppCompatActivity() , View.OnClick
                 }
             }
 
-//            btnchktele.id -> if (btnchktele!!.tag != "1") {
-//                if (btnchktele!!.isChecked && btnchkcommunication!!.isChecked && btnchkagree!!.isChecked ) {
-//                    btnNext.isEnabled = true
-//                //    btnNext.alpha = 1f
-//                    //btnNext.setVisibility(View.VISIBLE);
-//                    btnNext.tag = 1
-//                    btnNext.alpha = 1f
-//                  //  btnNext.text = "NEXT"
-//                } else {
-//                    btnNext.isEnabled = false
-//                    btnNext.alpha = 0.4f
-//                }
-//            }
-//            btnchkcommunication.id -> if (btnchkcommunication!!.tag != "1") {
-//                if (btnchktele!!.isChecked && btnchkcommunication!!.isChecked && btnchkagree!!.isChecked ) {
-//                    btnNext.isEnabled = true
-//                //    btnNext.alpha = 1f
-//                    //btnNext.setVisibility(View.VISIBLE);
-//                    btnNext.tag = 1
-//                    btnNext.alpha = 1f
-//                //    btnNext.text = "NEXT"
-//                } else {
-//                    btnNext.isEnabled = false
-//                    btnNext.alpha = 0.4f
-//                }
-//            }
+
 
 
         }
     }
 
+
+    // 🟢 NEW ONE: This function handles the modern permission request using your PermissionHandler
+    private fun requestContactPermissionsAndProceed() {
+        permissionHandler.checkAndRequestPermissions(
+            AppPermissionManager.PermissionType.CONTACTS_AND_CALL_LOG, // Asks for Contacts & Call Log
+            onResult = { isGranted ->
+                if (isGranted) {
+                    // User clicked "Allow" -> Go to the sync logic
+                    proceedToSync()
+                } else {
+                    // User clicked "Deny" -> Tell them it's required
+                    Snackbar.make(binding.root, "Permissions are required to sync contacts.", Snackbar.LENGTH_LONG).show()
+                }
+            },
+            onPermanentlyDenied = { permanentlyDeniedList ->
+                // User clicked "Don't ask again" -> Show your custom dialog to open Settings
+                permissionHandler.showPermissionDeniedDialog(
+                    permanentlyDeniedList,
+                    "Contacts and Call Log permissions are required to sync your leads. Please enable them in Settings."
+                )
+            }
+        )
+    }
+
+    // 🟢 NEW ONE: This function only runs IF permissions were granted.
+    // It groups your API call and Activity launch together safely.
+    private fun proceedToSync() {
+
+        // 1. Save the checkbox agreement to the server
+        lifecycleScope.launch(Dispatchers.IO) {
+            try {
+                //saveCheckboxDetails() // Your existing function
+                savecheckboxdetails()
+            } catch (e: Exception) {
+                Log.e(TAG, "Save error: ${e.message}")
+            }
+        }
+
+        // 2. Track event
+        trackSyncContactEvent("Get Started on Sync Contacts")
+
+        // 3. Finally, move to the Sync Screen!
+        startActivity(Intent(this, SyncContactActivity::class.java))
+        finish() // Closes the welcome screen so user doesn't come back to it on back press
+    }
     override fun onDestroy() {
         super.onDestroy()
 

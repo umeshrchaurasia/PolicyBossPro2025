@@ -6,10 +6,12 @@ import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.google.firebase.messaging.FirebaseMessaging
+import com.policyboss.policybosspro.BuildConfig
 import com.policyboss.policybosspro.databinding.ActivitySplashScreenBinding
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utils.Constant
@@ -24,6 +26,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
+
 /*********************** For Deeplink *******************************************
 
  Mark Must hosted this link :  https://www.policyboss.com/.well-known/assetlinks.json
@@ -31,7 +35,7 @@ import javax.inject.Inject
  *********************** *********************** *********************** ************/
 
 @AndroidEntryPoint
-class SplashScreenActivity : AppCompatActivity() {
+class  SplashScreenActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySplashScreenBinding
 
@@ -40,136 +44,118 @@ class SplashScreenActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivitySplashScreenBinding.inflate(layoutInflater)
+
         //setContentView(binding.root)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             installSplashScreen()
         }
+        binding = ActivitySplashScreenBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // getDynamicLinkFromFirebase()
+        // =========================================================
+        // 🚨 MOCK DEEP LINK FOR DEBUG TESTING ONLY 🚨
+        // =========================================================
+//        if (BuildConfig.DEBUG) {
+//            // Uncomment the one you want to test:
+//
+//             val testUrl = "https://www.policyboss.com/deeplink?product_id=10"
+//            //val testUrl =  "https://www.policyboss.com/deeplink?product_id=WB&url=https://www.policyboss.com/about-us"
+//           // val testUrl = "https://www.policyboss.com/deeplink?product_id=10"
+//          //  val testUrl = "https://www.policyboss.com/deeplink?product_id=DB&url=https://www.policyboss.com/UI22/car-insurance"
+//
+//            // If the system didn't already pass a deep link, inject ours
+//            if (intent.data == null) {
+//              //  intent.data = Uri.parse(testUrl)
+//                intent.data = testUrl.toUri()
+//            }
+//        }
+        // =========================================================
 
+      // 2. Capture Deep Link on Cold Start
+        // We do this immediately so the PrefsManager has the URL before HomeActivity opens
+        handleDeepLink(intent)
 
-
-        // Launch coroutine for initialization sequence
+        //3. Launch coroutine for initialization sequence
         lifecycleScope.launch {
             handleInitialization()
         }
 
 
-        //region comment
-//        getToken()
-//
-//        if (prefManager.isFirstTimeLaunch()) {
-//            startActivity(
-//                Intent(this, WelcomeActivity::class.java)
-//                    .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-//            )
-//        }else{
-//
-//            Handler(Looper.getMainLooper()).postDelayed({
-//                this.finish()
-//
-//                if (prefManager.getEmpData() != null) {
-//                    startActivity(
-//                        Intent(this@SplashScreenActivity, HomeActivity::class.java)
-//                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-//                    )
-//
-//                }else{
-//
-//                    startActivity(
-//                        Intent(this@SplashScreenActivity, LoginActivity::class.java)
-//                            .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-//                    )
-//
-//                }
-//            }, 3000)
-//        }
-
-        //endregion
 
 
         // ATTENTION: This was auto-generated to handle app links.
-        val appLinkIntent: Intent = intent
-        val appLinkAction: String? = appLinkIntent.action
-        val appLinkData: Uri? = appLinkIntent.data
+//        val appLinkIntent: Intent = intent
+//        val appLinkAction: String? = appLinkIntent.action
+//        val appLinkData: Uri? = appLinkIntent.data
     }
 
 
+    /**
+     * Triggered when the Activity is already running (e.g., in background)
+     * and a new deep link intent brings it to the foreground.
+     */
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        setIntent(intent)   //setIntent(intent) ensures getIntent() returns the latest one if needed later.
+        // Ensure getIntent() returns this new intent in the future
+        setIntent(intent)
+
+        // Process the new deep link and trigger the navigation flow again
         handleDeepLink(intent)
+
+        lifecycleScope.launch {
+            navigateBasedOnLoginStatus()
+        }
     }
     //**********************************************************//
 
-    private fun handleDeepLink1(intent: Intent?) {
-        val data = intent?.data
-        if (data != null && data.path?.startsWith("/PolicyBossPro.github.io/referral") == true) {
-            val code = data.getQueryParameter("code")
-            Log.d(Constant.TAG, "Referral code: $code")
-            // TODO: Navigate to referral screen or save code
-
-            showAlert("Referral code: $code")
-        }
-    }
 
 
+    /**
+     * Extracts URI from Intent and saves it globally.
+     * The actual cleaning/regex logic belongs inside PolicyBossPrefsManager.
+     */
     private fun handleDeepLink(intent: Intent?) {
 
-        //region test deeplink
-//        val url = "https://www.policyboss.com/deeplink/health-insurance?product_id=2&title=Health+Insurance"
-//
-//        val uri = Uri.parse(url)
-//        // Pass into your function
-//        processDeeplink(uri)
-        //endregion
+        val uri = intent?.data ?: return // Exit immediately if no URI exists
 
-        processDeeplink(intent?.data)
+        val host = uri.host ?: "Unknown"
+        val path = uri.path ?: "Unknown"
+        val productId = uri.getQueryParameter("product_id") ?: "N/A"
+
+        Log.d("DeepLink", "Captured URI: $uri | Host: $host | Path: $path | ProductID: $productId")
+
+        // Save to preferences. PrefManager will handle the regex cleaning.
+        prefManager.setDeeplink(uri.toString())
     }
 
-    private fun processDeeplink(uri: Uri?) {
-        uri?.let {
-            val host = it.host ?: "Unknown"
-            val path = it.path ?: "Unknown"
 
-            val productId = it.getQueryParameter("product_id")?.takeIf { id -> id.isNotBlank() } ?: "N/A"
-            val title = it.getQueryParameter("title")?.takeIf { t -> t.isNotBlank() } ?: "N/A"
-
-            Log.d("DeepLink", "URI: $uri")
-            Log.d("DeepLink", "Host = $host, Path = $path, ID = $productId, Title = $title")
-
-     //Note : Replace /deeplink/ from url bec we set deeplink url like https://www.policyboss.com/deeplink/...
-
-            prefManager.setDeeplink(uri.toString())
-            // Navigate or store as needed
-        }
-    }
 
 
     private suspend fun handleInitialization() {
         try {
             // First fetch token
-
+            // Background tasks triggered in parallel (or quickly sequentially)
             initAuthReceiver()
             getToken()
 
             subscribeToAllUsers()
 
-             handleDeepLink(intent)
+           //  handleDeepLink(intent)
 
 
             // Then handle navigation
             if (prefManager.isFirstTimeLaunch()) {
                 navigateToWelcome()
             } else {
-                delay(2000) // Optional delay if you still want it
+                delay(2000.milliseconds) // Optional delay if you still want it
                 navigateBasedOnLoginStatus()
             }
         } catch (e: Exception) {
             Log.e("Initialization", "Error during initialization", e)
             // Handle error case - maybe show error UI or retry
+
+            startActivity(Intent(this@SplashScreenActivity, LoginActivity::class.java))
+            finish()
         }
     }
 
