@@ -37,6 +37,8 @@ import com.policyboss.demoandroidapp.Utility.ExtensionFun.applySystemBarInsetsPa
 import com.policyboss.demoandroidapp.Utility.ExtensionFun.showSnackbar
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.R
+import com.policyboss.policybosspro.analytics.AnalyticsBranchIOHelper
+import com.policyboss.policybosspro.analytics.BranchCustomEvents
 import com.policyboss.policybosspro.analytics.WebEngageAnalytics
 import com.policyboss.policybosspro.core.APIState
 
@@ -164,7 +166,17 @@ class SyncContactActivity : BaseActivity<ActivitySyncContactBinding>() {
 //
 //        }
 
-        //emdregion
+        //endregion
+
+
+        AnalyticsBranchIOHelper.trackCustomEvent(
+            context = this@SyncContactActivity,
+            eventName = BranchCustomEvents.CONTACT_SYNC_VIEWED, // Using the constant!
+            screenName = "SyncContactActivity",
+            customData = mapOf(
+                "ss_id" to prefManager.getSSID()
+            )
+        )
 
     }
 

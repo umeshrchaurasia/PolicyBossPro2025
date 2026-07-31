@@ -52,6 +52,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
 import java.io.OutputStream
+import androidx.core.net.toUri
 
 abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
 
@@ -541,13 +542,49 @@ abstract class BaseActivity<VB : ViewBinding> : AppCompatActivity() {
                     super.onPageFinished(view, url)
                 }
 
+                // For API 24+
                 override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest): Boolean {
-                    val urlToLoad = request.url.toString()
+                    return handleUrlOverride(view, request.url.toString())
+                }
+
+                // For API 23 and below
+                @Suppress("DEPRECATION")
+                override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+                    return handleUrlOverride(view, url)
+                }
+
+                // Centralized gatekeeper logic (Kotlin Version)
+                private fun handleUrlOverride(view: WebView, urlToLoad: String?): Boolean {
+                    if (urlToLoad == null) return false
+
+                    // 1. Handle PDF files (try native viewer first, fallback to Google Docs)
                     if (urlToLoad.endsWith(".pdf")) {
-                        // Handle PDF files with Google Docs Viewer
-                        loadUrl("https://docs.google.com/viewer?url=$urlToLoad")
-                        return true
+                        try {
+                            val intent = Intent(Intent.ACTION_VIEW)
+                            intent.setDataAndType(urlToLoad.toUri(), "application/pdf")
+                            startActivity(intent)
+                        } catch (e: Exception) {
+                            view.loadUrl("https://docs.google.com/viewer?url=$urlToLoad")
+                        }
+                        return true // We handled it
                     }
+
+                    // 2. Let WebView load normal HTTP/HTTPS links
+                    if (urlToLoad.startsWith("http://") || urlToLoad.startsWith("https://")) {
+                        return false
+                    }
+
+                    // 3. Catch custom schemes (like intent://) from Branch.io shortlinks
+                    try {
+                        val intent = Intent.parseUri(urlToLoad, Intent.URI_INTENT_SCHEME)
+                        startActivity(intent)
+                        // If it's a popup, you might also want to dismiss it after clicking a deep link:
+                        // dismissWebviewDialog() // Optional: close the popup if they go to another screen
+                        return true // We handled it, prevent crash
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+
                     return false
                 }
             }

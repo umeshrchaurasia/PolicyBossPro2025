@@ -9,12 +9,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.net.toUri
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
-import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
+//import com.google.firebase.dynamiclinks.FirebaseDynamicLinks
 import com.google.firebase.messaging.FirebaseMessaging
 import com.policyboss.policybosspro.BuildConfig
+import com.policyboss.policybosspro.analytics.AnalyticsBranchIOHelper
+import com.policyboss.policybosspro.analytics.BranchCustomEvents
 import com.policyboss.policybosspro.databinding.ActivitySplashScreenBinding
+import com.policyboss.policybosspro.facade.DeepLinkEntity
 import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utils.Constant
+import com.policyboss.policybosspro.utils.FirebasePushNotification.FcmTopicManager
 import com.policyboss.policybosspro.utils.showAlert
 
 import com.policyboss.policybosspro.view.home.HomeActivity
@@ -22,9 +26,11 @@ import com.policyboss.policybosspro.view.introslider.WelcomeActivity
 import com.policyboss.policybosspro.view.login.LoginActivity
 import com.policyboss.policybosspro.view.syncContact.ui.WelcomeSyncContactActivityKotlin
 import dagger.hilt.android.AndroidEntryPoint
+import io.branch.referral.Branch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -42,6 +48,9 @@ class  SplashScreenActivity : AppCompatActivity() {
     @Inject
     lateinit var prefManager : PolicyBossPrefsManager
 
+    @Inject
+    lateinit var fcmTopicManager: FcmTopicManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -58,7 +67,9 @@ class  SplashScreenActivity : AppCompatActivity() {
 //        if (BuildConfig.DEBUG) {
 //            // Uncomment the one you want to test:
 //
-//             val testUrl = "https://www.policyboss.com/deeplink?product_id=10"
+//            //val testUrl ="http://zextratravelassist.interstellar.co.in/static/media/TravelAssist.188539aef4163a318258.webp?_branch_match_id=1493474052034962988&utm_source=Website&utm_campaign=FirstOPen&utm_medium=Push&_branch_referrer=H4sIAAAAAAAAA8soKSkottLXL8jPyUyuTMovLtZLLCjQy8nMy9YPyC8ILcqxrytKTUstKsrMS49PKsovL04tsnXOKMrPTQUADJvNLjwAAAA%3D"
+//
+//           //  val testUrl = "https://www.policyboss.com/deeplink?product_id=10"
 //            //val testUrl =  "https://www.policyboss.com/deeplink?product_id=WB&url=https://www.policyboss.com/about-us"
 //           // val testUrl = "https://www.policyboss.com/deeplink?product_id=10"
 //          //  val testUrl = "https://www.policyboss.com/deeplink?product_id=DB&url=https://www.policyboss.com/UI22/car-insurance"
@@ -90,6 +101,44 @@ class  SplashScreenActivity : AppCompatActivity() {
     }
 
 
+    override fun onStart() {
+        super.onStart()
+
+        //region Initialize Branch session
+        Branch.sessionBuilder(this)
+            .withCallback { referringParams, error ->
+            if (error == null && referringParams != null) {
+                Log.i(Constant.TAG_DEEPLINK, "Branch Config Data: $referringParams")
+
+                val clickedBranchLink = referringParams.optBoolean("+clicked_branch_link", false)
+                if (clickedBranchLink) {
+                    // Extract custom data defined in your Branch dashboard/links
+                    // 1. Extract your custom data from the Branch dashboard payload
+                    val productId = referringParams.optString("product_id", "")
+                    val customUrl = referringParams.optString("url", "")
+                    val title = referringParams.optString("title", "")
+
+                    Log.d(Constant.TAG_DEEPLINK, "Captured customUrl: $customUrl | title: $title  | ProductID: $productId")
+
+                    // Map Branch JSON back into the URI structure HomeActivity already expects
+                    // 2. Map it into the format deeplinkHandle() already expects!
+                    if (productId.isNotEmpty()) {
+                        val entity = DeepLinkEntity(
+                            productId = productId,
+                            url = customUrl.ifEmpty { null },
+                            title = title.ifEmpty { null }
+                        )
+                        prefManager.setPendingDeepLink(entity)
+                    }
+                }
+            } else {
+                Log.e(Constant.TAG_DEEPLINK, "Branch Init Error: ${error?.message}")
+            }
+        }.withData(this.intent?.data).init()
+        //endregion
+    }
+
+
     /**
      * Triggered when the Activity is already running (e.g., in background)
      * and a new deep link intent brings it to the foreground.
@@ -98,6 +147,38 @@ class  SplashScreenActivity : AppCompatActivity() {
         super.onNewIntent(intent)
         // Ensure getIntent() returns this new intent in the future
         setIntent(intent)
+
+
+
+
+        //region Branch Handling
+        Branch.sessionBuilder(this).withCallback { referringParams, error ->
+            if (error == null && referringParams != null) {
+                val clickedBranchLink = referringParams.optBoolean("+clicked_branch_link", false)
+                if (clickedBranchLink) {
+                    // 1. Extract all custom data just like onStart
+                    val productId = referringParams.optString("product_id", "")
+                    val customUrl = referringParams.optString("url", "")
+                    val title = referringParams.optString("title", "") // Added missing title
+
+                    Log.d(Constant.TAG_DEEPLINK, "Captured customUrl: $customUrl | title: $title  | ProductID: $productId")
+
+                    // 2. Map directly to DeepLinkEntity just like onStart
+                    if (productId.isNotEmpty()) {
+                        val entity = DeepLinkEntity(
+                            productId = productId,
+                            url = customUrl.ifEmpty { null },
+                            title = title.ifEmpty { null }
+                        )
+
+                        // Use the exact same preference method
+                        prefManager.setPendingDeepLink(entity)
+                    }
+                }
+            }
+        }.reInit()
+        //endregion
+
 
         // Process the new deep link and trigger the navigation flow again
         handleDeepLink(intent)
@@ -138,16 +219,31 @@ class  SplashScreenActivity : AppCompatActivity() {
             initAuthReceiver()
             getToken()
 
-            subscribeToAllUsers()
+            // Subscribe to all_users once
+        // 1. Everyone gets the ALL_USER topic
+            fcmTopicManager.subscribeToAllUsersAsync()
 
-           //  handleDeepLink(intent)
+            // 2. ONLY Guests get the GUEST_USERS topic
+            if (prefManager.getEmpData() == null) {
+                fcmTopicManager.subscribeToGuestAsync()
+            }
 
-
-            // Then handle navigation
+            // Handle navigation...
             if (prefManager.isFirstTimeLaunch()) {
+
+
+                AnalyticsBranchIOHelper.trackCustomEvent(
+                    context = this@SplashScreenActivity,
+                    eventName = BranchCustomEvents.FIRST_OPEN,
+                    screenName = "SplashScreenActivity",
+                    customData = mapOf(
+                        "user_status" to "NEW_INSTALL"
+                    )
+                )
+
                 navigateToWelcome()
             } else {
-                delay(2000.milliseconds) // Optional delay if you still want it
+                delay(2000.milliseconds)
                 navigateBasedOnLoginStatus()
             }
         } catch (e: Exception) {
@@ -158,6 +254,43 @@ class  SplashScreenActivity : AppCompatActivity() {
             finish()
         }
     }
+
+//    private fun handleUserTopicSubscriptions() {
+//
+//       // isGuestTopicSubscribed()      // false
+//      //  isLoggedInTopicSubscribed()   // false
+//
+//        if (prefManager.getEmpData() != null) {
+//
+//            // Logged-in user
+//            if (!prefManager.isLoggedInTopicSubscribed()) {
+//
+//                Log.d("FCM", "Switching to logged_in_users")
+//
+//                fcmTopicManager.switchToLoggedIn()
+//
+//            } else {
+//
+//                Log.d("FCM", "Already subscribed to logged_in_users")
+//            }
+//
+//        } else {
+//
+//            // Guest user
+//            if (!prefManager.isGuestTopicSubscribed()) {
+//
+//                Log.d("FCM", "Switching to guest_users")
+//
+//                fcmTopicManager.switchToGuest()
+//
+//            } else {
+//
+//                Log.d("FCM", "Already subscribed to guest_users")
+//            }
+//        }
+//    }
+
+
 
     private fun navigateToWelcome() {
         startActivity(
@@ -176,10 +309,23 @@ class  SplashScreenActivity : AppCompatActivity() {
             LoginActivity::class.java
         }
 
-        startActivity(
-            Intent(this, targetActivity)
-                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-        )
+//        startActivity(
+//            Intent(this, targetActivity)
+//                .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+//        )
+
+        val nextIntent = Intent(this, targetActivity).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+
+            // ========================================================
+            // ADD THIS: Pass the Notification payload to the next screen
+            // ========================================================
+            if (this@SplashScreenActivity.intent.extras != null) {
+                putExtras(this@SplashScreenActivity.intent.extras!!)
+            }
+        }
+
+        startActivity(nextIntent)
         finish()
     }
 
@@ -187,50 +333,50 @@ class  SplashScreenActivity : AppCompatActivity() {
 
 
 
-    private fun getDynamicLinkFromFirebaseOld() {
-        FirebaseDynamicLinks.getInstance()
-            .getDynamicLink(intent)
-            .addOnSuccessListener(this) { pendingDynamicLinkData ->
-                Log.d("dynamic", "We have link")
-                var deepLink: Uri? = null
-
-                // Check if we received a dynamic link from Firebase
-                if (pendingDynamicLinkData != null) {
-                    deepLink = pendingDynamicLinkData.link
-                }
-
-                if (deepLink != null) {
-                    // Dynamic link exists, process it
-                    val deeplinkUrl = deepLink.toString()
-                    Log.i("dynamic url", deeplinkUrl)
-
-                    // Save to preferences or handle the deeplink
-                    prefManager.setDeeplink(deeplinkUrl)
-
-                    // Call method to handle deep link (navigation, etc.)
-
-                } else {
-                    // No dynamic link, check for regular intent URI
-                    val uri = intent.data
-                    if (uri != null) {
-                        val deeplinkUrl = uri.toString()
-                        Log.i("intent url", deeplinkUrl)
-
-                        // Save and handle the normal intent
-                        prefManager.setDeeplink(deeplinkUrl)
-
-                    } else {
-                        // No deep link or URI found, proceed with normal flow
-
-                    }
-                }
-            }
-            .addOnFailureListener(this) { e ->
-                Log.w("HomeActivity", "getDynamicLink:onFailure", e)
-                // Proceed normally if dynamic link fetching failed
-               // handleNoDeepLink()
-            }
-    }
+//    private fun getDynamicLinkFromFirebaseOld() {
+//        FirebaseDynamicLinks.getInstance()
+//            .getDynamicLink(intent)
+//            .addOnSuccessListener(this) { pendingDynamicLinkData ->
+//                Log.d("dynamic", "We have link")
+//                var deepLink: Uri? = null
+//
+//                // Check if we received a dynamic link from Firebase
+//                if (pendingDynamicLinkData != null) {
+//                    deepLink = pendingDynamicLinkData.link
+//                }
+//
+//                if (deepLink != null) {
+//                    // Dynamic link exists, process it
+//                    val deeplinkUrl = deepLink.toString()
+//                    Log.i("dynamic url", deeplinkUrl)
+//
+//                    // Save to preferences or handle the deeplink
+//                    prefManager.setDeeplink(deeplinkUrl)
+//
+//                    // Call method to handle deep link (navigation, etc.)
+//
+//                } else {
+//                    // No dynamic link, check for regular intent URI
+//                    val uri = intent.data
+//                    if (uri != null) {
+//                        val deeplinkUrl = uri.toString()
+//                        Log.i("intent url", deeplinkUrl)
+//
+//                        // Save and handle the normal intent
+//                        prefManager.setDeeplink(deeplinkUrl)
+//
+//                    } else {
+//                        // No deep link or URI found, proceed with normal flow
+//
+//                    }
+//                }
+//            }
+//            .addOnFailureListener(this) { e ->
+//                Log.w("HomeActivity", "getDynamicLink:onFailure", e)
+//                // Proceed normally if dynamic link fetching failed
+//               // handleNoDeepLink()
+//            }
+//    }
 
 
     private fun getToken(){

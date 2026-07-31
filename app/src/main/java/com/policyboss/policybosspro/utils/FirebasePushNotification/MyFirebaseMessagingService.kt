@@ -18,6 +18,8 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.policyboss.policybosspro.R
+import com.policyboss.policybosspro.analytics.AnalyticsBranchIOHelper
+import com.policyboss.policybosspro.analytics.BranchCustomEvents
 import com.policyboss.policybosspro.core.model.notification.NotifyEntity
 import com.policyboss.policybosspro.core.repository.loginRepository.LoginRepository
 import com.policyboss.policybosspro.core.repository.notificationRepository.INotificationRepository
@@ -26,6 +28,7 @@ import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utils.AppPermission.PermissionHandler
 import com.policyboss.policybosspro.utils.Constant
 import com.policyboss.policybosspro.view.home.HomeActivity
+import com.policyboss.policybosspro.view.splashscreen.SplashScreenActivity
 import com.webengage.sdk.android.WebEngage
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -95,6 +98,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             }
         } else {
             // For devices below Android 13, send the notification without checking permission
+
+
             sendNotification(remoteMessage, data)
         }
     }
@@ -129,6 +134,19 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             web_title = webTitle
         }
 
+        AnalyticsBranchIOHelper.trackCustomEvent(
+            context = this,
+            eventName = BranchCustomEvents.NOTIFICATION_RECEIVE,
+            screenName = "NotificationActivity",
+            customData = mapOf(
+                "ss_id" to (prefManager.getSSID()),
+
+                "notification_type" to (type),
+                "notification_title" to (webTitle),
+                "notification_url" to (webURL),
+
+                )
+        )
 
         //Mark : Emit the notification data via NotificationRepository
 
@@ -140,9 +158,15 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         val imgUrl = data["img_url"]
         bitmapImage = imgUrl?.let { getBitmapFromUrl(it) }
 
-        val intent = Intent(this, HomeActivity::class.java).apply {
+//        val intent = Intent(this, HomeActivity::class.java).apply {
+//            putExtra(Constant.PUSH_NOTIFY, notifyEntity)
+//            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP or  Intent.FLAG_ACTIVITY_CLEAR_TASK)
+//        }
+
+        // ✅ USE THIS INSTEAD:
+        val intent = Intent(this, SplashScreenActivity::class.java).apply {
             putExtra(Constant.PUSH_NOTIFY, notifyEntity)
-            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP or  Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         }
 
         val pendingIntent = PendingIntent.getActivity(

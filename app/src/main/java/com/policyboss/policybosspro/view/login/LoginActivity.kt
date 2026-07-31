@@ -33,9 +33,11 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.BuildConfig
 import com.policyboss.policybosspro.R
+import com.policyboss.policybosspro.analytics.AnalyticsBranchIOHelper
 import com.policyboss.policybosspro.analytics.WebEngageAnalytics
 import com.policyboss.policybosspro.broadcast.SMSReaderBroadCastReceiver
 import com.policyboss.policybosspro.core.APIState
+import com.policyboss.policybosspro.core.model.notification.NotifyEntity
 import com.policyboss.policybosspro.core.viewModel.loginVM.LoginViewModel
 import com.policyboss.policybosspro.databinding.ActivityHomeBinding
 import com.policyboss.policybosspro.databinding.ActivityLoginBinding
@@ -45,6 +47,7 @@ import com.policyboss.policybosspro.facade.PolicyBossPrefsManager
 import com.policyboss.policybosspro.utility.Utility
 import com.policyboss.policybosspro.utils.AppSignatureHashHelper
 import com.policyboss.policybosspro.utils.Constant
+import com.policyboss.policybosspro.utils.FirebasePushNotification.FcmTopicManager
 import com.policyboss.policybosspro.utils.NetworkUtils.Companion.isNetworkAvailable
 import com.policyboss.policybosspro.utils.ValidationUtil
 import com.policyboss.policybosspro.utils.hideKeyboard
@@ -57,6 +60,7 @@ import com.policyboss.policybosspro.view.raiseTicketDialog.RaiseTicketDialogActi
 import com.policyboss.policybosspro.view.syncContact.ui.WelcomeSyncContactActivityKotlin
 import com.policyboss.policybosspro.webview.CommonWebViewActivity
 import dagger.hilt.android.AndroidEntryPoint
+import io.branch.referral.util.BRANCH_STANDARD_EVENT
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -71,6 +75,9 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), View.OnClickListener
 
     @Inject
     lateinit var prefManager : PolicyBossPrefsManager
+
+    @Inject
+    lateinit var fcmTopicManager: FcmTopicManager
 
     var isClickable = true
 
@@ -142,9 +149,9 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), View.OnClickListener
 
         //region declaration
         observe()
-        // Check For LoginVia
-        loginViewModel.getusersignup(appVersion = prefManager.getAppVersion(),
-            deviceCode = prefManager.getDeviceID())
+        // Check For LoginVia currently off it 005
+//        loginViewModel.getusersignup(appVersion = prefManager.getAppVersion(),
+//            deviceCode = prefManager.getDeviceID())
 
         // Init Sms Retriever >>>>
         initSmsListener()
@@ -160,13 +167,62 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), View.OnClickListener
         displayLoadingWithText()
         //endregion
 
+// Request notification permission for returning guests if not granted
+        checkGuestNotificationPermission()
 
-
+        checkNotificationIntent()
 
     }
 
+    private fun checkGuestNotificationPermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+
+                // Request POST_NOTIFICATIONS
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                    Constant.PERMISSION_CAMERA_STORAGE_CONSTANT
+                )
+            }
+        }
+    }
 
 
+    private fun checkNotificationIntent() {
+        intent.extras?.let { extras ->
+            val notifyEntity: NotifyEntity? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                extras.getParcelable(Constant.PUSH_NOTIFY, NotifyEntity::class.java)
+            } else {
+                @Suppress("DEPRECATION")
+                extras.getParcelable(Constant.PUSH_NOTIFY)
+            }
+
+            notifyEntity?.let {
+
+                // Save it to preferences. After successful login, HomeActivity will read this and navigate!
+
+                prefManager.setPushNotifyPreference(it)
+                prefManager.setSharePushType(it.notifyFlag ?: "")
+
+                // If it is a generic Marketing Popup ("POP"), you can optionally show it directly on the Login Screen
+//                if (it.notifyFlag == "POP" && !it.web_url.isNullOrBlank()) {
+//
+//                    // Open the popup using your Utility class
+//                    Utility.loadWebViewUrlInBrowser(this@LoginActivity, it.web_url!!)
+//
+//                    // CLEAR the intent extra so the popup doesn't open again if the user rotates the screen
+//                    intent.removeExtra(Constant.PUSH_NOTIFY)
+//                } else {
+//                    // For anything else ("HM", "PF", etc.), the user MUST log in first.
+//                    // Save it to preferences. After successful login, HomeActivity will read this and navigate!
+//                    prefManager.setPushNotifyPreference(it)
+//                    prefManager.setSharePushType(it.notifyFlag ?: "")
+//                }
+            }
+        }
+    }
 
     // region method
 
@@ -189,6 +245,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), View.OnClickListener
         val deviceName = Build.MODEL
 
         prefManager.setDEVICE_NAME(Build.MODEL)
+
 
     }
 
@@ -929,92 +986,93 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), View.OnClickListener
     //region Observation OF Api using Flow
     private fun observe() {
 
-        //region  is UserSignUp
-        lifecycleScope.launch {
+//        //region  is UserSignUp
 
-            repeatOnLifecycle(Lifecycle.State.CREATED) {
-
-                loginViewModel.getsignUpStateFlow.collect {
-
-                    when (it) {
-                        is APIState.Loading -> {
-                            // showAnimDialog()
-                            displayLoadingWithText()
-
-                        }
-
-                        is APIState.Success -> {
-
-
-                            hideLoading()
-                            if (it != null) {
-
-                                //pospurl
-
-                                enable_pro_signupurl = it.data?.MasterData?.get(0)?.enable_pro_signupurl?: ""
-
-                                prefManager.setEnableProPOSPurl(enable_pro_signupurl)
-
-
-                                enable_otp_only = it.data?.MasterData?.get(0)?.enable_otp_only?:""
-
-                                if(enable_otp_only !=null)
-                                {
-                                    if (enable_otp_only.isEmpty())
-                                    {
-                                        binding.includeLoginNew.lyloginvia.visibility = View.VISIBLE
-                                        binding.includeLoginNew.lblloginvia.visibility = View.VISIBLE
-                                    }
-                                    else
-                                    {
-
-                                        if(enable_otp_only.equals("Y"))
-                                        {
-                                            binding.includeLoginNew.lyloginvia.visibility  = View.GONE
-                                            binding.includeLoginNew.lblloginvia.visibility = View.GONE
-
-                                            binding.includeLoginNew.etEmail.requestFocus()
-                                        }else
-                                        {
-                                            binding.includeLoginNew.lyloginvia.visibility = View.VISIBLE
-                                            binding.includeLoginNew.lblloginvia.visibility = View.VISIBLE
-                                        }
-
-                                    }
-                                }
-                                else
-                                {
-                                    binding.includeLoginNew.lyloginvia.visibility = View.VISIBLE
-                                    binding.includeLoginNew.lblloginvia.visibility = View.VISIBLE
-                                }
-                                //add sub user
-
-                                //add sub user
-                                val getenable_pro_Addsubuser_url = it.data?.MasterData?.get(0)?.enable_pro_Addsubuser_url?: ""
-                                prefManager.setEnablePro_ADDSUBUSERurl(getenable_pro_Addsubuser_url)
-
-                            }
-                        }
-
-                        is APIState.Failure -> {
-                            hideLoading()
-
-
-                        }
-
-                        is APIState.Empty -> {
-                            hideLoading()
-                        }
-                    }
-
-                }
-
-
-            }
-
-
-        }
-        //endregion
+//        lifecycleScope.launch {
+//
+//            repeatOnLifecycle(Lifecycle.State.CREATED) {
+//
+//                loginViewModel.getsignUpStateFlow.collect {
+//
+//                    when (it) {
+//                        is APIState.Loading -> {
+//                            // showAnimDialog()
+//                            displayLoadingWithText()
+//
+//                        }
+//
+//                        is APIState.Success -> {
+//
+//
+//                            hideLoading()
+//                            if (it != null) {
+//
+//                                //pospurl
+//
+//                                enable_pro_signupurl = it.data?.MasterData?.get(0)?.enable_pro_signupurl?: ""
+//
+//                                prefManager.setEnableProPOSPurl(enable_pro_signupurl)
+//
+//
+//                                enable_otp_only = it.data?.MasterData?.get(0)?.enable_otp_only?:""
+//
+//                                if(enable_otp_only !=null)
+//                                {
+//                                    if (enable_otp_only.isEmpty())
+//                                    {
+//                                        binding.includeLoginNew.lyloginvia.visibility = View.VISIBLE
+//                                        binding.includeLoginNew.lblloginvia.visibility = View.VISIBLE
+//                                    }
+//                                    else
+//                                    {
+//
+//                                        if(enable_otp_only.equals("Y"))
+//                                        {
+//                                            binding.includeLoginNew.lyloginvia.visibility  = View.GONE
+//                                            binding.includeLoginNew.lblloginvia.visibility = View.GONE
+//
+//                                            binding.includeLoginNew.etEmail.requestFocus()
+//                                        }else
+//                                        {
+//                                            binding.includeLoginNew.lyloginvia.visibility = View.VISIBLE
+//                                            binding.includeLoginNew.lblloginvia.visibility = View.VISIBLE
+//                                        }
+//
+//                                    }
+//                                }
+//                                else
+//                                {
+//                                    binding.includeLoginNew.lyloginvia.visibility = View.VISIBLE
+//                                    binding.includeLoginNew.lblloginvia.visibility = View.VISIBLE
+//                                }
+//                                //add sub user
+//
+//                                //add sub user
+//                                val getenable_pro_Addsubuser_url = it.data?.MasterData?.get(0)?.enable_pro_Addsubuser_url?: ""
+//                                prefManager.setEnablePro_ADDSUBUSERurl(getenable_pro_Addsubuser_url)
+//
+//                            }
+//                        }
+//
+//                        is APIState.Failure -> {
+//                            hideLoading()
+//
+//
+//                        }
+//
+//                        is APIState.Empty -> {
+//                            hideLoading()
+//                        }
+//                    }
+//
+//                }
+//
+//
+//            }
+//
+//
+//        }
+//        //endregion
 
         //region  Login Using OTP Alert
         lifecycleScope.launch {
@@ -1204,10 +1262,37 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), View.OnClickListener
 
                                 showToast("Login is Successfully...")
 
+                                // ========================================================
+                                // ADD THIS BLOCK: Switch FCM Topic on Successful Login
+                                // ========================================================
+
+
+                                val ssid = prefManager.getSSID()
+
+                                // 1. Identify the user
+                                AnalyticsBranchIOHelper.setIdentity(ssid)
+
+                                // 2. Log the event
+                                AnalyticsBranchIOHelper.trackStandardEvent(
+                                    context = this@LoginActivity,
+                                    eventType = BRANCH_STANDARD_EVENT.LOGIN,
+                                    screenName = "LoginActivity",
+                                    alias = "user_login",
+                                    description = "User successfully logged in via API",
+                                    customData = mapOf(
+                                        "ssid" to ssid,
+                                        "fba_id" to prefManager.getFBAID(),
+                                        "user_type" to prefManager.getUserType()
+                                    )
+                                )
+
+
+                                // Switch FCM Topics
+                               // fcmTopicManager.switchToLoggedIn()
+                                // Fire-and-forget: runs on FcmTopicManager's own scope, survives finish()
+                                fcmTopicManager.unsubscribeGuestOnLoginAsync()
+                                Log.d("FCM", "Topic Status: User logged in, guest_users unsubscribed")
                                 this@LoginActivity.finish()
-                               // startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
-
-
                                 startActivity(Intent(this@LoginActivity, WelcomeSyncContactActivityKotlin::class.java))
 
 
@@ -1216,7 +1301,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), View.OnClickListener
 
                         is APIState.Failure -> {
                             hideLoading()
-                            Log.d("LoginResp erro",it.errorMessage.toString())
+                            Log.d("LoginResp error",it.errorMessage.toString())
 
 
                             showAlert(it.errorMessage.toString())

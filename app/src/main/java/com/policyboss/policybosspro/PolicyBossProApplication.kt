@@ -24,6 +24,7 @@ import com.webengage.sdk.android.callbacks.PushNotificationCallbacks
 import com.xiaomi.mipush.sdk.MiPushClient
 
 import dagger.hilt.android.HiltAndroidApp
+import io.branch.referral.Branch
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -43,6 +44,14 @@ class PolicyBossProApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        // Enable logging for debugging (remove or conditionalize for release)
+       // Branch.enableTestMode() // Only if TestMode metadata is true
+
+        Branch.enableLogging()
+
+        Branch.getAutoInstance(this)
+
         FirebaseApp.initializeApp(this)
 
 

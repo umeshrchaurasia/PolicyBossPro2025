@@ -85,6 +85,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="com.policyboss.policybosspro.permission.MIPUSH_RECEIVE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" /> <!-- For Workmanager Notification Permission -->
+<!--    <uses-permission android:name="com.google.android.gms.permission.AD_ID"/>-->
     <permission
         android:name="com.policyboss.policybosspro.permission.MIPUSH_RECEIVE"
         android:protectionLevel="signature" />
@@ -100,6 +101,11 @@
         android:theme="@style/Theme.Policybossprov34"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
+
+        <!-- 1. Add your Branch Keys -->
+        <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_live_kywUDzGfMWSC6yzeRAlailblrvcIN0pj" />
+        <meta-data android:name="io.branch.sdk.BranchKey.test" android:value="key_test_YOUR_TEST_KEY_HERE" />
+        <meta-data android:name="io.branch.sdk.TestMode" android:value="false" /> <!-- Set to true for debug builds -->
 
         <activity
             android:name=".view.qrScanner.ScannerActivity"
@@ -234,18 +240,33 @@
             android:name=".view.splashscreen.SplashScreenActivity"
             android:exported="true"
             android:screenOrientation="portrait"
+            android:launchMode="singleTask"
             android:theme="@style/Theme.Policybossprov34">
+            <!-- 2. Set launchMode to singleTask -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
+            <!-- 2. Custom URI Scheme Fallback (policybosspro://) -->
+            <!-- Notice there is NO autoVerify="true" needed here -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="policybosspro" />
+            </intent-filter>
+
+
+
+
             <!-- Mark Must hosted this link :         https://www.policyboss.com/.well-known/assetlinks.json -->
 
 
             <!-- Playstore SHA256 key :       B3:BF:E8:15:CD:09:BF:7A:3D:21:3C:5A:29:8B:48:BF:59:69:7F:8F:D6:A9:65:92:19:F3:53:1F:62:89:AD:CD -->
 
+            <!-- 3. Android App Links / Universal Links -->
             <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
@@ -257,6 +278,9 @@
                 <data android:pathPrefix="/deeplink" />
             </intent-filter>
         </activity> <!-- Theme is optional and only needed if default theme has no action bar. -->
+
+
+
         <activity
             android:name="com.canhub.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat" />

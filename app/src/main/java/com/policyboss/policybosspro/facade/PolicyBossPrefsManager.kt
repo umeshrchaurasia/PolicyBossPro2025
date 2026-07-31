@@ -89,6 +89,13 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         private const val USER_CONSTANT_RESPONSE_KEY = "UserConstantResponseKey"
 
         private const val IS_SUBSCRIBED_ALL_USERS = "is_subscribed_all_users"
+
+
+
+        private const val IS_SUBSCRIBED_GUEST_USERS = "is_subscribed_guest_users"
+        private const val IS_SUBSCRIBED_LOGGED_IN_USERS = "is_subscribed_logged_in_users"
+
+        private const val PENDING_DEEP_LINK_KEY = "pending_deep_link_entity"
     }
 
 
@@ -174,6 +181,25 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         return pref.getBoolean(IS_SUBSCRIBED_ALL_USERS, false)
     }
 
+
+
+    fun isGuestTopicSubscribed(): Boolean {
+        return pref.getBoolean(IS_SUBSCRIBED_GUEST_USERS, false)
+    }
+
+    fun setGuestTopicSubscribed(isSubscribed: Boolean) {
+        editor.putBoolean(IS_SUBSCRIBED_GUEST_USERS, isSubscribed)
+        editor.apply()
+    }
+
+    fun isLoggedInTopicSubscribed(): Boolean {
+        return pref.getBoolean(IS_SUBSCRIBED_LOGGED_IN_USERS, false)
+    }
+
+    fun setLoggedInTopicSubscribed(isSubscribed: Boolean) {
+        editor.putBoolean(IS_SUBSCRIBED_LOGGED_IN_USERS, isSubscribed)
+        editor.apply()
+    }
 
     /////////
 
@@ -313,8 +339,31 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         return pref.getString(IS_ENABLE_PRO_POSPURL, "") ?: ""
     }
 
+    //region Deeplink Branch.Io
+    fun setPendingDeepLink(deepLinkEntity: DeepLinkEntity) {
+        try {
+            val json = gson.toJson(deepLinkEntity)
+            editor.putString(PENDING_DEEP_LINK_KEY, json).apply()
+        } catch (e: Exception) {
+            Log.e(Constant.TAG, "Error saving deep link", e)
+        }
+    }
 
-    //region Deeplink
+    fun getPendingDeepLink(): DeepLinkEntity? {
+        val json = pref.getString(PENDING_DEEP_LINK_KEY, null) ?: return null
+        return try {
+            gson.fromJson(json, DeepLinkEntity::class.java)
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    fun clearPendingDeepLink() {
+        editor.remove(PENDING_DEEP_LINK_KEY).apply()
+    }
+//endregion
+
+    //region Deeplink Univeral
     fun setDeeplink(strDeepLink: String): Boolean {
 
         //Note : // Safely removes "/deeplink/" or "/deeplink" (if it's immediately followed by '?') ...
@@ -1245,10 +1294,13 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         val strToken = getToken()
         val strContact = getContactMsgFirst()
 
+
+
         editor.clear().apply()
 
         setToken(strToken)
         updateContactMsgFirst(strContact)
+
 
     }
 

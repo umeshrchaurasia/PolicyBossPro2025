@@ -52,6 +52,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.JsResult;
 import android.webkit.MimeTypeMap;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -70,6 +71,8 @@ import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.policyboss.policybosspro.BaseJavaActivity;
 import com.policyboss.policybosspro.R;
+import com.policyboss.policybosspro.analytics.AnalyticsBranchIOHelper;
+import com.policyboss.policybosspro.analytics.BranchCustomEvents;
 import com.policyboss.policybosspro.core.model.sysncContact.POSPHorizonEntity;
 import com.policyboss.policybosspro.core.model.sysncContact.SyncContactEntity;
 import com.policyboss.policybosspro.core.oldWayApi.IResponseSubcriber;
@@ -106,6 +109,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -212,6 +216,24 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
 
 
             weAnalytics.screenNavigated("Common WebView Screen", screenData);
+
+           // ******** Branch Analytics ************ //
+            HashMap<String, String> customData = new HashMap<>();
+            customData.put("name", prefManager.getName());
+            customData.put("title", title);
+            customData.put("url", url);
+            customData.put("ss_id", prefManager.getFBAID());
+
+            AnalyticsBranchIOHelper.trackCustomEvent(
+                    this,                                     // context
+                    BranchCustomEvents.PAGE_VIEW_WEBVIEW,     // eventName
+                    "CommonWebViewActivity",// screenName
+                    "",   //alias
+                    "",  //description
+                    customData                                // customData map
+            );
+
+            Log.d(Constant.TAG, "Branch.io analytics CommonWebView  " + customData.toString());
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -260,7 +282,9 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
 
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+       // getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar())
+                .setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle(title);
 
 
@@ -484,30 +508,57 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
                 super.onPageFinished(view, url);
             }
 
+            // For modern Android devices (API 24+)
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                return handleUrlOverride(view, request.getUrl().toString());
+            }
 
+            // For older Android devices (API 23 and below)
+            @SuppressWarnings("deprecation") // <--- ADD THIS LINE
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                //whatsapp plugin call.. via WEB
-//                if (url != null && url.startsWith("whatsapp://")) {
-//                    view.getContext().startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-//                    return true;
-//                } else
+
+
+                return handleUrlOverride(view, url);
+            }
+
+
+            // Create a helper method so you don't write the logic twice
+            private boolean handleUrlOverride(WebView view, String url) {
+                if (url == null) return false;
+
+                // 1. Existing PDF logic
                 if (url.endsWith(".pdf")) {
                     Intent intent = new Intent(Intent.ACTION_VIEW);
                     intent.setDataAndType(Uri.parse(url), "application/pdf");
                     try {
                         startActivity(intent);
                     } catch (ActivityNotFoundException e) {
-                        //user does not have a pdf viewer installed
                         String googleDocs = "https://docs.google.com/viewer?url=";
                         webView.loadUrl(googleDocs + url);
                     }
+                    return true; // Return true because we handled it
                 }
 
-                /*qacamp@gmail.com/01011980
-                download policy QA user
-                878769 crn
-                */
+                // 2. Allow normal website URLs to load inside the WebView
+                if (url.startsWith("http://") || url.startsWith("https://")) {
+                    return false; // Return false tells WebView: "You handle this"
+                }
+
+                // 3. Catch custom schemes (like intent://) from Branch.io shortlinks
+                try {
+                    // Parse the redirect URI into an Android Intent
+                    Intent intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
+
+                    // Fire the intent (this routes it to your HomeActivity's deep link handler)
+                    startActivity(intent);
+                    return true; // We intercepted it, stop the WebView from crashing
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
                 return false;
             }
         });
@@ -870,6 +921,18 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
 
                 case R.id.action_raise:
                     // Toast.makeText(this,"Popup",Toast.LENGTH_SHORT).show();
+                    Map<String, String> customData = new HashMap<>();
+                    customData.put("ssid", prefManager.getSSID());
+
+// 2. Call the Kotlin object method
+                    AnalyticsBranchIOHelper.INSTANCE.trackCustomEvent(
+                            this,
+                            BranchCustomEvents.RAISE_TICKET_CLICKED,
+                            "RaiseTicketActivity",
+                            "",
+                            "",
+                            customData
+                    );
                     String url = userConstantEntity.getRaiseTickitUrl() + "&mobile_no=" + userConstantEntity.getMangMobile()
                             + "&UDID=" + userConstantEntity.getUid();
                     Log.d("URL", "Raise Ticket URL: " + url);

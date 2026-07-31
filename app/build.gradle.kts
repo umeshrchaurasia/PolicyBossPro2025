@@ -172,6 +172,13 @@ dependencies {
     implementation("jp.wasabeef:blurry:4.0.1")
 
 
+    // ******** Branch SDK **************
+    //Used : For Deeplink,banner and analytic
+    implementation("io.branch.sdk.android:library:5.21.1")
+
+    // Required by Branch
+    implementation("com.google.android.gms:play-services-ads-identifier:18.0.1")
+    implementation("androidx.browser:browser:1.8.0")
 
     // Image Cropper
 //    implementation("com.github.yalantis:ucrop:2.2.8-native")

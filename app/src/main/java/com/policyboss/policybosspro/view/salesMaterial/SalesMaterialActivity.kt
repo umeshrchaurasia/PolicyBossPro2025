@@ -17,6 +17,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.policyboss.demoandroidapp.Utility.ExtensionFun.applySystemBarInsetsPadding
 import com.policyboss.policybosspro.BaseActivity
+import com.policyboss.policybosspro.analytics.AnalyticsBranchIOHelper
+import com.policyboss.policybosspro.analytics.BranchCustomEvents
 import com.policyboss.policybosspro.core.APIState
 import com.policyboss.policybosspro.core.response.salesMaterial.CompanyEntity
 import com.policyboss.policybosspro.core.response.salesMaterial.SalesMateriaProdEntity
@@ -89,6 +91,16 @@ class SalesMaterialActivity : BaseActivity<ActivitySalesMaterialBinding>() {
 
         //Mark :-- call Api for Sales Material Main Page
         viewModel.getSalesProducts()
+
+        // Add this in onCreate() of SalesMaterialActivity.kt
+        AnalyticsBranchIOHelper.trackCustomEvent(
+            context = this,
+            eventName = BranchCustomEvents.SALESMATERIAL_VIEWED,
+            screenName = "SalesMaterialActivity",
+            customData = mapOf(
+                "fba_id" to prefsManager.getFBAID()
+            )
+        )
 
         //Mark :- Observing Api, get Api Response
        observeResponse()

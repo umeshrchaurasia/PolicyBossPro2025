@@ -33,6 +33,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.policyboss.demoandroidapp.Utility.ExtensionFun.applySystemBarInsetsPadding
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.R
+import com.policyboss.policybosspro.analytics.AnalyticsBranchIOHelper
+import com.policyboss.policybosspro.analytics.BranchCustomEvents
 import com.policyboss.policybosspro.analytics.WebEngageAnalytics
 import com.policyboss.policybosspro.core.RetroHelper
 
@@ -142,6 +144,15 @@ open class WelcomeSyncContactActivityKotlin : AppCompatActivity() , View.OnClick
         viewPager!!.adapter = myViewPagerAdapter
 
 
+        // Add this in onCreate() of WelcomeSyncContactActivityKotlin.kt
+        AnalyticsBranchIOHelper.trackCustomEvent(
+            context = this,
+            eventName = BranchCustomEvents.SYNC_CONTACTS_VIEWED,
+            screenName = "SyncContactActivity", // Kept as requested in your table
+            customData = mapOf(
+                "ss_id" to POSPNO
+            )
+        )
         showAnimDialog("Please Wait...")
 
         CoroutineScope(Dispatchers.IO).launch {

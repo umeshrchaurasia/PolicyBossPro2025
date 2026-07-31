@@ -113,11 +113,19 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
+import com.policyboss.policybosspro.analytics.AnalyticsBranchIOHelper
+import com.policyboss.policybosspro.analytics.BranchCustomEvents
 import com.policyboss.policybosspro.utils.ExtensionFun.showCustomSnackbar
+import com.policyboss.policybosspro.utils.FirebasePushNotification.FcmTopicManager
 import com.policyboss.policybosspro.view.qrScanner.ScannerActivity
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.milliseconds
 
+import io.branch.indexing.BranchUniversalObject
+import io.branch.referral.util.ContentMetadata
+import io.branch.referral.util.LinkProperties
+import io.branch.referral.BranchError
+import io.branch.referral.util.BRANCH_STANDARD_EVENT
 
 @AndroidEntryPoint
 class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavigationItemSelectedListener, OnClickListener {
@@ -143,6 +151,9 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
     private val viewModelNotify : NotifyViewModel by viewModels()
     @Inject
     lateinit var prefsManager: PolicyBossPrefsManager
+
+    @Inject
+    lateinit var fcmTopicManager: FcmTopicManager
     lateinit var weUser: User
 
     @Inject
@@ -290,7 +301,6 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
         setupNavigationViewTheme()
 
         permissionHandler = PermissionHandler(this)
-        //requestNotificationPermission()
 
 
         //region Handle OnBackPressed()
@@ -1181,175 +1191,234 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
 
     //endregion
 
-    //region Deeplik Handling
-
-
-
-    //endregion
-
-    //region Handle DeepLink and Notification
-
-
-    // region comment Old Deeplink
-//    private fun deeplinkHandle() {
-//        val deeplinkValue = prefsManager.getDeepLink()
-//
-//        val subSSID = prefsManager.getSUBUserSSId()
-//        val subFBAID = prefsManager.getSUBUserFBAID()
-//
-//
-//        if (!deeplinkValue.isNullOrEmpty()) {
-//
-//            try {
-//
-//                val myUri = Uri.parse(deeplinkValue)
-//
-//                val prdID = myUri.getQueryParameter("product_id")
-//                val titleValue = myUri.getQueryParameter("title") ?: ""
-//
-//                Title = titleValue
-//
-//                when (prdID) {
-//
-//                    //id 500 from Home Page
-//                    "500" ->{
-//                        return
-//                    }
-//                    "41" -> startActivity(Intent(this, WelcomeSyncContactActivityKotlin::class.java))
-//                    "501" -> startActivity(Intent(this, MyAccountActivity::class.java))
-//                    "502" -> {
-//                        val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
-//                            putExtra("URL", prefsManager.getEnableProPOSPurl() +
-//                                    "&app_version=" + prefsManager.getAppVersion() +
-//                                    "&device_code=" + Utility.getDeviceID(this@HomeActivity) +
-//                                    "&ssid=" + prefsManager.getSSID() +
-//                                    "&fbaid=" + prefsManager.getFBAID() +
-//                                    "&sub_fba_id=${subFBAID}" +
-//                                    "&sub_ss_id=${subSSID}" )
-//                            putExtra("NAME", "Posp Enrollment")
-//                            putExtra("TITLE", "Posp Enrollment")
-//                        }
-//                        startActivity(intent)
-//                    }
-//                    "503" -> startActivity(Intent(this, NotificationActivity::class.java))
-//                    "504" -> startActivity(Intent(this, SalesMaterialActivity::class.java))
-//                    "505" -> {
-//
-//                        //Sync Contact Dashboard
-//                        startLeadDetailActivity()
-//                    }
-//                    "506" -> {
-//
-//                        //RaiseTicket Handling
-//                        val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
-//                            putExtra("URL", prefsManager.getRaiseTickitUrl() +
-//                                    "&mobile_no=" + prefsManager.getMobileNo() +
-//                                    "&UDID=" + prefsManager.getUserId() +
-//                                    "&app_version=" + prefsManager.getAppVersion() +
-//                                    "&device_code=" + Utility.getDeviceID(this@HomeActivity) +
-//                                    "&ssid=" + prefsManager.getSSID() +
-//                                    "&fbaid=" + prefsManager.getFBAID())
-//                            putExtra("NAME", "RAISE_TICKET")
-//                            putExtra("TITLE", "RAISE TICKET")
-//                        }
-//                        startActivity(intent)
-//                    }
-//                    "507" -> {
-//                        //manage support Dialog
-//                        if (!NetworkUtils.isNetworkAvailable(this)) {
-//                            this.showSnackbar(binding.root,getString(R.string.noInternet))
-//                            return
-//                        }
-//                        prefsManager.getUserConstantEntity()?.let { user ->
-//                            if (user.MangMobile != null && user.ManagName != null) {
-//                                if (callingDetailDialog?.isShowing == true) {
-//                                    return
-//                                } else {
-//                                    //************* call User Details Api //*************
-//                                    viewModel.getUserCallingDetail()
-//                                }
-//                            }
-//                        }
-//                    }
-//                    "508" -> {
-//                        //Calculator Activity
-//                        startActivity(Intent(this, IncomePotentialActivity::class.java))
-//                    }
-//                    "509" -> {
-//                        //Calculator Activity
-//                        startActivity(Intent(this, IncomePotentialActivity::class.java))
-//                    }
-//                    "551" ->{
-//                        // SalesMaterial : Motor Insurance
-//
-//                        val intent = Intent(this, SalesMaterialActivity::class.java).apply {
-//                            putExtra(Constant.Deeplink_PRODUCT_ID, "2") // Ensure "2" is a valid String
-//                        }
-//                        startActivity(intent)
-//
-//                    }
-//                    "552" ->{
-//                        // SalesMaterial : "Health Insurance
-//                        val intent = Intent(this, SalesMaterialActivity::class.java).apply {
-//                            putExtra(Constant.Deeplink_PRODUCT_ID, "1") // Ensure "2" is a valid String
-//                        }
-//                        startActivity(intent)
-//
-//                    }
-//                    "553" ->{
-//                        // SalesMaterial : "Term Insurance"
-//                        val intent = Intent(this, SalesMaterialActivity::class.java).apply {
-//                            putExtra(Constant.Deeplink_PRODUCT_ID, "6") // Ensure "2" is a valid String
-//                        }
-//                        startActivity(intent)
-//
-//                    }
-//                    "554" ->{
-//                        // SalesMaterial : "Travel Insurance"
-//
-//                        val intent = Intent(this, SalesMaterialActivity::class.java).apply {
-//                            putExtra(Constant.Deeplink_PRODUCT_ID, "8") // Ensure "2" is a valid String
-//                        }
-//                        startActivity(intent)
-//
-//                    }
-//                    else -> {
-//                        val ipAddress = try {
-//                            getLocalIpAddress()?: ""  // Replace with actual logic to get IP address
-//                        } catch (e: Exception) {
-//                            "0.0.0.0"
-//                        }
-//
-//                        val append = "&ss_id=${prefsManager.getSSID()}&fba_id=${prefsManager.getFBAID()}" +
-//                                "&sub_fba_id=${subFBAID}&ip_address=$ipAddress&mac_address=$ipAddress" +
-//                                "&app_version=${prefsManager.getAppVersion()}&device_id=${Utility.getDeviceID(this)}" +
-//                                "&login_ssid=&sub_ss_id=${subSSID}"
-//
-//                        // Update deeplinkValue with appended parameters
-//                        val updatedDeeplinkValue = deeplinkValue + append
-//
-//                        Log.d("DeepLink", updatedDeeplinkValue.toString())
-//                        // Delayed execution using Coroutine
-//                        Handler(Looper.getMainLooper()).postDelayed({
-//                            startActivity(Intent(this, CommonWebViewActivity::class.java).apply {
-//                                putExtra("URL", updatedDeeplinkValue)
-//                                putExtra("NAME", Title)
-//                                putExtra("TITLE", Title)
-//                            })
-//                        }, 100)
-//                    }
-//                }
-//            } catch (ex: Exception) {
-//                Log.d("Deeplink", ex.toString())
-//            } finally {
-//                prefsManager.clearDeeplink() // Clear deeplink at the end
-//            }
-//        }
-//    }
-
-    //endregion
 
     private fun deeplinkHandle() {
+        // 1. Set up variables to hold the extracted data, regardless of the source
+        var prdID: String? = null
+        var extractedUrl = ""
+        var titleValue = ""
+
+        // We keep this specific variable for the "else" fallback block
+        var fallbackRawUrl = ""
+
+        // 2. STRATEGY A: Try to get the structured DeepLinkEntity (Branch.io)
+        val branchDeepLink = prefsManager.getPendingDeepLink()
+
+        if (branchDeepLink != null) {
+            prdID = branchDeepLink.productId
+            extractedUrl = branchDeepLink.url ?: ""
+            titleValue = branchDeepLink.title ?: ""
+
+           // Log.d("DeepLink", "Captured URI: $uri | Host: $host | Path: $path | ProductID: $productId")
+
+        }
+        // 3. STRATEGY B: Fallback to the raw String (Universal Links / Intents)
+        else {
+            val rawDeepLink = prefsManager.getDeepLink()
+            if (!rawDeepLink.isNullOrEmpty()) {
+                fallbackRawUrl = rawDeepLink
+                try {
+                    val myUri = Uri.parse(rawDeepLink)
+                    prdID = myUri.getQueryParameter("product_id")
+                    extractedUrl = myUri.getQueryParameter("url") ?: ""
+                    titleValue = myUri.getQueryParameter("title") ?: ""
+                } catch (e: Exception) {
+                    Log.e("Deeplink", "Failed to parse raw URI: $rawDeepLink", e)
+                }
+            }
+        }
+
+        // 4. If neither strategy yielded a deep link, exit early
+        if (prdID.isNullOrEmpty() && fallbackRawUrl.isEmpty()) {
+            return
+        }
+
+
+        Title = titleValue
+
+        // 5. Pre-fetch common device details
+        val subSSID = prefsManager.getSUBUserSSId()
+        val subFBAID = prefsManager.getSUBUserFBAID()
+        val ipAddress = try { getLocalIpAddress() ?: "0.0.0.0" } catch (e: Exception) { "0.0.0.0" }
+        val deviceId = Utility.getDeviceID(this@HomeActivity)
+        val appVersion = "policyboss-${BuildConfig.VERSION_NAME}"
+        val parentSsid = ""
+
+
+        AnalyticsBranchIOHelper.trackCustomEvent(
+            context = this,
+            eventName = BranchCustomEvents.DEEPLINK_CLICK,
+            screenName = "HomeActivity",
+            alias = "",
+            description = "Opened via Deep Link",
+            customData = mapOf(
+                "url" to fallbackRawUrl,
+                "deeplink_type" to (prdID ?: "UNKNOWN"),
+                "ss_id" to prefsManager.getSSID()
+            )
+        )
+
+        // 6. Execute your exact routing logic using the unified variables
+        try {
+            when (prdID?.uppercase()) {
+
+                // region Dynamic WebViews (DB & WB)
+                "DB" -> {
+                    if (extractedUrl.isNotBlank()) {
+                        val separator = if (extractedUrl.contains("?")) "&" else "?"
+                        val appendParams = "${separator}ss_id=${prefsManager.getSSID()}" +
+                                "&fba_id=${prefsManager.getFBAID()}&sub_fba_id=$subFBAID" +
+                                "&ip_address=$ipAddress&mac_address=$ipAddress" +
+                                "&app_version=${prefsManager.getAppVersion()}" +
+                                "&device_id=$deviceId&product_id=$prdID&login_ssid=&sub_ss_id=$subSSID"
+
+                        val finalWebUrl = extractedUrl + appendParams
+
+                        startActivity(Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+                            putExtra("URL", finalWebUrl)
+                            putExtra("NAME", titleValue.ifEmpty { "PolicyBoss" })
+                            putExtra("TITLE", titleValue.ifEmpty { "PolicyBoss" })
+                        })
+                    }
+                }
+
+                "WB" -> {
+                    if (extractedUrl.isNotBlank()) {
+                        startActivity(Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+                            putExtra("URL", extractedUrl)
+                            putExtra("NAME", titleValue.ifEmpty { "PolicyBoss" })
+                            putExtra("TITLE", titleValue.ifEmpty { "PolicyBoss" })
+                        })
+                    }
+                }
+
+
+                // region Marketing Popup
+                "POP" -> {
+                    if (extractedUrl.isNotBlank()) {
+                        // Optional: If you need tracking parameters like you did for "DB", append them here.
+                        // Otherwise, just use the extractedUrl directly.
+
+                        val separator = if (extractedUrl.contains("?")) "&" else "?"
+                        val finalWebUrl = extractedUrl + "${separator}ss_id=${prefsManager.getSSID()}" +
+                                "&fba_id=${prefsManager.getFBAID()}" +
+                                "&device_id=$deviceId"
+
+                        // Call your popup function.
+                        // Note: pass your activity's root view (e.g., binding.root or window.decorView.rootView)
+                        openWebViewPopUp_marketing(
+                            view = binding.root,
+                            url = finalWebUrl, // Or just use 'extractedUrl' if you don't want appended params
+                            isCancelable = true,
+                            strHdr = titleValue // Fallback title if titleValue is empty
+                        )
+                    }
+                }
+                // endregion
+
+                // region Native Deep Links
+                "1" -> {
+                    val motorUrl = prefsManager.getFourWheelerUrl() + buildUrlAppend(ipAddress, deviceId, appVersion, 1, parentSsid)
+                    openCommonWebView(motorUrl, "Motor Insurance", "Motor Insurance", Constant.INSURANCE_TYPE)
+                }
+                "2" -> {
+                    val healthUrl = prefsManager.getHealthurl() + buildUrlAppend(ipAddress, deviceId, appVersion, 2, parentSsid)
+                    openCommonWebView(healthUrl, "Health Insurance", "Health Insurance", Constant.INSURANCE_TYPE)
+                }
+                "10" -> {
+                    val bikeUrl = prefsManager.getTwoWheelerUrl() + buildUrlAppend(ipAddress, deviceId, appVersion, 10, parentSsid)
+                    openCommonWebView(bikeUrl, "Two Wheeler Insurance", "Two Wheeler Insurance", Constant.INSURANCE_TYPE)
+                }
+                "SY", "41" -> startActivity(Intent(this@HomeActivity, WelcomeSyncContactActivityKotlin::class.java))
+                // endregion
+
+                // region 500 and 550 Series
+                "500", "HM" -> return
+                "501" -> startActivity(Intent(this@HomeActivity, MyAccountActivity::class.java))
+                "502" -> {
+                    val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+                        putExtra("URL", prefsManager.getEnableProPOSPurl() +
+                                "&app_version=" + prefsManager.getAppVersion() +
+                                "&device_code=" + deviceId +
+                                "&ssid=" + prefsManager.getSSID() +
+                                "&fbaid=" + prefsManager.getFBAID() +
+                                "&sub_fba_id=$subFBAID" +
+                                "&sub_ss_id=$subSSID" )
+                        putExtra("NAME", "Posp Enrollment")
+                        putExtra("TITLE", "Posp Enrollment")
+                    }
+                    startActivity(intent)
+                }
+                "503" -> startActivity(Intent(this@HomeActivity, NotificationActivity::class.java))
+                "504", "SL" -> startActivity(Intent(this@HomeActivity, SalesMaterialActivity::class.java))
+                "505" -> startLeadDetailActivity()
+                "506" -> {
+                    val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+                        putExtra("URL", prefsManager.getRaiseTickitUrl() +
+                                "&mobile_no=" + prefsManager.getMobileNo() +
+                                "&UDID=" + prefsManager.getUserId() +
+                                "&app_version=" + prefsManager.getAppVersion() +
+                                "&device_code=" + deviceId +
+                                "&ssid=" + prefsManager.getSSID() +
+                                "&fbaid=" + prefsManager.getFBAID())
+                        putExtra("NAME", "RAISE_TICKET")
+                        putExtra("TITLE", "RAISE TICKET")
+                    }
+                    startActivity(intent)
+                }
+                "507" -> {
+                    if (!NetworkUtils.isNetworkAvailable(this)) {
+                        this.showSnackbar(binding.root, getString(R.string.noInternet))
+                        return
+                    }
+                    prefsManager.getUserConstantEntity()?.let { user ->
+                        if (user.MangMobile != null && user.ManagName != null) {
+                            if (callingDetailDialog?.isShowing != true) {
+                                viewModel.getUserCallingDetail()
+                            }
+                        }
+                    }
+                }
+                "508", "509" -> startActivity(Intent(this@HomeActivity, IncomePotentialActivity::class.java))
+                "551" -> startActivity(Intent(this@HomeActivity, SalesMaterialActivity::class.java).apply { putExtra(Constant.Deeplink_PRODUCT_ID, "2") })
+                "552" -> startActivity(Intent(this@HomeActivity, SalesMaterialActivity::class.java).apply { putExtra(Constant.Deeplink_PRODUCT_ID, "1") })
+                "553" -> startActivity(Intent(this@HomeActivity, SalesMaterialActivity::class.java).apply { putExtra(Constant.Deeplink_PRODUCT_ID, "6") })
+                "554" -> startActivity(Intent(this@HomeActivity, SalesMaterialActivity::class.java).apply { putExtra(Constant.Deeplink_PRODUCT_ID, "8") })
+                // endregion
+
+                else -> {
+                    // If the ID isn't recognized, append analytics params to the original raw URL
+                    // Note: If this came from Branch (where fallbackRawUrl is empty), this block skips appending to avoid malformed URLs.
+                    if (fallbackRawUrl.isNotEmpty()) {
+                        val append = "&ss_id=${prefsManager.getSSID()}&fba_id=${prefsManager.getFBAID()}" +
+                                "&sub_fba_id=$subFBAID&ip_address=$ipAddress&mac_address=$ipAddress" +
+                                "&app_version=${prefsManager.getAppVersion()}&device_id=$deviceId" +
+                                "&login_ssid=&sub_ss_id=$subSSID"
+
+                        val updatedDeeplinkValue = fallbackRawUrl + append
+
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            startActivity(Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+                                putExtra("URL", updatedDeeplinkValue)
+                                putExtra("NAME", Title)
+                                putExtra("TITLE", Title)
+                            })
+                        }, 100)
+                    } else {
+                        Log.w("Deeplink", "Unrecognized Branch Product ID: $prdID with no raw fallback URL.")
+                    }
+                }
+            }
+        } catch (ex: Exception) {
+            Log.e("Deeplink", "Error executing routing logic", ex)
+        } finally {
+            // 7. Clear BOTH deep link references to ensure they don't trigger again on resume
+            prefsManager.clearDeeplink()
+            prefsManager.clearPendingDeepLink()
+        }
+    }
+
+    private fun deeplinkHandleOld() {
         val deeplinkValue = prefsManager.getDeepLink()
 
         val subSSID = prefsManager.getSUBUserSSId()
@@ -1434,7 +1503,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
                     "501" -> startActivity(Intent(this@HomeActivity, MyAccountActivity::class.java))
                     "502" -> {
 
-                       // PospEnrollment
+                        // PospEnrollment
                         val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
                             putExtra("URL", prefsManager.getEnableProPOSPurl() +
                                     "&app_version=" + prefsManager.getAppVersion() +
@@ -1453,7 +1522,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
                     "505" -> startLeadDetailActivity()
                     "506" -> {
 
-                       // ********** RAISE_TICKET  **********
+                        // ********** RAISE_TICKET  **********
                         val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
                             putExtra("URL", prefsManager.getRaiseTickitUrl() +
                                     "&mobile_no=" + prefsManager.getMobileNo() +
@@ -1515,145 +1584,269 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
 
 
     private fun getNotificationAction() {
-        // region Activity Open Using Notification
+        var notifyEntity: NotifyEntity? = null
+
+        // 1. Check if it came directly from the Intent (User was already logged in)
         intent.extras?.let { extras ->
-
-            // For getting User Click Action
-
-            val notifyEntity: NotifyEntity? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            notifyEntity = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 extras.getParcelable(Constant.PUSH_NOTIFY, NotifyEntity::class.java)
             } else {
                 @Suppress("DEPRECATION")
                 extras.getParcelable(Constant.PUSH_NOTIFY)
             }
 
-            notifyEntity?.let {
-                val messageId = it.message_id?:"0"
-               // RegisterController(this@HomeActivity).getUserClickActionOnNotification(messageId, null)
-                viewModel.userClickActionOnNotification(
-                    notifyReqID = messageId,
-                    appVersion = prefsManager.getAppVersion(),
-                    deviceCode = prefsManager.getDeviceID())
+            // Clear the intent extra so it doesn't trigger again if the user rotates the screen
+            intent.removeExtra(Constant.PUSH_NOTIFY)
+        }
+
+        // 2. If it wasn't in the Intent, check PrefsManager (User JUST logged in via LoginActivity)
+        if (notifyEntity == null) {
+            notifyEntity = prefsManager.getPushNotifyPreference()
+
+            // If we found one, clear it immediately so it doesn't trigger every time they open the app
+            if (notifyEntity != null) {
+                prefsManager.clearNotification()
+                prefsManager.setSharePushType("")
             }
+        }
 
-            // Step 1: Check if the user is logged in
-            if (prefsManager == null) {
-                notifyEntity?.let { entity ->
-                    prefsManager.setPushNotifyPreference(entity)
-                    prefsManager.setSharePushType(entity.notifyFlag?:"")
+        // 3. Now handle the navigation based on the notification data
+        notifyEntity?.let { entity ->
 
-                    val intent = Intent(this, SplashScreenActivity::class.java)
-                    startActivity(intent)
-                    finish()
+            // (Optional) Call your viewmodel to track that the user clicked the notification
+            // val messageId = entity.message_id ?: "0"
+            // viewModel.userClickActionOnNotification(messageId, prefsManager.getAppVersion(), prefsManager.getDeviceID())
+
+
+            AnalyticsBranchIOHelper.trackCustomEvent(
+                context = this@HomeActivity,
+                eventName = BranchCustomEvents.NOTIFICATION_CLICK,
+                screenName = "NotificationActivity",
+                customData = mapOf(
+                    "notification_type" to (entity.notifyFlag ?: "UNKNOWN"),
+                    "notification_title" to (entity.web_title ?: "UNKNOWN"),
+                    "notification_url" to (entity.web_url ?: "UNKNOWN"),
+                    "ss_id" to prefsManager.getSSID()
+
+
+                )
+            )
+
+            when (entity.notifyFlag?.trim()) {
+                "HM" -> {
+                    // Do nothing, already on Home
                 }
-            }
-            // Step 2: Handle login notification action
-            else if (extras.getString(Constant.PUSH_LOGIN_PAGE) != null) {
-                val pushLogin = extras.getString(Constant.PUSH_LOGIN_PAGE)
-                if (pushLogin == "555") {
-                    var type = ""
-                    var title = ""
-                    var body = ""
-                    var webUrl = ""
-                    var webTitle = ""
-
-                    prefsManager.getPushNotifyPreference()?.let { entity ->
-                        type = entity.notifyFlag ?:""
-                        title = entity.title ?: ""
-                        body = entity.body ?: ""
-                        webUrl = entity.web_url ?: ""
-                        webTitle = entity.web_title ?: ""
+                "POP" -> {
+                    entity.web_url?.let { webUrl ->
+                        if (webUrl.isNotBlank()) {
+                            openWebViewPopUp_marketing(
+                                view = binding.root,
+                                url = webUrl,
+                                isCancelable = true,
+                                strHdr = entity.web_title ?: ""
+                            )
+                        }
                     }
-
-                    prefsManager.clearNotification()
-
                 }
-            }
-            // region User already logged in and app is in foreground/background
-            else if (notifyEntity != null) {
-                when (notifyEntity.notifyFlag?.trim()) {
-
-                    "HM" -> {
-
-                    }
-                    "NL" -> {
-                        val intent = Intent(this, NotificationActivity::class.java)
-                        startActivity(intent)
-                    }
-                    "PF" -> {
-                        val intent = Intent(this, MyAccountActivity::class.java)
-                        startActivity(intent)
-                    }
-                    "SL" -> {
-                        val intent = Intent(this, SalesMaterialActivity::class.java)
-                        startActivity(intent)
-                    }
-                    "SY" -> {
-                        val intent = Intent(this, WelcomeSyncContactActivityKotlin::class.java)
-                        startActivity(intent)
-                    }
-                    "SYC" -> {
-                        val intent = Intent(this, SyncContactActivity::class.java)
-                        startActivity(intent)
-                    }
-                    else -> {
-                        notifyEntity.web_url?.let { webUrl ->
-                            navigateViaNotification(notifyEntity.notifyFlag?:"", webUrl, notifyEntity.web_title ?: "")
+                "NL" -> {
+                    startActivity(Intent(this, NotificationActivity::class.java))
+                }
+                "PF" -> {
+                    startActivity(Intent(this, MyAccountActivity::class.java))
+                }
+                "SL" -> {
+                    startActivity(Intent(this, SalesMaterialActivity::class.java))
+                }
+                "SY" -> {
+                    startActivity(Intent(this, WelcomeSyncContactActivityKotlin::class.java))
+                }
+                "SYC" -> {
+                    startActivity(Intent(this, SyncContactActivity::class.java))
+                }
+                else -> {
+                    entity.web_url?.let { webUrl ->
+                        if (webUrl.isNotBlank()) {
+                            navigateViaNotification(entity.notifyFlag ?: "", webUrl, entity.web_title ?: "")
                         }
                     }
                 }
             }
-
         }
-        // endregion
     }
 
+
     private fun navigateViaNotification(prdID: String, webURL: String, title: String) {
-        when (prdID) {
+        // 1. Pre-fetch common device details required for the URLs
+        val subSSID = prefsManager.getSUBUserSSId()
+        val subFBAID = prefsManager.getSUBUserFBAID()
+        val ipAddress = try { getLocalIpAddress() ?: "0.0.0.0" } catch (e: Exception) { "0.0.0.0" }
+        val deviceId = Utility.getDeviceID(this@HomeActivity)
+        val appVersion = "policyboss-${BuildConfig.VERSION_NAME}"
+        val parentSsid = ""
+
+        // 2. Route based on the Notification ID (prdID)
+        when (prdID.uppercase()) {
             "WB" -> {
                 startActivity(
-                    Intent(this, CommonWebViewActivity::class.java)
+                    Intent(this@HomeActivity, CommonWebViewActivity::class.java)
                         .putExtra("URL", webURL)
                         .putExtra("NAME", title)
                         .putExtra("TITLE", title)
                 )
             }
             "CB" -> {
-                Utility.loadWebViewUrlInBrowser(this, webURL)
+                Utility.loadWebViewUrlInBrowser(this@HomeActivity, webURL)
             }
-
             "DB" -> {
                 if (webURL.trim().isEmpty() || title.trim().isEmpty()) {
                     return
                 }
 
-                val ipAddress: String = try {
-                    // You can replace the following line with the actual way to retrieve the IP address if needed
-                    "" // Assuming you want to leave it empty as per your Java code
-                } catch (io: Exception) {
-                    "0.0.0.0"
-                }
-
                 // Construct the URL with additional parameters
                 val append = "&ss_id=${prefsManager.getSSID()}&fba_id=${prefsManager.getFBAID()}" +
-                        "&sub_fba_id=&ip_address=$ipAddress&mac_address=$ipAddress&app_version=${prefsManager.getAppVersion()}" +
-                        "&device_id=${prefsManager.getDeviceID()}&product_id=$prdID&login_ssid="
+                        "&sub_fba_id=$subFBAID&ip_address=$ipAddress&mac_address=$ipAddress&app_version=${prefsManager.getAppVersion()}" +
+                        "&device_id=$deviceId&product_id=$prdID&login_ssid=&sub_ss_id=$subSSID"
 
                 val updatedWebURL = webURL + append
 
                 startActivity(
-                    Intent(this, CommonWebViewActivity::class.java)
+                    Intent(this@HomeActivity, CommonWebViewActivity::class.java)
                         .putExtra("URL", updatedWebURL)
                         .putExtra("NAME", title)
                         .putExtra("TITLE", title)
                 )
             }
 
-            else ->{
+            // region Native Deep Links migrated to Notification
+            "1" -> {
+                val motorUrl = prefsManager.getFourWheelerUrl() + buildUrlAppend(ipAddress, deviceId, appVersion, 1, parentSsid)
+                openCommonWebView(motorUrl, "Motor Insurance", "Motor Insurance", Constant.INSURANCE_TYPE)
+            }
+            "2" -> {
+                val healthUrl = prefsManager.getHealthurl() + buildUrlAppend(ipAddress, deviceId, appVersion, 2, parentSsid)
+                openCommonWebView(healthUrl, "Health Insurance", "Health Insurance", Constant.INSURANCE_TYPE)
+            }
+            "10" -> {
+                val bikeUrl = prefsManager.getTwoWheelerUrl() + buildUrlAppend(ipAddress, deviceId, appVersion, 10, parentSsid)
+                openCommonWebView(bikeUrl, "Two Wheeler Insurance", "Two Wheeler Insurance", Constant.INSURANCE_TYPE)
+            }
+            "41" -> startActivity(Intent(this@HomeActivity, WelcomeSyncContactActivityKotlin::class.java))
+            // endregion
 
+            // region 500 and 550 Series migrated to Notification
+            "500" -> return
+            "501" -> startActivity(Intent(this@HomeActivity, MyAccountActivity::class.java))
+            "502" -> {
+                val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+                    putExtra("URL", prefsManager.getEnableProPOSPurl() +
+                            "&app_version=" + prefsManager.getAppVersion() +
+                            "&device_code=" + deviceId +
+                            "&ssid=" + prefsManager.getSSID() +
+                            "&fbaid=" + prefsManager.getFBAID() +
+                            "&sub_fba_id=$subFBAID" +
+                            "&sub_ss_id=$subSSID" )
+                    putExtra("NAME", "Posp Enrollment")
+                    putExtra("TITLE", "Posp Enrollment")
+                }
+                startActivity(intent)
+            }
+            "503" -> startActivity(Intent(this@HomeActivity, NotificationActivity::class.java))
+            "504" -> startActivity(Intent(this@HomeActivity, SalesMaterialActivity::class.java))
+            "505" -> startLeadDetailActivity()
+            "506" -> {
+                val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
+                    putExtra("URL", prefsManager.getRaiseTickitUrl() +
+                            "&mobile_no=" + prefsManager.getMobileNo() +
+                            "&UDID=" + prefsManager.getUserId() +
+                            "&app_version=" + prefsManager.getAppVersion() +
+                            "&device_code=" + deviceId +
+                            "&ssid=" + prefsManager.getSSID() +
+                            "&fbaid=" + prefsManager.getFBAID())
+                    putExtra("NAME", "RAISE_TICKET")
+                    putExtra("TITLE", "RAISE TICKET")
+                }
+                startActivity(intent)
+            }
+            "507" -> {
+                if (!NetworkUtils.isNetworkAvailable(this@HomeActivity)) {
+                    this@HomeActivity.showSnackbar(binding.root, getString(R.string.noInternet))
+                    return
+                }
+                prefsManager.getUserConstantEntity()?.let { user ->
+                    if (user.MangMobile != null && user.ManagName != null) {
+                        if (callingDetailDialog?.isShowing != true) {
+                            viewModel.getUserCallingDetail()
+                        }
+                    }
+                }
+            }
+            "508", "509" -> startActivity(Intent(this@HomeActivity, IncomePotentialActivity::class.java))
+            "551" -> startActivity(Intent(this@HomeActivity, SalesMaterialActivity::class.java).apply { putExtra(Constant.Deeplink_PRODUCT_ID, "2") })
+            "552" -> startActivity(Intent(this@HomeActivity, SalesMaterialActivity::class.java).apply { putExtra(Constant.Deeplink_PRODUCT_ID, "1") })
+            "553" -> startActivity(Intent(this@HomeActivity, SalesMaterialActivity::class.java).apply { putExtra(Constant.Deeplink_PRODUCT_ID, "6") })
+            "554" -> startActivity(Intent(this@HomeActivity, SalesMaterialActivity::class.java).apply { putExtra(Constant.Deeplink_PRODUCT_ID, "8") })
+            // endregion
+
+            else -> {
+                // Fallback for unhandled Notification IDs that include a webURL
+                if (webURL.isNotBlank()) {
+                    startActivity(
+                        Intent(this@HomeActivity, CommonWebViewActivity::class.java)
+                            .putExtra("URL", webURL)
+                            .putExtra("NAME", title)
+                            .putExtra("TITLE", title)
+                    )
+                }
             }
         }
     }
+
+//    private fun navigateViaNotificationOLD(prdID: String, webURL: String, title: String) {
+//        when (prdID) {
+//            "WB" -> {
+//                startActivity(
+//                    Intent(this, CommonWebViewActivity::class.java)
+//                        .putExtra("URL", webURL)
+//                        .putExtra("NAME", title)
+//                        .putExtra("TITLE", title)
+//                )
+//            }
+//            "CB" -> {
+//                Utility.loadWebViewUrlInBrowser(this, webURL)
+//            }
+//
+//            "DB" -> {
+//                if (webURL.trim().isEmpty() || title.trim().isEmpty()) {
+//                    return
+//                }
+//
+//                val ipAddress: String = try {
+//                    // You can replace the following line with the actual way to retrieve the IP address if needed
+//                    "" // Assuming you want to leave it empty as per your Java code
+//                } catch (io: Exception) {
+//                    "0.0.0.0"
+//                }
+//
+//                // Construct the URL with additional parameters
+//                val append = "&ss_id=${prefsManager.getSSID()}&fba_id=${prefsManager.getFBAID()}" +
+//                        "&sub_fba_id=&ip_address=$ipAddress&mac_address=$ipAddress&app_version=${prefsManager.getAppVersion()}" +
+//                        "&device_id=${prefsManager.getDeviceID()}&product_id=$prdID&login_ssid="
+//
+//                val updatedWebURL = webURL + append
+//
+//                startActivity(
+//                    Intent(this, CommonWebViewActivity::class.java)
+//                        .putExtra("URL", updatedWebURL)
+//                        .putExtra("NAME", title)
+//                        .putExtra("TITLE", title)
+//                )
+//            }
+//
+//            else ->{
+//
+//            }
+//        }
+//    }
 
 
 
@@ -1821,6 +2014,17 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
     }
     fun onDashBoardListener(entity: DashboardMultiLangEntity){
 
+        // 1. ADD BRANCH ANALYTICS HERE
+        AnalyticsBranchIOHelper.trackStandardEvent(
+            context = this@HomeActivity,
+            eventType = BRANCH_STANDARD_EVENT.VIEW_ITEM,
+            screenName = "HomeActivity",
+            customData = mapOf(
+
+                "product_name" to entity.productName,
+                "ss_id" to prefsManager.getSSID()
+            )
+        )
         dashBoardMenusList(dashboardEntity = entity)
     }
 
@@ -1849,6 +2053,19 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
 
         // Set up share button click listener
         binding.btnShare.setOnClickListener {
+
+            // ADD BRANCH EVENT HERE
+            AnalyticsBranchIOHelper.trackCustomEvent( // <-- FIX: Call trackCustomEvent instead
+                context = this@HomeActivity,
+                eventName = BranchCustomEvents.PRODUCT_SHARE, // Now this String will be accepted
+                screenName = "HomeActivity",
+                customData = mapOf(
+                    "product_name" to (shareEntity.menuName ?: ""),
+                    "product_id" to shareEntity.productId.toString()
+                )
+            )
+
+
 
            viewModel.getProductShareURL(shareEntity.productId.toString(),"0")
             shareProdDialog.dismiss()
@@ -2086,20 +2303,47 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
             onPositiveClick = {
 
 
-                //region Clear All data
+                // 1. SAVE ONLY the ALL_USERS flag (Because they should stay subscribed forever)
+                val isAllSubscribed = prefsManager.isSubscribedToAllUsers()
+
+                // ---> ADD THIS BRANCH ANALYTICS CODE HERE <---
+                AnalyticsBranchIOHelper.trackCustomEvent(
+                    context = this@HomeActivity,
+                    eventName = BranchCustomEvents.USER_LOGOUT,
+                    screenName = "HomeActivity",
+                    customData = mapOf(
+                        "ss_id" to prefsManager.getSSID(),
+
+                    )
+                )
+                // ---------------------------------------------
+
+                // Unlink Branch Identity
+                AnalyticsBranchIOHelper.clearIdentity()
+
+                // 2. CLEAR the data instantly (This logs them out locally and resets all other flags)
                 prefsManager.clearAll()
 
-                removeShortcuts()
-                weUser.logout()
+                // 3. RESTORE the ALL_USERS flag immediately
+                prefsManager.setSubscribedToAllUsers(isAllSubscribed)
 
-                //endregion
+                // 4. FIRE-AND-FORGET: Subscribe to guest.
+                // Because we just cleared the data, your FcmTopicManager will see they aren't
+                // a guest yet, make the Firebase network call, and automatically save
+                // 'setGuestTopicSubscribed(true)' in the background when it succeeds!
+                fcmTopicManager.subscribeToGuestAsync()
 
-                // Navigate to LoginActivity
-                val intent = Intent(this, LoginActivity::class.java)
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                startActivity(intent)
+                    removeShortcuts()
+                    weUser.logout()
 
-                this@HomeActivity.finish()
+                    val intent = Intent(this@HomeActivity, LoginActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                    startActivity(intent)
+                    finish()
+
+
+
+
             })
 
 

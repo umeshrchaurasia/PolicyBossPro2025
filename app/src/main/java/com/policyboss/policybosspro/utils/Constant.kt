@@ -12,6 +12,7 @@ object Constant {
     const val SHARED_PREF = "policybosspro_preference"
     const val token = "1234567890"
     const val TAG = "POLICYBOSS"
+    const val TAG_DEEPLINK = "DEEPLINK"
 
     const val WEB_LOGIN_MSG= "WEB_LOGIN_MESSAGE"
     const val enable_pro_signupurl	=	"https://www.policyboss.com/posp/registration?v=240709"
@@ -111,7 +112,17 @@ object Constant {
     const val   NOTIFICATION_MAX = "NOTIFICATION_MAX"
     const val   NOTIFICATION_MESSAGE = "NOTIFICATION_MESSAGE"
 
-    const val   ALL_USER =  "all_users"
+
+    //Top[ic
+    const val   ALL_USER =  "all_users1"
+
+    const val   LOGGED_IN_USERS =  "logged_in_users"
+
+    const val   GUEST_USERS =  "guest_users"
+
+
+
+
 
 
     const val SHARED_KEY_PUSH_NOTIFY = "SHARED_KEY_PUSH_NOTIFY"
