@@ -20,10 +20,14 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.policyboss.demoandroidapp.Utility.ExtensionFun.applySystemBarInsetsPadding
 import com.policyboss.policybosspro.BaseActivity
 
 import com.policyboss.policybosspro.R
+import com.policyboss.policybosspro.analytics.AnalyticsBranchIOHelper
+import com.policyboss.policybosspro.analytics.BranchCustomEvents
+import com.policyboss.policybosspro.analytics.FirebaseAnalyticsHelper
 import com.policyboss.policybosspro.core.response.salesMaterial.DocEntity
 import com.policyboss.policybosspro.core.response.salesMaterial.SalesMateriaProdEntity
 import com.policyboss.policybosspro.core.viewModel.salesMaterialVM.SalesMaterialViewNodel
@@ -55,6 +59,10 @@ class SalesShareActivity :BaseActivity<ActivitySalesShareBinding>() {
 
     @Inject
     lateinit var prefsManager: PolicyBossPrefsManager
+
+
+    @Inject
+    lateinit var firebaseAnalyticsHelper: FirebaseAnalyticsHelper
 
     lateinit var salesProductEntity: SalesMateriaProdEntity
 
@@ -268,6 +276,36 @@ class SalesShareActivity :BaseActivity<ActivitySalesShareBinding>() {
 
     //region Share SalesImage
     fun showShareProduct() {
+
+
+        // ==========================================
+        // DUAL ANALYTICS TRACKING: SHARE EVENT
+        // ==========================================
+        val prodName = salesProductEntity.Product_Name ?: "UNKNOWN"
+        val prodId = salesProductEntity.Product_Id.toString()
+        val ssid = prefsManager.getSSID()
+
+        // 1. Branch.io Tracking
+        AnalyticsBranchIOHelper.trackCustomEvent(
+            context = this@SalesShareActivity,
+            eventName = BranchCustomEvents.PRODUCT_SHARE,
+            screenName = "SalesShareActivity",
+            customData = mapOf(
+                "product_name" to prodName,
+                "product_id" to prodId,
+                "ss_id" to ssid
+            )
+        )
+
+        // 2. Firebase Analytics Tracking
+        val bundle = Bundle().apply {
+            putString(FirebaseAnalytics.Param.ITEM_NAME, prodName)
+            putString(FirebaseAnalytics.Param.ITEM_ID, prodId)
+            putString(FirebaseAnalytics.Param.CONTENT_TYPE, "sales_material_share")
+            putString("ss_id", ssid)
+        }
+        firebaseAnalyticsHelper.trackEvent(FirebaseAnalytics.Event.SHARE, bundle)
+        // ==========================================
         if (viewModel.combinedImage != null) datashareList(
             this@SalesShareActivity,
             viewModel.combinedImage,

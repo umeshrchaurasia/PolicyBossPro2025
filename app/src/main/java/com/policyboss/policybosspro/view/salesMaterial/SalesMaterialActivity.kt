@@ -19,6 +19,7 @@ import com.policyboss.demoandroidapp.Utility.ExtensionFun.applySystemBarInsetsPa
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.analytics.AnalyticsBranchIOHelper
 import com.policyboss.policybosspro.analytics.BranchCustomEvents
+import com.policyboss.policybosspro.analytics.FirebaseAnalyticsHelper
 import com.policyboss.policybosspro.core.APIState
 import com.policyboss.policybosspro.core.response.salesMaterial.CompanyEntity
 import com.policyboss.policybosspro.core.response.salesMaterial.SalesMateriaProdEntity
@@ -43,6 +44,9 @@ class SalesMaterialActivity : BaseActivity<ActivitySalesMaterialBinding>() {
 
     @Inject
     lateinit var prefsManager: PolicyBossPrefsManager
+
+    @Inject
+    lateinit var firebaseAnalyticsHelper: FirebaseAnalyticsHelper
 
     lateinit var companyLst: ArrayList<CompanyEntity>
 
@@ -98,10 +102,16 @@ class SalesMaterialActivity : BaseActivity<ActivitySalesMaterialBinding>() {
             eventName = BranchCustomEvents.SALESMATERIAL_VIEWED,
             screenName = "SalesMaterialActivity",
             customData = mapOf(
-                "fba_id" to prefsManager.getFBAID()
+                "ss_id" to prefsManager.getSSID()
             )
         )
 
+        // 2. Firebase Analytics Tracking
+        val bundle = Bundle().apply {
+            putString("ss_id", prefsManager.getSSID())
+            putString("screen_name", "SalesMaterialActivity")
+        }
+        firebaseAnalyticsHelper.trackEvent("salesmaterial_viewed", bundle)
         //Mark :- Observing Api, get Api Response
        observeResponse()
 

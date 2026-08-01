@@ -73,6 +73,7 @@ import com.policyboss.policybosspro.BaseJavaActivity;
 import com.policyboss.policybosspro.R;
 import com.policyboss.policybosspro.analytics.AnalyticsBranchIOHelper;
 import com.policyboss.policybosspro.analytics.BranchCustomEvents;
+import com.policyboss.policybosspro.analytics.FirebaseAnalyticsHelper;
 import com.policyboss.policybosspro.core.model.sysncContact.POSPHorizonEntity;
 import com.policyboss.policybosspro.core.model.sysncContact.SyncContactEntity;
 import com.policyboss.policybosspro.core.oldWayApi.IResponseSubcriber;
@@ -158,8 +159,14 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
     @Inject
     PolicyBossPrefsManager prefManager;
 
+    // =================================================
+    // ADD THIS FIELD INJECTION For firebaseAnalyticsHelper
+    // =================================================
+    @Inject
+    FirebaseAnalyticsHelper firebaseAnalyticsHelper;
 
-   // CameraGalleryManager cameraGalleryManager;   //tempRahul
+
+    // CameraGalleryManager cameraGalleryManager;   //tempRahul
 
     PermissionHandler permissionHandler ;
 
@@ -207,8 +214,10 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
 
             Analytics weAnalytics = WebEngage.get().analytics();
 
-            screenData.put("SS ID", userConstantEntity.getPOSPNo());
-            screenData.put("FBA ID", userConstantEntity.getFBAId());
+            // Null check for userConstantEntity just in case it hasn't loaded
+
+            screenData.put("SS ID",  prefManager.getSSID());
+            screenData.put("FBA ID",  prefManager.getFBAID());
             screenData.put("Name", prefManager.getName());
 
             screenData.put("url", url);
@@ -222,18 +231,28 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
             customData.put("name", prefManager.getName());
             customData.put("title", title);
             customData.put("url", url);
-            customData.put("ss_id", prefManager.getFBAID());
+            customData.put("ss_id", prefManager.getSSID());
 
             AnalyticsBranchIOHelper.trackCustomEvent(
-                    this,                                     // context
-                    BranchCustomEvents.PAGE_VIEW_WEBVIEW,     // eventName
-                    "CommonWebViewActivity",// screenName
-                    "",   //alias
-                    "",  //description
-                    customData                                // customData map
+                    this,                                     // Context
+                    BranchCustomEvents.PAGE_VIEW_WEBVIEW,     // Event Name
+                    "CommonWebViewActivity",                  // Screen Name
+                    "",                                       // Alias
+                    "",                                       // Description
+                    customData                                // Custom Data
             );
 
             Log.d(Constant.TAG, "Branch.io analytics CommonWebView  " + customData.toString());
+
+
+            // 3. Firebase Analytics (Added)
+            Bundle bundle = new Bundle();
+            bundle.putString("name", prefManager.getName());
+            bundle.putString("title", title);
+            bundle.putString("url", url);
+            bundle.putString("ss_id", prefManager.getSSID());
+
+            firebaseAnalyticsHelper.trackEvent("page_view_webview", bundle);
         }
         catch (Exception ex){
             ex.printStackTrace();

@@ -66,6 +66,17 @@ class WelcomeActivity : AppCompatActivity(), View.OnClickListener {
             // customData is completely omitted because it's not needed here
         )
 
+        AnalyticsBranchIOHelper.trackCustomEvent(
+            context = this@WelcomeActivity,
+            eventName = BranchCustomEvents.APP_OPEN, // Keep this generic: "app_open"
+            screenName = "WelcomeActivity",
+            customData = mapOf(
+                "login_status" to "false",
+                "user_status" to  "NEW_INSTALL"
+            )
+        )
+
+
         initWidgets()
         setListener()
         CoroutineHelper.saveDeviceDetails(this@WelcomeActivity, "0", "Install")

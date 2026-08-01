@@ -113,8 +113,10 @@ import android.Manifest
 import android.content.pm.PackageManager
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.policyboss.policybosspro.analytics.AnalyticsBranchIOHelper
 import com.policyboss.policybosspro.analytics.BranchCustomEvents
+import com.policyboss.policybosspro.analytics.FirebaseAnalyticsHelper
 import com.policyboss.policybosspro.utils.ExtensionFun.showCustomSnackbar
 import com.policyboss.policybosspro.utils.FirebasePushNotification.FcmTopicManager
 import com.policyboss.policybosspro.view.qrScanner.ScannerActivity
@@ -151,6 +153,9 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
     private val viewModelNotify : NotifyViewModel by viewModels()
     @Inject
     lateinit var prefsManager: PolicyBossPrefsManager
+
+    @Inject
+    lateinit var firebaseAnalyticsHelper: FirebaseAnalyticsHelper
 
     @Inject
     lateinit var fcmTopicManager: FcmTopicManager
@@ -1243,20 +1248,29 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
         val deviceId = Utility.getDeviceID(this@HomeActivity)
         val appVersion = "policyboss-${BuildConfig.VERSION_NAME}"
         val parentSsid = ""
+        val ssid = prefsManager.getSSID()
+        val deeplinkType = prdID ?: "UNKNOWN"
 
-
+        // Branch Deeplink Event
         AnalyticsBranchIOHelper.trackCustomEvent(
-            context = this,
+            context = this@HomeActivity,
             eventName = BranchCustomEvents.DEEPLINK_CLICK,
             screenName = "HomeActivity",
             alias = "",
             description = "Opened via Deep Link",
             customData = mapOf(
                 "url" to fallbackRawUrl,
-                "deeplink_type" to (prdID ?: "UNKNOWN"),
-                "ss_id" to prefsManager.getSSID()
+                "deeplink_type" to deeplinkType,
+                "ss_id" to ssid
             )
         )
+        // Firebase Deeplink Event
+        val bundle = Bundle().apply {
+            putString("url", fallbackRawUrl)
+            putString("deeplink_type", deeplinkType)
+            putString("ss_id", ssid)
+        }
+        firebaseAnalyticsHelper.trackEvent("deeplink_click", bundle)
 
         // 6. Execute your exact routing logic using the unified variables
         try {
@@ -1418,169 +1432,7 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
         }
     }
 
-    private fun deeplinkHandleOld() {
-        val deeplinkValue = prefsManager.getDeepLink()
 
-        val subSSID = prefsManager.getSUBUserSSId()
-        val subFBAID = prefsManager.getSUBUserFBAID()
-
-        if (!deeplinkValue.isNullOrEmpty()) {
-            try {
-                val myUri = Uri.parse(deeplinkValue)
-
-                val prdID = myUri.getQueryParameter("product_id")
-                val titleValue = myUri.getQueryParameter("title") ?: ""
-
-                // Extract the 'url' parameter (Expect it for DB and WB, but gracefully handle if null/empty)
-                val extractedUrl = myUri.getQueryParameter("url") ?: ""
-
-                Title = titleValue
-
-                // Pre-fetch common device details to avoid repeating code
-                val ipAddress = try { getLocalIpAddress() ?: "0.0.0.0" } catch (e: Exception) { "0.0.0.0" }
-                val deviceId = Utility.getDeviceID(this@HomeActivity)
-                val appVersion = "policyboss-${BuildConfig.VERSION_NAME}"
-                val parentSsid = ""
-
-                when (prdID?.uppercase()) { // Use uppercase to safely handle "sl", "SL", "db", "DB"
-
-                    // region Dynamic WebViews (DB & WB) - Matches Notification Logic
-                    "DB" -> {
-                        if (extractedUrl.isNotBlank()) {
-
-                            // Smart Append: Check if the extracted URL already has a '?' to decide between '?' and '&'
-                            val separator = if (extractedUrl.contains("?")) "&" else "?"
-
-                            val appendParams = "${separator}ss_id=${prefsManager.getSSID()}" +
-                                    "&fba_id=${prefsManager.getFBAID()}&sub_fba_id=$subFBAID" +
-                                    "&ip_address=$ipAddress&mac_address=$ipAddress" +
-                                    "&app_version=${prefsManager.getAppVersion()}" +
-                                    "&device_id=$deviceId&product_id=$prdID&login_ssid=&sub_ss_id=$subSSID"
-
-                            val finalWebUrl = extractedUrl + appendParams
-
-                            startActivity(Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
-                                putExtra("URL", finalWebUrl)
-                                putExtra("NAME", titleValue.ifEmpty { "PolicyBoss" })
-                                putExtra("TITLE", titleValue.ifEmpty { "PolicyBoss" })
-                            })
-                        }
-                    }
-
-                    "WB" -> {
-                        if (extractedUrl.isNotBlank()) {
-                            // WB opens the URL directly without appending session parameters
-                            startActivity(Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
-                                putExtra("URL", extractedUrl)
-                                putExtra("NAME", titleValue.ifEmpty { "PolicyBoss" })
-                                putExtra("TITLE", titleValue.ifEmpty { "PolicyBoss" })
-                            })
-                        }
-                    }
-                    // endregion
-
-                    // region Native Deep Links (IDs, Menus, App Activities)
-                    "1" -> {
-                        val motorUrl = prefsManager.getFourWheelerUrl() + buildUrlAppend(ipAddress, deviceId, appVersion, 1, parentSsid)
-                        openCommonWebView(motorUrl, "Motor Insurance", "Motor Insurance", Constant.INSURANCE_TYPE)
-                    }
-                    "2" -> {
-                        val healthUrl = prefsManager.getHealthurl() + buildUrlAppend(ipAddress, deviceId, appVersion, 2, parentSsid)
-                        openCommonWebView(healthUrl, "Health Insurance", "Health Insurance", Constant.INSURANCE_TYPE)
-                    }
-                    "10" -> {
-                        val bikeUrl = prefsManager.getTwoWheelerUrl() + buildUrlAppend(ipAddress, deviceId, appVersion, 10, parentSsid)
-                        openCommonWebView(bikeUrl, "Two Wheeler Insurance", "Two Wheeler Insurance", Constant.INSURANCE_TYPE)
-                    }
-
-                    "SY", "41" -> {
-                        startActivity(Intent(this@HomeActivity, WelcomeSyncContactActivityKotlin::class.java))
-                    }
-                    // endregion
-
-                    // region Existing 500 and 550 Series Logic
-                    "500","HM" -> return
-                    "501" -> startActivity(Intent(this@HomeActivity, MyAccountActivity::class.java))
-                    "502" -> {
-
-                        // PospEnrollment
-                        val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
-                            putExtra("URL", prefsManager.getEnableProPOSPurl() +
-                                    "&app_version=" + prefsManager.getAppVersion() +
-                                    "&device_code=" + deviceId +
-                                    "&ssid=" + prefsManager.getSSID() +
-                                    "&fbaid=" + prefsManager.getFBAID() +
-                                    "&sub_fba_id=${subFBAID}" +
-                                    "&sub_ss_id=${subSSID}" )
-                            putExtra("NAME", "Posp Enrollment")
-                            putExtra("TITLE", "Posp Enrollment")
-                        }
-                        startActivity(intent)
-                    }
-                    "503" -> startActivity(Intent(this@HomeActivity, NotificationActivity::class.java))
-                    "504","SL" -> startActivity(Intent(this@HomeActivity, SalesMaterialActivity::class.java))
-                    "505" -> startLeadDetailActivity()
-                    "506" -> {
-
-                        // ********** RAISE_TICKET  **********
-                        val intent = Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
-                            putExtra("URL", prefsManager.getRaiseTickitUrl() +
-                                    "&mobile_no=" + prefsManager.getMobileNo() +
-                                    "&UDID=" + prefsManager.getUserId() +
-                                    "&app_version=" + prefsManager.getAppVersion() +
-                                    "&device_code=" + deviceId +
-                                    "&ssid=" + prefsManager.getSSID() +
-                                    "&fbaid=" + prefsManager.getFBAID())
-                            putExtra("NAME", "RAISE_TICKET")
-                            putExtra("TITLE", "RAISE TICKET")
-                        }
-                        startActivity(intent)
-                    }
-                    "507" -> {
-                        if (!NetworkUtils.isNetworkAvailable(this)) {
-                            this.showSnackbar(binding.root, getString(R.string.noInternet))
-                            return
-                        }
-                        prefsManager.getUserConstantEntity()?.let { user ->
-                            if (user.MangMobile != null && user.ManagName != null) {
-                                if (callingDetailDialog?.isShowing != true) {
-                                    viewModel.getUserCallingDetail()
-                                }
-                            }
-                        }
-                    }
-                    "508", "509" -> startActivity(Intent(this@HomeActivity, IncomePotentialActivity::class.java))
-                    "551" -> startActivity(Intent(this@HomeActivity, SalesMaterialActivity::class.java).apply { putExtra(Constant.Deeplink_PRODUCT_ID, "2") })
-                    "552" -> startActivity(Intent(this@HomeActivity, SalesMaterialActivity::class.java).apply { putExtra(Constant.Deeplink_PRODUCT_ID, "1") })
-                    "553" -> startActivity(Intent(this@HomeActivity, SalesMaterialActivity::class.java).apply { putExtra(Constant.Deeplink_PRODUCT_ID, "6") })
-                    "554" -> startActivity(Intent(this@HomeActivity, SalesMaterialActivity::class.java).apply { putExtra(Constant.Deeplink_PRODUCT_ID, "8") })
-                    // endregion
-
-                    else -> {
-                        // Fallback to legacy behavior if ID is completely unrecognized
-                        val append = "&ss_id=${prefsManager.getSSID()}&fba_id=${prefsManager.getFBAID()}" +
-                                "&sub_fba_id=${subFBAID}&ip_address=$ipAddress&mac_address=$ipAddress" +
-                                "&app_version=${prefsManager.getAppVersion()}&device_id=$deviceId" +
-                                "&login_ssid=&sub_ss_id=${subSSID}"
-
-                        val updatedDeeplinkValue = deeplinkValue + append
-
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            startActivity(Intent(this@HomeActivity, CommonWebViewActivity::class.java).apply {
-                                putExtra("URL", updatedDeeplinkValue)
-                                putExtra("NAME", Title)
-                                putExtra("TITLE", Title)
-                            })
-                        }, 100)
-                    }
-                }
-            } catch (ex: Exception) {
-                Log.d("Deeplink", ex.toString())
-            } finally {
-                prefsManager.clearDeeplink() // Ensure it is cleared so it doesn't fire again on rotation/resume
-            }
-        }
-    }
 
 
     private fun getNotificationAction() {
@@ -1618,19 +1470,32 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
             // viewModel.userClickActionOnNotification(messageId, prefsManager.getAppVersion(), prefsManager.getDeviceID())
 
 
+            val notifyFlag = entity.notifyFlag ?: "UNKNOWN"
+            val notifyTitle = entity.web_title ?: "UNKNOWN"
+            val notifyUrl = entity.web_url ?: "UNKNOWN"
+            val ssid = prefsManager.getSSID()
+
+            // Branch Notification Click
             AnalyticsBranchIOHelper.trackCustomEvent(
                 context = this@HomeActivity,
                 eventName = BranchCustomEvents.NOTIFICATION_CLICK,
-                screenName = "NotificationActivity",
+                screenName = "HomeActivity",
                 customData = mapOf(
-                    "notification_type" to (entity.notifyFlag ?: "UNKNOWN"),
-                    "notification_title" to (entity.web_title ?: "UNKNOWN"),
-                    "notification_url" to (entity.web_url ?: "UNKNOWN"),
-                    "ss_id" to prefsManager.getSSID()
-
-
+                    "notification_type" to notifyFlag,
+                    "notification_title" to notifyTitle,
+                    "notification_url" to notifyUrl,
+                    "ss_id" to ssid
                 )
             )
+
+            // Firebase Notification Click
+            val bundle = Bundle().apply {
+                putString("notification_type", notifyFlag)
+                putString("notification_title", notifyTitle)
+                putString("notification_url", notifyUrl)
+                putString("ss_id", ssid)
+            }
+            firebaseAnalyticsHelper.trackEvent("notification_click", bundle)
 
             when (entity.notifyFlag?.trim()) {
                 "HM" -> {
@@ -2060,10 +1925,18 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
                 eventName = BranchCustomEvents.PRODUCT_SHARE, // Now this String will be accepted
                 screenName = "HomeActivity",
                 customData = mapOf(
-                    "product_name" to (shareEntity.menuName ?: ""),
+                    "product_name" to (shareEntity.productName ?: ""),
                     "product_id" to shareEntity.productId.toString()
                 )
             )
+
+            // Firebase Product Share
+            val bundle = Bundle().apply {
+                putString(FirebaseAnalytics.Param.ITEM_NAME, shareEntity.productName ?: "")
+                putString(FirebaseAnalytics.Param.ITEM_ID, shareEntity.productId.toString())
+                putString(FirebaseAnalytics.Param.CONTENT_TYPE, "product_share")
+            }
+            firebaseAnalyticsHelper.trackEvent(FirebaseAnalytics.Event.SHARE, bundle)
 
 
 
@@ -2317,6 +2190,13 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
                     )
                 )
                 // ---------------------------------------------
+
+                // Firebase Logout
+                val bundle = Bundle().apply { putString("ss_id", prefsManager.getSSID()) }
+                firebaseAnalyticsHelper.trackEvent("user_logout", bundle)
+                firebaseAnalyticsHelper.clearUserId()
+
+
 
                 // Unlink Branch Identity
                 AnalyticsBranchIOHelper.clearIdentity()

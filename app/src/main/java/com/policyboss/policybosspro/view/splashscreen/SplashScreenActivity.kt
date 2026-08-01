@@ -216,7 +216,7 @@ class  SplashScreenActivity : AppCompatActivity() {
         try {
             // First fetch token
             // Background tasks triggered in parallel (or quickly sequentially)
-            initAuthReceiver()
+
             getToken()
 
             // Subscribe to all_users once
@@ -232,14 +232,6 @@ class  SplashScreenActivity : AppCompatActivity() {
             if (prefManager.isFirstTimeLaunch()) {
 
 
-                AnalyticsBranchIOHelper.trackCustomEvent(
-                    context = this@SplashScreenActivity,
-                    eventName = BranchCustomEvents.FIRST_OPEN,
-                    screenName = "SplashScreenActivity",
-                    customData = mapOf(
-                        "user_status" to "NEW_INSTALL"
-                    )
-                )
 
                 navigateToWelcome()
             } else {

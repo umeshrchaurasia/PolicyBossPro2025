@@ -29,11 +29,13 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.messaging.FirebaseMessaging
 import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.BuildConfig
 import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.analytics.AnalyticsBranchIOHelper
+import com.policyboss.policybosspro.analytics.FirebaseAnalyticsHelper
 import com.policyboss.policybosspro.analytics.WebEngageAnalytics
 import com.policyboss.policybosspro.broadcast.SMSReaderBroadCastReceiver
 import com.policyboss.policybosspro.core.APIState
@@ -78,6 +80,10 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), View.OnClickListener
 
     @Inject
     lateinit var fcmTopicManager: FcmTopicManager
+
+
+    @Inject
+    lateinit var firebaseAnalyticsHelper: FirebaseAnalyticsHelper
 
     var isClickable = true
 
@@ -986,7 +992,8 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), View.OnClickListener
     //region Observation OF Api using Flow
     private fun observe() {
 
-//        //region  is UserSignUp
+        //region  Login Using OTP Alert
+
 
 //        lifecycleScope.launch {
 //
@@ -1262,13 +1269,26 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), View.OnClickListener
 
                                 showToast("Login is Successfully...")
 
+                                // ==========================================
+                                // DISMISS DIALOGS BEFORE FINISHING ACTIVITY
+                                // ==========================================
+                                if (this@LoginActivity::alertDialogOTP.isInitialized && alertDialogOTP.isShowing) {
+                                    alertDialogOTP.dismiss()
+                                }
+                                if (this@LoginActivity::alertDialogPassword.isInitialized && alertDialogPassword.isShowing) {
+                                    alertDialogPassword.dismiss()
+                                }
+                                // ==========================================
+
                                 // ========================================================
                                 // ADD THIS BLOCK: Switch FCM Topic on Successful Login
                                 // ========================================================
 
 
                                 val ssid = prefManager.getSSID()
+                                val userType  = prefManager.getUserType()
 
+                                Log.d(Constant.TAG, "Log for Analytics Type: ${userType} and pospNo: ${ssid}")
                                 // 1. Identify the user
                                 AnalyticsBranchIOHelper.setIdentity(ssid)
 
@@ -1281,10 +1301,24 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), View.OnClickListener
                                     description = "User successfully logged in via API",
                                     customData = mapOf(
                                         "ssid" to ssid,
-                                        "fba_id" to prefManager.getFBAID(),
                                         "user_type" to prefManager.getUserType()
                                     )
                                 )
+
+                                // ----------------------------------------------------
+                                // 2. FIREBASE ANALYTICS LOGIN
+                                // ----------------------------------------------------
+                                firebaseAnalyticsHelper.setUserId(ssid)
+                                firebaseAnalyticsHelper.setUserProperty("user_type", userType)
+
+
+                                val firebaseBundle = Bundle().apply {
+                                    putString(FirebaseAnalytics.Param.METHOD, "API")
+                                    putString("ss_id", ssid)
+
+                                    putString("user_type", userType)
+                                }
+                                firebaseAnalyticsHelper.trackEvent(FirebaseAnalytics.Event.LOGIN, firebaseBundle)
 
 
                                 // Switch FCM Topics
@@ -1633,6 +1667,17 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), View.OnClickListener
         super.onDestroy()
         unregisterSmsReceiver()
         binding.includeLoginNew.radioGroup.setOnCheckedChangeListener(null)
+
+        // ==========================================
+        // PREVENT WINDOW LEAKS: Dismiss active dialogs
+        // ==========================================
+        if (this::alertDialogOTP.isInitialized && alertDialogOTP.isShowing) {
+            alertDialogOTP.dismiss()
+        }
+
+        if (this::alertDialogPassword.isInitialized && alertDialogPassword.isShowing) {
+            alertDialogPassword.dismiss()
+        }
     }
 
 

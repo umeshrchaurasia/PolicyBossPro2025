@@ -35,6 +35,7 @@ import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.analytics.AnalyticsBranchIOHelper
 import com.policyboss.policybosspro.analytics.BranchCustomEvents
+import com.policyboss.policybosspro.analytics.FirebaseAnalyticsHelper
 import com.policyboss.policybosspro.analytics.WebEngageAnalytics
 import com.policyboss.policybosspro.core.RetroHelper
 
@@ -101,6 +102,10 @@ open class WelcomeSyncContactActivityKotlin : AppCompatActivity() , View.OnClick
     @Inject
     lateinit var prefManager : PolicyBossPrefsManager
 
+    // 2. Inject the Firebase Helper we created
+    @Inject
+    lateinit var firebaseAnalyticsHelper: FirebaseAnalyticsHelper
+
     // Inject/Initialize modern PermissionHandler
     private lateinit var permissionHandler: PermissionHandler
 
@@ -153,6 +158,13 @@ open class WelcomeSyncContactActivityKotlin : AppCompatActivity() , View.OnClick
                 "ss_id" to POSPNO
             )
         )
+
+        // B. Firebase Analytics Tracking (To keep platforms in sync)
+        val bundle = Bundle().apply {
+            putString("ss_id", POSPNO)
+        }
+        firebaseAnalyticsHelper.trackEvent("sync_contacts_viewed", bundle)
+
         showAnimDialog("Please Wait...")
 
         CoroutineScope(Dispatchers.IO).launch {

@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.media.RingtoneManager
 import android.os.Build
+import android.os.Bundle
 import android.util.Log
 import androidx.activity.viewModels
 import androidx.core.app.NotificationCompat
@@ -20,6 +21,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.analytics.AnalyticsBranchIOHelper
 import com.policyboss.policybosspro.analytics.BranchCustomEvents
+import com.policyboss.policybosspro.analytics.FirebaseAnalyticsHelper
 import com.policyboss.policybosspro.core.model.notification.NotifyEntity
 import com.policyboss.policybosspro.core.repository.loginRepository.LoginRepository
 import com.policyboss.policybosspro.core.repository.notificationRepository.INotificationRepository
@@ -66,6 +68,11 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     lateinit var notificationRepository: INotificationRepository
 
 
+    // ==========================================
+    // NEW: Inject Firebase Analytics Helper
+    // ==========================================
+    @Inject
+    lateinit var firebaseAnalyticsHelper: FirebaseAnalyticsHelper
 
 
     private var notificationManager: NotificationManager? = null
@@ -86,6 +93,47 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     private fun checkAndSendNotification(context: Context, remoteMessage: RemoteMessage, data: Map<String, String>) {
+
+
+
+        //region Analytics
+        type = remoteMessage.data["notifyFlag"] ?: "UNKNOWN"
+        webTitle = remoteMessage.data["web_title"] ?: "UNKNOWN"
+        webURL = remoteMessage.data["web_url"] ?: "UNKNOWN"
+
+        val ssid = prefManager.getSSID()
+
+        // ==========================================
+        // DUAL ANALYTICS TRACKING: NOTIFICATION RECEIVE
+        // ==========================================
+
+        // 1. Branch.io Tracking
+        AnalyticsBranchIOHelper.trackCustomEvent(
+            context = this@MyFirebaseMessagingService, // 'this' is perfectly valid as Service is a Context
+            eventName = BranchCustomEvents.NOTIFICATION_RECEIVE,
+            screenName = "MyFirebaseMessagingService", // Changed to reflect background state
+            customData = mapOf(
+                "ss_id" to ssid,
+                "notification_type" to type,
+                "notification_title" to webTitle,
+                "notification_url" to webURL
+            )
+        )
+
+        // 2. Firebase Analytics Tracking
+        val bundle = Bundle().apply {
+            putString("ss_id", ssid)
+            putString("notification_type", type)
+            putString("notification_title", webTitle)
+            putString("notification_url", webURL)
+        }
+        firebaseAnalyticsHelper.trackEvent("notification_receive", bundle)
+
+        //endregion
+
+        // ==========================================
+        // 2. CHECK PERMISSIONS & DISPLAY NOTIFICATION
+        // ==========================================
         // Check if the device is running Android 13 (API level 33) or higher
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
@@ -134,19 +182,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             web_title = webTitle
         }
 
-        AnalyticsBranchIOHelper.trackCustomEvent(
-            context = this,
-            eventName = BranchCustomEvents.NOTIFICATION_RECEIVE,
-            screenName = "NotificationActivity",
-            customData = mapOf(
-                "ss_id" to (prefManager.getSSID()),
 
-                "notification_type" to (type),
-                "notification_title" to (webTitle),
-                "notification_url" to (webURL),
-
-                )
-        )
 
         //Mark : Emit the notification data via NotificationRepository
 

@@ -16,7 +16,7 @@ import io.branch.referral.util.BranchEvent
 
 object BranchCustomEvents {
     // Onboarding
-    const val TUTORIAL_BEGIN = "Tutorial_Begin"
+    const val TUTORIAL_BEGIN = "Welcome_Screen"
 
     // Core Actions
     const val RAISE_TICKET_CLICKED = "Raise_Ticket_Clicked"
@@ -38,7 +38,7 @@ object BranchCustomEvents {
     const val DEEPLINK_CLICK = "Deeplink_Click"
     const val USER_LOGOUT = "User_Logout"
 
-    const val FIRST_OPEN = "first_open"
+    const val APP_OPEN = "app_open_loggin_status"
 
 }
 

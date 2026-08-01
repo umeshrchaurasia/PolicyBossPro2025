@@ -39,6 +39,7 @@ import com.policyboss.policybosspro.BaseActivity
 import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.analytics.AnalyticsBranchIOHelper
 import com.policyboss.policybosspro.analytics.BranchCustomEvents
+import com.policyboss.policybosspro.analytics.FirebaseAnalyticsHelper
 import com.policyboss.policybosspro.analytics.WebEngageAnalytics
 import com.policyboss.policybosspro.core.APIState
 
@@ -108,6 +109,10 @@ class SyncContactActivity : BaseActivity<ActivitySyncContactBinding>() {
     @Inject
     lateinit var prefManager:PolicyBossPrefsManager
 
+    @Inject
+    lateinit var firebaseAnalyticsHelper: FirebaseAnalyticsHelper
+
+
     override fun getViewBinding() = ActivitySyncContactBinding.inflate(layoutInflater)
 
 
@@ -168,7 +173,7 @@ class SyncContactActivity : BaseActivity<ActivitySyncContactBinding>() {
 
         //endregion
 
-
+      // 1. Branch.io Tracking sync Contact
         AnalyticsBranchIOHelper.trackCustomEvent(
             context = this@SyncContactActivity,
             eventName = BranchCustomEvents.CONTACT_SYNC_VIEWED, // Using the constant!
@@ -177,6 +182,12 @@ class SyncContactActivity : BaseActivity<ActivitySyncContactBinding>() {
                 "ss_id" to prefManager.getSSID()
             )
         )
+
+        // 2. Firebase Analytics Tracking (To keep platforms in sync)
+        val bundle = Bundle().apply {
+            putString("ss_id", prefManager.getSSID())
+        }
+        firebaseAnalyticsHelper.trackEvent("contact_sync_viewed", bundle)
 
     }
 
