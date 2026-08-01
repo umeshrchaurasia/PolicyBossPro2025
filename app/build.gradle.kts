@@ -20,8 +20,8 @@ android {
         applicationId = "com.policyboss.policybosspro"
         minSdk = 24
         targetSdk = 36
-        versionCode = 59
-        versionName = "1.5.0.9"
+        versionCode = 60
+        versionName = "1.5.6.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

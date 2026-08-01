@@ -100,7 +100,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Policybossprov34"
         android:usesCleartextTraffic="true"
-        tools:targetApi="31">
+       >
 
         <!-- 1. Add your Branch Keys -->
         <meta-data android:name="io.branch.sdk.BranchKey" android:value="key_live_kywUDzGfMWSC6yzeRAlailblrvcIN0pj" />

@@ -155,9 +155,9 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), View.OnClickListener
 
         //region declaration
         observe()
-        // Check For LoginVia currently off it 005
-//        loginViewModel.getusersignup(appVersion = prefManager.getAppVersion(),
-//            deviceCode = prefManager.getDeviceID())
+
+        loginViewModel.getusersignup(appVersion = prefManager.getAppVersion(),
+            deviceCode = prefManager.getDeviceID())
 
         // Init Sms Retriever >>>>
         initSmsListener()
@@ -995,90 +995,90 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), View.OnClickListener
         //region  Login Using OTP Alert
 
 
-//        lifecycleScope.launch {
-//
-//            repeatOnLifecycle(Lifecycle.State.CREATED) {
-//
-//                loginViewModel.getsignUpStateFlow.collect {
-//
-//                    when (it) {
-//                        is APIState.Loading -> {
-//                            // showAnimDialog()
-//                            displayLoadingWithText()
-//
-//                        }
-//
-//                        is APIState.Success -> {
-//
-//
-//                            hideLoading()
-//                            if (it != null) {
-//
-//                                //pospurl
-//
-//                                enable_pro_signupurl = it.data?.MasterData?.get(0)?.enable_pro_signupurl?: ""
-//
-//                                prefManager.setEnableProPOSPurl(enable_pro_signupurl)
-//
-//
-//                                enable_otp_only = it.data?.MasterData?.get(0)?.enable_otp_only?:""
-//
-//                                if(enable_otp_only !=null)
-//                                {
-//                                    if (enable_otp_only.isEmpty())
-//                                    {
-//                                        binding.includeLoginNew.lyloginvia.visibility = View.VISIBLE
-//                                        binding.includeLoginNew.lblloginvia.visibility = View.VISIBLE
-//                                    }
-//                                    else
-//                                    {
-//
-//                                        if(enable_otp_only.equals("Y"))
-//                                        {
-//                                            binding.includeLoginNew.lyloginvia.visibility  = View.GONE
-//                                            binding.includeLoginNew.lblloginvia.visibility = View.GONE
-//
-//                                            binding.includeLoginNew.etEmail.requestFocus()
-//                                        }else
-//                                        {
-//                                            binding.includeLoginNew.lyloginvia.visibility = View.VISIBLE
-//                                            binding.includeLoginNew.lblloginvia.visibility = View.VISIBLE
-//                                        }
-//
-//                                    }
-//                                }
-//                                else
-//                                {
-//                                    binding.includeLoginNew.lyloginvia.visibility = View.VISIBLE
-//                                    binding.includeLoginNew.lblloginvia.visibility = View.VISIBLE
-//                                }
-//                                //add sub user
-//
-//                                //add sub user
-//                                val getenable_pro_Addsubuser_url = it.data?.MasterData?.get(0)?.enable_pro_Addsubuser_url?: ""
-//                                prefManager.setEnablePro_ADDSUBUSERurl(getenable_pro_Addsubuser_url)
-//
-//                            }
-//                        }
-//
-//                        is APIState.Failure -> {
-//                            hideLoading()
-//
-//
-//                        }
-//
-//                        is APIState.Empty -> {
-//                            hideLoading()
-//                        }
-//                    }
-//
-//                }
-//
-//
-//            }
-//
-//
-//        }
+        lifecycleScope.launch {
+
+            repeatOnLifecycle(Lifecycle.State.CREATED) {
+
+                loginViewModel.getsignUpStateFlow.collect {
+
+                    when (it) {
+                        is APIState.Loading -> {
+                            // showAnimDialog()
+                            displayLoadingWithText()
+
+                        }
+
+                        is APIState.Success -> {
+
+
+                            hideLoading()
+                            if (it != null) {
+
+                                //pospurl
+
+                                enable_pro_signupurl = it.data?.MasterData?.get(0)?.enable_pro_signupurl?: ""
+
+                                prefManager.setEnableProPOSPurl(enable_pro_signupurl)
+
+
+                                enable_otp_only = it.data?.MasterData?.get(0)?.enable_otp_only?:""
+
+                                if(enable_otp_only !=null)
+                                {
+                                    if (enable_otp_only.isEmpty())
+                                    {
+                                        binding.includeLoginNew.lyloginvia.visibility = View.VISIBLE
+                                        binding.includeLoginNew.lblloginvia.visibility = View.VISIBLE
+                                    }
+                                    else
+                                    {
+
+                                        if(enable_otp_only.equals("Y"))
+                                        {
+                                            binding.includeLoginNew.lyloginvia.visibility  = View.GONE
+                                            binding.includeLoginNew.lblloginvia.visibility = View.GONE
+
+                                            binding.includeLoginNew.etEmail.requestFocus()
+                                        }else
+                                        {
+                                            binding.includeLoginNew.lyloginvia.visibility = View.VISIBLE
+                                            binding.includeLoginNew.lblloginvia.visibility = View.VISIBLE
+                                        }
+
+                                    }
+                                }
+                                else
+                                {
+                                    binding.includeLoginNew.lyloginvia.visibility = View.VISIBLE
+                                    binding.includeLoginNew.lblloginvia.visibility = View.VISIBLE
+                                }
+                                //add sub user
+
+                                //add sub user
+                                val getenable_pro_Addsubuser_url = it.data?.MasterData?.get(0)?.enable_pro_Addsubuser_url?: ""
+                                prefManager.setEnablePro_ADDSUBUSERurl(getenable_pro_Addsubuser_url)
+
+                            }
+                        }
+
+                        is APIState.Failure -> {
+                            hideLoading()
+
+
+                        }
+
+                        is APIState.Empty -> {
+                            hideLoading()
+                        }
+                    }
+
+                }
+
+
+            }
+
+
+        }
 //        //endregion
 
         //region  Login Using OTP Alert
@@ -1588,26 +1588,16 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), View.OnClickListener
                     return
                 }
 
-                if (enable_pro_signupurl != null) {
-                    if (enable_pro_signupurl.isEmpty()) {
-                       // startActivity(Intent(this, RegisterActivity::class.java))    //temp05
-                    } else {
-//                        val signupurl: String =
-//                            enable_pro_signupurl + "&app_version=" + prefManager.getAppVersion() + "&device_code=" + prefManager.getDeviceID() + "&ssid=&fbaid="
-//                        Utility.loadWebViewUrlInBrowser(this@LoginActivity, signupurl)
-
-
-                        val signupurl : String = enable_pro_signupurl
-
-                        Utility.loadWebViewUrlInBrowser(this@LoginActivity, signupurl)
-
-                    }
+                // 2. Simplified Null and Empty Check
+                if (enable_pro_signupurl.isNotBlank()) {
+                    // Safe to load the URL
+                    Utility.loadWebViewUrlInBrowser(this@LoginActivity, enable_pro_signupurl)
                 } else {
-                    //startActivity(Intent(this, RegisterActivity::class.java))   //temp05
+                    // Fallback action if URL is null, empty, or just spaces
+                    // startActivity(Intent(this, RegisterActivity::class.java))    //temp05
                 }
 
 
-                trackEvent("")
             }
 
             binding.includeLoginNew.lyRaiseTicket.id ->{
