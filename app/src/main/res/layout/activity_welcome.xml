@@ -97,7 +97,10 @@
             android:background="@null"
             android:gravity="center"
             android:padding="4dp"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="12dp"
             style="@style/TextStyle.TextLarge"
+
             android:text="@string/skin_walkthrogh" />
     </LinearLayout>
 </LinearLayout>

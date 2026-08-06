@@ -227,22 +227,22 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
             weAnalytics.screenNavigated("Common WebView Screen", screenData);
 
            // ******** Branch Analytics ************ //
-            HashMap<String, String> customData = new HashMap<>();
-            customData.put("name", prefManager.getName());
-            customData.put("title", title);
-            customData.put("url", url);
-            customData.put("ss_id", prefManager.getSSID());
+//            HashMap<String, String> customData = new HashMap<>();
+//            customData.put("name", prefManager.getName());
+//            customData.put("title", title);
+//            customData.put("url", url);
+//            customData.put("ss_id", prefManager.getSSID());
+//
+//            AnalyticsBranchIOHelper.trackCustomEvent(
+//                    this,                                     // Context
+//                    BranchCustomEvents.PAGE_VIEW_WEBVIEW,     // Event Name
+//                    "CommonWebViewActivity",                  // Screen Name
+//                    "",                                       // Alias
+//                    "",                                       // Description
+//                    customData                                // Custom Data
+//            );
 
-            AnalyticsBranchIOHelper.trackCustomEvent(
-                    this,                                     // Context
-                    BranchCustomEvents.PAGE_VIEW_WEBVIEW,     // Event Name
-                    "CommonWebViewActivity",                  // Screen Name
-                    "",                                       // Alias
-                    "",                                       // Description
-                    customData                                // Custom Data
-            );
-
-            Log.d(Constant.TAG, "Branch.io analytics CommonWebView  " + customData.toString());
+  //          Log.d(Constant.TAG, "Branch.io analytics CommonWebView  " + customData.toString());
 
 
             // 3. Firebase Analytics (Added)
@@ -252,7 +252,7 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
             bundle.putString("url", url);
             bundle.putString("ss_id", prefManager.getSSID());
 
-            firebaseAnalyticsHelper.trackEvent("page_view_webview", bundle);
+            firebaseAnalyticsHelper.trackScreenView("page_view_webview" , this.getClass().getSimpleName(), bundle);
         }
         catch (Exception ex){
             ex.printStackTrace();
@@ -944,14 +944,24 @@ public class CommonWebViewActivity extends BaseJavaActivity implements BaseJavaA
                     customData.put("ssid", prefManager.getSSID());
 
 // 2. Call the Kotlin object method
-                    AnalyticsBranchIOHelper.INSTANCE.trackCustomEvent(
-                            this,
-                            BranchCustomEvents.RAISE_TICKET_CLICKED,
-                            "RaiseTicketActivity",
-                            "",
-                            "",
-                            customData
-                    );
+//                    AnalyticsBranchIOHelper.INSTANCE.trackCustomEvent(
+//                            this,
+//                            BranchCustomEvents.RAISE_TICKET_CLICKED,
+//                            "RaiseTicketActivity",
+//                            "",
+//                            "",
+//                            customData
+//                    );
+
+                    Bundle bundle = new Bundle();
+                    bundle.putString("name", prefManager.getName());
+                    bundle.putString("title", title);
+                    bundle.putString("url", url);
+                    bundle.putString("ss_id", prefManager.getSSID());
+
+                    firebaseAnalyticsHelper.trackEvent("Raise_Ticket_Clicked", bundle);
+
+
                     String url = userConstantEntity.getRaiseTickitUrl() + "&mobile_no=" + userConstantEntity.getMangMobile()
                             + "&UDID=" + userConstantEntity.getUid();
                     Log.d("URL", "Raise Ticket URL: " + url);

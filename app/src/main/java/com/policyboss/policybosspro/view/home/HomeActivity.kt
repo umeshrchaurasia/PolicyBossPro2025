@@ -1920,15 +1920,15 @@ class HomeActivity : BaseActivity<ActivityHomeBinding>(), NavigationView.OnNavig
         binding.btnShare.setOnClickListener {
 
             // ADD BRANCH EVENT HERE
-            AnalyticsBranchIOHelper.trackCustomEvent( // <-- FIX: Call trackCustomEvent instead
-                context = this@HomeActivity,
-                eventName = BranchCustomEvents.PRODUCT_SHARE, // Now this String will be accepted
-                screenName = "HomeActivity",
-                customData = mapOf(
-                    "product_name" to (shareEntity.productName ?: ""),
-                    "product_id" to shareEntity.productId.toString()
-                )
-            )
+//            AnalyticsBranchIOHelper.trackCustomEvent( // <-- FIX: Call trackCustomEvent instead
+//                context = this@HomeActivity,
+//                eventName = BranchCustomEvents.PRODUCT_SHARE, // Now this String will be accepted
+//                screenName = "HomeActivity",
+//                customData = mapOf(
+//                    "product_name" to (shareEntity.productName ?: ""),
+//                    "product_id" to shareEntity.productId.toString()
+//                )
+//            )
 
             // Firebase Product Share
             val bundle = Bundle().apply {

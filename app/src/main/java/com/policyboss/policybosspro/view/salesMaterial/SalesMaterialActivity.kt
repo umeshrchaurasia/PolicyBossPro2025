@@ -97,21 +97,23 @@ class SalesMaterialActivity : BaseActivity<ActivitySalesMaterialBinding>() {
         viewModel.getSalesProducts()
 
         // Add this in onCreate() of SalesMaterialActivity.kt
-        AnalyticsBranchIOHelper.trackCustomEvent(
-            context = this,
-            eventName = BranchCustomEvents.SALESMATERIAL_VIEWED,
-            screenName = "SalesMaterialActivity",
-            customData = mapOf(
-                "ss_id" to prefsManager.getSSID()
-            )
-        )
+//        AnalyticsBranchIOHelper.trackCustomEvent(
+//            context = this,
+//            eventName = BranchCustomEvents.SALESMATERIAL_VIEWED,
+//            screenName = "SalesMaterialActivity",
+//            customData = mapOf(
+//                "ss_id" to prefsManager.getSSID()
+//            )
+//        )
 
         // 2. Firebase Analytics Tracking
         val bundle = Bundle().apply {
             putString("ss_id", prefsManager.getSSID())
             putString("screen_name", "SalesMaterialActivity")
         }
-        firebaseAnalyticsHelper.trackEvent("salesmaterial_viewed", bundle)
+        val className = this.javaClass.simpleName
+
+        firebaseAnalyticsHelper.trackScreenView("salesmaterial_viewed", className, bundle)
         //Mark :- Observing Api, get Api Response
        observeResponse()
 

@@ -150,20 +150,23 @@ open class WelcomeSyncContactActivityKotlin : AppCompatActivity() , View.OnClick
 
 
         // Add this in onCreate() of WelcomeSyncContactActivityKotlin.kt
-        AnalyticsBranchIOHelper.trackCustomEvent(
-            context = this,
-            eventName = BranchCustomEvents.SYNC_CONTACTS_VIEWED,
-            screenName = "SyncContactActivity", // Kept as requested in your table
-            customData = mapOf(
-                "ss_id" to POSPNO
-            )
-        )
+//        AnalyticsBranchIOHelper.trackCustomEvent(
+//            context = this,
+//            eventName = BranchCustomEvents.SYNC_CONTACTS_VIEWED,
+//            screenName = "SyncContactActivity", // Kept as requested in your table
+//            customData = mapOf(
+//                "ss_id" to POSPNO
+//            )
+//        )
 
         // B. Firebase Analytics Tracking (To keep platforms in sync)
         val bundle = Bundle().apply {
             putString("ss_id", POSPNO)
         }
-        firebaseAnalyticsHelper.trackEvent("sync_contacts_viewed", bundle)
+
+        firebaseAnalyticsHelper.trackScreenView(this@WelcomeSyncContactActivityKotlin.javaClass.simpleName, "sync_contacts_viewed",bundle)
+
+
 
         showAnimDialog("Please Wait...")
 

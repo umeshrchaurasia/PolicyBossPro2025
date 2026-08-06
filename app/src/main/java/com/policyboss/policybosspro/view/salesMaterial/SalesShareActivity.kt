@@ -286,16 +286,16 @@ class SalesShareActivity :BaseActivity<ActivitySalesShareBinding>() {
         val ssid = prefsManager.getSSID()
 
         // 1. Branch.io Tracking
-        AnalyticsBranchIOHelper.trackCustomEvent(
-            context = this@SalesShareActivity,
-            eventName = BranchCustomEvents.PRODUCT_SHARE,
-            screenName = "SalesShareActivity",
-            customData = mapOf(
-                "product_name" to prodName,
-                "product_id" to prodId,
-                "ss_id" to ssid
-            )
-        )
+//        AnalyticsBranchIOHelper.trackCustomEvent(
+//            context = this@SalesShareActivity,
+//            eventName = BranchCustomEvents.PRODUCT_SHARE,
+//            screenName = "SalesShareActivity",
+//            customData = mapOf(
+//                "product_name" to prodName,
+//                "product_id" to prodId,
+//                "ss_id" to ssid
+//            )
+//        )
 
         // 2. Firebase Analytics Tracking
         val bundle = Bundle().apply {

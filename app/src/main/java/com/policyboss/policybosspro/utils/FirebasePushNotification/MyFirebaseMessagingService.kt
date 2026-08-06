@@ -108,17 +108,17 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // ==========================================
 
         // 1. Branch.io Tracking
-        AnalyticsBranchIOHelper.trackCustomEvent(
-            context = this@MyFirebaseMessagingService, // 'this' is perfectly valid as Service is a Context
-            eventName = BranchCustomEvents.NOTIFICATION_RECEIVE,
-            screenName = "MyFirebaseMessagingService", // Changed to reflect background state
-            customData = mapOf(
-                "ss_id" to ssid,
-                "notification_type" to type,
-                "notification_title" to webTitle,
-                "notification_url" to webURL
-            )
-        )
+//        AnalyticsBranchIOHelper.trackCustomEvent(
+//            context = this@MyFirebaseMessagingService, // 'this' is perfectly valid as Service is a Context
+//            eventName = BranchCustomEvents.NOTIFICATION_RECEIVE,
+//            screenName = "MyFirebaseMessagingService", // Changed to reflect background state
+//            customData = mapOf(
+//                "ss_id" to ssid,
+//                "notification_type" to type,
+//                "notification_title" to webTitle,
+//                "notification_url" to webURL
+//            )
+//        )
 
         // 2. Firebase Analytics Tracking
         val bundle = Bundle().apply {

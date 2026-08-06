@@ -243,7 +243,7 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), View.OnClickListener
 
         prefManager.setDeviceID(Utility.getDeviceID(this@LoginActivity))
 
-        prefManager.setAppVersion("policyboss-" + BuildConfig.VERSION_NAME) 
+       // prefManager.setAppVersion("policyboss-" + BuildConfig.VERSION_NAME)
         
 
         //   val deviceId: String =
@@ -1290,20 +1290,20 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(), View.OnClickListener
 
                                 Log.d(Constant.TAG, "Log for Analytics Type: ${userType} and pospNo: ${ssid}")
                                 // 1. Identify the user
-                                AnalyticsBranchIOHelper.setIdentity(ssid)
+                               // AnalyticsBranchIOHelper.setIdentity(ssid)
 
                                 // 2. Log the event
-                                AnalyticsBranchIOHelper.trackStandardEvent(
-                                    context = this@LoginActivity,
-                                    eventType = BRANCH_STANDARD_EVENT.LOGIN,
-                                    screenName = "LoginActivity",
-                                    alias = "user_login",
-                                    description = "User successfully logged in via API",
-                                    customData = mapOf(
-                                        "ssid" to ssid,
-                                        "user_type" to prefManager.getUserType()
-                                    )
-                                )
+//                                AnalyticsBranchIOHelper.trackStandardEvent(
+//                                    context = this@LoginActivity,
+//                                    eventType = BRANCH_STANDARD_EVENT.LOGIN,
+//                                    screenName = "LoginActivity",
+//                                    alias = "user_login",
+//                                    description = "User successfully logged in via API",
+//                                    customData = mapOf(
+//                                        "ssid" to ssid,
+//                                        "user_type" to prefManager.getUserType()
+//                                    )
+//                                )
 
                                 // ----------------------------------------------------
                                 // 2. FIREBASE ANALYTICS LOGIN

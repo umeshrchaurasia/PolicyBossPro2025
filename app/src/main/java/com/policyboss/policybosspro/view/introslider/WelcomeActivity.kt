@@ -12,18 +12,23 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.policyboss.demoandroidapp.Utility.ExtensionFun.applySystemBarInsetsPadding
-import com.policyboss.policybosspro.BuildConfig
+
 import com.policyboss.policybosspro.R
 import com.policyboss.policybosspro.analytics.AnalyticsBranchIOHelper
 import com.policyboss.policybosspro.analytics.BranchCustomEvents
+import com.policyboss.policybosspro.analytics.FirebaseAnalyticsHelper
 import com.policyboss.policybosspro.databinding.ActivityWelcomeBinding
 import com.policyboss.policybosspro.utils.AppPermission.AppPermissionManager
 import com.policyboss.policybosspro.utils.AppPermission.PermissionHandler
 import com.policyboss.policybosspro.utils.CoroutineHelper
 import com.webengage.sdk.android.WebEngage
+import dagger.hilt.android.AndroidEntryPoint
 import io.branch.referral.util.BRANCH_STANDARD_EVENT
+import jakarta.inject.Inject
 
+@AndroidEntryPoint
 class WelcomeActivity : AppCompatActivity(), View.OnClickListener {
 
     private lateinit var binding: ActivityWelcomeBinding
@@ -34,6 +39,10 @@ class WelcomeActivity : AppCompatActivity(), View.OnClickListener {
     // 1. Declare Permission Handler and a flag to prevent multiple prompts
     private lateinit var permissionHandler: PermissionHandler
     private var hasAskedNotification = false
+
+
+    @Inject
+    lateinit var firebaseAnalyticsHelper: FirebaseAnalyticsHelper
 
     override fun onStart() {
         super.onStart()
@@ -58,23 +67,23 @@ class WelcomeActivity : AppCompatActivity(), View.OnClickListener {
 
         // Inside WelcomeActivity.kt -> onCreate() or pageChangeCallback (position == 0)
 
-        AnalyticsBranchIOHelper.trackCustomEvent(
-            context = this@WelcomeActivity,
-            eventName = BranchCustomEvents.TUTORIAL_BEGIN,
-            screenName = "WelcomeActivity",
-            description = "User started the onboarding slider"
-            // customData is completely omitted because it's not needed here
-        )
-
-        AnalyticsBranchIOHelper.trackCustomEvent(
-            context = this@WelcomeActivity,
-            eventName = BranchCustomEvents.APP_OPEN, // Keep this generic: "app_open"
-            screenName = "WelcomeActivity",
-            customData = mapOf(
-                "login_status" to "false",
-                "user_status" to  "NEW_INSTALL"
-            )
-        )
+//        AnalyticsBranchIOHelper.trackCustomEvent(
+//            context = this@WelcomeActivity,
+//            eventName = BranchCustomEvents.TUTORIAL_BEGIN,
+//            screenName = "WelcomeActivity",
+//            description = "User started the onboarding slider"
+//            // customData is completely omitted because it's not needed here
+//        )
+//
+//        AnalyticsBranchIOHelper.trackCustomEvent(
+//            context = this@WelcomeActivity,
+//            eventName = BranchCustomEvents.APP_OPEN, // Keep this generic: "app_open"
+//            screenName = "WelcomeActivity",
+//            customData = mapOf(
+//                "login_status" to "false",
+//                "user_status" to  "NEW_INSTALL"
+//            )
+//        )
 
 
         initWidgets()
@@ -109,24 +118,26 @@ class WelcomeActivity : AppCompatActivity(), View.OnClickListener {
                     binding.viewPager.currentItem = current
                 } else {
 
-                    AnalyticsBranchIOHelper.trackStandardEvent(
-                        context = this,
-                        eventType = BRANCH_STANDARD_EVENT.COMPLETE_TUTORIAL,
-                        screenName = "WelcomeActivity",
-                        description = "User completed the onboarding slider"
-                    )
+// For the Next/Finish button
+                    val bundleComplete = Bundle().apply {
+                        putString("screen_name", this@WelcomeActivity.javaClass.simpleName)
+                        putString("description", "User completed the onboarding slider")
+                    }
+                    firebaseAnalyticsHelper.trackEvent(FirebaseAnalytics.Event.TUTORIAL_COMPLETE, bundleComplete)
                     startActivity(Intent(this, EulaActivity::class.java))
                 }
             }
+
             R.id.btn_skip -> {
-                AnalyticsBranchIOHelper.trackStandardEvent(
-                    context = this,
-                    eventType = BRANCH_STANDARD_EVENT.COMPLETE_TUTORIAL,
-                    screenName = "WelcomeActivity",
-                    description = "User completed the onboarding slider"
-                )
+                val bundleSkip = Bundle().apply {
+                    putString("screen_name", this@WelcomeActivity.javaClass.simpleName)
+                    putString("description", "User skipped the onboarding slider")
+                }
+                firebaseAnalyticsHelper.trackEvent(FirebaseAnalytics.Event.TUTORIAL_COMPLETE, bundleSkip)
+
                 startActivity(Intent(this, EulaActivity::class.java))
             }
+
         }
     }
 

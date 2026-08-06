@@ -174,20 +174,21 @@ class SyncContactActivity : BaseActivity<ActivitySyncContactBinding>() {
         //endregion
 
       // 1. Branch.io Tracking sync Contact
-        AnalyticsBranchIOHelper.trackCustomEvent(
-            context = this@SyncContactActivity,
-            eventName = BranchCustomEvents.CONTACT_SYNC_VIEWED, // Using the constant!
-            screenName = "SyncContactActivity",
-            customData = mapOf(
-                "ss_id" to prefManager.getSSID()
-            )
-        )
+//        AnalyticsBranchIOHelper.trackCustomEvent(
+//            context = this@SyncContactActivity,
+//            eventName = BranchCustomEvents.CONTACT_SYNC_VIEWED, // Using the constant!
+//            screenName = "SyncContactActivity",
+//            customData = mapOf(
+//                "ss_id" to prefManager.getSSID()
+//            )
+//        )
 
         // 2. Firebase Analytics Tracking (To keep platforms in sync)
         val bundle = Bundle().apply {
             putString("ss_id", prefManager.getSSID())
         }
-        firebaseAnalyticsHelper.trackEvent("contact_sync_viewed", bundle)
+
+        firebaseAnalyticsHelper.trackEvent("sync_contacts_started", bundle)
 
     }
 

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
 import com.google.gson.Gson
+import com.policyboss.policybosspro.BuildConfig
 import com.policyboss.policybosspro.core.model.notification.NotifyEntity
 import com.policyboss.policybosspro.core.response.login.EMP
 import com.policyboss.policybosspro.core.response.login.LoginNewResponse_DSAS_Horizon
@@ -1140,8 +1141,12 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         editor.putString(APP_VERSION, appVersion).apply()
     }
 
+//    fun getAppVersion(): String {
+//        return pref.getString(APP_VERSION, "") ?: ""
+//    }
+
     fun getAppVersion(): String {
-        return pref.getString(APP_VERSION, "") ?: ""
+        return "policyboss-${BuildConfig.VERSION_NAME}"
     }
 
 
