@@ -2,6 +2,7 @@ package com.policyboss.policybosspro.analytics
 
 import android.os.Bundle
 import com.google.firebase.analytics.FirebaseAnalytics
+
 import com.policyboss.policybosspro.BuildConfig
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -14,7 +15,7 @@ class FirebaseAnalyticsHelper @Inject constructor(
     init {
         // This attaches "client_version" to EVERY event automatically
         val defaultParams = Bundle().apply {
-            putString("client_version", BuildConfig.VERSION_NAME)
+            putString("app_version", BuildConfig.VERSION_NAME)
         }
         firebaseAnalytics.setDefaultEventParameters(defaultParams)
     }

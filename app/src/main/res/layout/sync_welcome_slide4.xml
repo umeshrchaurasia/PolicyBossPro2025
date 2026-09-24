@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/slide4ScrollView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="#EBFCFF">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Header Title -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="SYNC CONTACTS"
+            android:textAlignment="center"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="UNDERSTANDING WHAT, HOW &amp; WHY"
+            android:textAlignment="center"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/black" />
+
+        <!-- Graphic Image View matching synccontactlogo -->
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:layout_marginTop="10dp"
+            android:scaleType="centerInside"
+            android:src="@drawable/synccontactlogo"
+            android:contentDescription="Sync Contact Illustration" />
+
+        <!-- Body Content Copy -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Exclusive feature only for PolicyBoss Pro users"
+            android:textSize="14sp"
+            android:layout_marginTop="12dp"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Now, Get important insurance related information &amp; updates to your phonebook contacts, pre-filled to enrich your app experience"
+            android:textSize="14sp"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/black" />
+
+        <!-- Click Here Link -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="10dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="To understand how it works &amp; more details"
+                android:textSize="14sp"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/tvClickHere"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Click Here"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/blue"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Rest assured, no synced data will be shared with any third-party and is completely safe."
+            android:textSize="14sp"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="For extended business support using PolicyBoss.com's communication &amp; tele-channels share your preference below."
+            android:textSize="14sp"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/black" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="It you still wish to stop or discontinue sync of new contacts, simply toggle to switch off under 'Settings' of app."
+            android:textSize="14sp"
+            android:layout_marginTop="10dp"
+            android:textColor="@color/black" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginLeft="0dp"
+
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/txtsetting"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/_4dp"
+                android:layout_marginLeft="0dp"
+
+                android:text="@string/settings"
+                android:textAppearance="@style/TextStyle.TextMedium" />
+        </LinearLayout>
+
+        <!-- Terms & Privacy Links -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="14dp">
+
+            <TextView
+                android:id="@+id/txtterm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Terms &amp; Conditions"
+                android:textColor="@color/blue"
+                android:textSize="15sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="  |  "
+                android:textColor="@color/blue"
+                android:textSize="15sp" />
+
+            <TextView
+                android:id="@+id/txtprivacy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Privacy Policy."
+                android:textColor="@color/blue"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <!-- Checkboxes -->
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/chkcommunication_sms"
+            style="@style/MaterialCheckBoxStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="top"
+            android:text="I would like to avail of communication support (SMS/Email/Whatsapp/Other Comm. modes) for my Sync Contact Leads" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/chktele_call"
+            style="@style/MaterialCheckBoxStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="top"
+            android:text="I would like to avail of tele-calling support for my Sync Contact Leads" />
+
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/chkagree"
+            style="@style/MaterialCheckBoxStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:gravity="top"
+            android:text="I hereby agree to the terms &amp; conditions for using Sync Contacts" />
+
+
+
+
+    </LinearLayout>
+</androidx.core.widget.NestedScrollView>

@@ -97,6 +97,9 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         private const val IS_SUBSCRIBED_LOGGED_IN_USERS = "is_subscribed_logged_in_users"
 
         private const val PENDING_DEEP_LINK_KEY = "pending_deep_link_entity"
+
+
+        private const val KEY_SYNC_WALKTHROUGH_COMPLETED = "key_sync_walkthrough_completed"
     }
 
 
@@ -1325,4 +1328,14 @@ class PolicyBossPrefsManager @Inject constructor(@ApplicationContext context: Co
         editor.putString("contact_msg_key", contactMsg).apply()
     }
 
+
+
+
+    fun setSyncWalkthroughCompleted(completed: Boolean) {
+        editor.putBoolean(KEY_SYNC_WALKTHROUGH_COMPLETED, completed).apply()
+    }
+
+    fun isSyncWalkthroughCompleted(): Boolean {
+        return pref.getBoolean(KEY_SYNC_WALKTHROUGH_COMPLETED, false)
+    }
 }

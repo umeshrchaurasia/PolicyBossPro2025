@@ -5,6 +5,9 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Region
 import android.os.Bundle
+import android.util.Log
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.lifecycle.Observer
 import com.google.android.gms.analytics.GoogleAnalytics
 import com.google.android.gms.analytics.HitBuilders
 import com.google.android.gms.analytics.Tracker
@@ -12,6 +15,7 @@ import com.google.firebase.FirebaseApp
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.messaging.FirebaseMessaging
 import com.policyboss.policybosspro.analytics.AnalyticsTrackers
+import com.policyboss.policybosspro.view.syncContact.contactScheduler.ContactSyncScheduler
 import com.webengage.sdk.android.WebEngage
 import com.webengage.sdk.android.WebEngageActivityLifeCycleCallbacks
 import com.webengage.sdk.android.WebEngageConfig
@@ -26,9 +30,14 @@ import com.xiaomi.mipush.sdk.MiPushClient
 import dagger.hilt.android.HiltAndroidApp
 import io.branch.referral.Branch
 import javax.inject.Inject
+import androidx.work.Configuration // ✅ ADD THIS IMPORT
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
+import com.policyboss.policybosspro.view.syncContact.contactScheduler.ContactSyncWorker
+import java.util.UUID
 
 @HiltAndroidApp
-class PolicyBossProApplication : Application() {
+class PolicyBossProApplication : Application() , Configuration.Provider { // ✅ ADD Configuration.Provider HERE
 
     companion object {
         const val TAG: String = "PolicyBossPro"
@@ -42,11 +51,35 @@ class PolicyBossProApplication : Application() {
     @Inject
     lateinit var mFirebaseAnalytics: FirebaseAnalytics
 
+
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
+
+    // Holds the currently-attached WorkInfo observer + the LiveData it's attached to,
+    // so we can detach cleanly before re-attaching to a new work ID.
+    private var currentWorkObserver: Observer<WorkInfo?>? = null
+    private var currentWorkLiveData: androidx.lifecycle.LiveData<WorkInfo?>? = null
+
+    override val workManagerConfiguration: Configuration
+        get() =
+            Configuration.Builder()
+                .setWorkerFactory(workerFactory)
+                .setMinimumLoggingLevel(
+                    if (BuildConfig.DEBUG) {
+                        Log.DEBUG
+                    } else {
+                        Log.ERROR
+                    }
+                )
+                .build()
+
+
     override fun onCreate() {
         super.onCreate()
 
         // Enable logging for debugging (remove or conditionalize for release)
        // Branch.enableTestMode() // Only if TestMode metadata is true
+
 
         Branch.enableLogging()
 
@@ -87,7 +120,19 @@ class PolicyBossProApplication : Application() {
         MiPushClient.registerPush(this, "2882303761521918691", "5682191839691")
 
 
+
+        // 1. Defensive Cleanup: If the OS killed the app mid-sync last time, clear the stuck notification
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as android.app.NotificationManager
+        notificationManager.cancel(ContactSyncWorker.NOTIF_ID_PROGRESS)
+
+
+        //0507 temparary stop
+
+      //  ContactSyncScheduler.ensureScheduled(this)
+
     }
+
+
 
     @Synchronized
     fun getGoogleAnalyticsTracker(): Tracker {

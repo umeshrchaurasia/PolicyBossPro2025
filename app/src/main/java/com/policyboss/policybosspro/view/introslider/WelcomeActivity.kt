@@ -65,6 +65,15 @@ class WelcomeActivity : AppCompatActivity(), View.OnClickListener {
         // 2. Initialize your Permission Handler
         permissionHandler = PermissionHandler(this)
 
+
+        val bundle = Bundle().apply {
+            putString("screen_name", "WelcomeActivity") // or this@WelcomeActivity.javaClass.simpleName
+            putString("description", "User started the onboarding slider")
+        }
+
+      //  Track the event using your injected helper
+        firebaseAnalyticsHelper.trackEvent(FirebaseAnalytics.Event.TUTORIAL_BEGIN, bundle)
+
         // Inside WelcomeActivity.kt -> onCreate() or pageChangeCallback (position == 0)
 
 //        AnalyticsBranchIOHelper.trackCustomEvent(
