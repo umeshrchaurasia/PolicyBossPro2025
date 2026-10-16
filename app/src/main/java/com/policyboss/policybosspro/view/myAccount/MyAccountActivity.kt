@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -206,42 +207,79 @@ class MyAccountActivity : BaseActivity<ActivityMyAccountBinding>(), View.OnClick
 
         }
 
-        galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {uri ->
+//        galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) {uri ->
+//            if (uri != null) {
+//                includedBinding.ivUser.load(uri) {
+//                    transformations(CircleCropTransformation()) // Apply circular transformation
+//                    placeholder(R.drawable.circle_placeholder)        // Optional: Placeholder while loading
+//                    error(R.drawable.circle_placeholder)        // Optional: Error placeholder
+//                }
+//
+//                val selectedBitmap = Utility.getBitmapFromUri(contentResolver, uri)
+//                val circularBitmap = selectedBitmap?.let {
+//                    Utility.getCircularBitmap(it)
+//
+//                }
+//                circularBitmap?.let {
+//                    profileBitmap = circularBitmap
+//                }
+//
+//            }
+//        }
+
+        galleryLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
             if (uri != null) {
                 includedBinding.ivUser.load(uri) {
-                    transformations(CircleCropTransformation()) // Apply circular transformation
-                    placeholder(R.drawable.circle_placeholder)        // Optional: Placeholder while loading
-                    error(R.drawable.circle_placeholder)        // Optional: Error placeholder
+                    transformations(CircleCropTransformation())
+                    placeholder(R.drawable.circle_placeholder)
+                    error(R.drawable.circle_placeholder)
                 }
 
-                val selectedBitmap = Utility.getBitmapFromUri(contentResolver, uri)
-                val circularBitmap = selectedBitmap?.let {
-                    Utility.getCircularBitmap(it)
-
+                // Safely load & crop in the background without blocking the UI thread
+                lifecycleScope.launch {
+                    profileBitmap = Utility.getBitmapFromUri(
+                        context = this@MyAccountActivity, // Or requireContext() if inside a Fragment
+                        uri = uri,
+                        isCircular = true
+                    )
                 }
-                circularBitmap?.let {
-                    profileBitmap = circularBitmap
-                }
-
             }
         }
-
         // Register launcher for Android 13+ (API 33 and above) using PickVisualMedia
+//        pickVisualMediaLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+//            if (uri != null) {
+//                includedBinding.ivUser.load(uri) {
+//                    transformations(CircleCropTransformation()) // Apply circular transformation
+//                    placeholder(R.drawable.circle_placeholder)        // Optional: Placeholder while loading
+//                    error(R.drawable.circle_placeholder)        // Optional: Error placeholder
+//                }
+//
+//                val selectedBitmap = Utility.getBitmapFromUri(contentResolver, uri)
+//                val circularBitmap = selectedBitmap?.let {
+//                    Utility.getCircularBitmap(it)
+//
+//                }
+//                circularBitmap?.let {
+//                    profileBitmap = circularBitmap
+//                }
+//            }
+//        }
+
+
         pickVisualMediaLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
             if (uri != null) {
                 includedBinding.ivUser.load(uri) {
-                    transformations(CircleCropTransformation()) // Apply circular transformation
-                    placeholder(R.drawable.circle_placeholder)        // Optional: Placeholder while loading
-                    error(R.drawable.circle_placeholder)        // Optional: Error placeholder
-                }
-
-                val selectedBitmap = Utility.getBitmapFromUri(contentResolver, uri)
-                val circularBitmap = selectedBitmap?.let {
-                    Utility.getCircularBitmap(it)
-
-                }
-                circularBitmap?.let {
-                    profileBitmap = circularBitmap
+                    // Required if you compress, upload, or save `profileBitmap` later
+                    allowHardware(false)
+                    transformations(CircleCropTransformation())
+                    placeholder(R.drawable.circle_placeholder)
+                    error(R.drawable.circle_placeholder)
+                    listener(
+                        onSuccess = { _, result ->
+                            // Grab the downsampled, circular-cropped bitmap directly from Coil
+                            profileBitmap = (result.drawable as? BitmapDrawable)?.bitmap
+                        }
+                    )
                 }
             }
         }

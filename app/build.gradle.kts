@@ -28,7 +28,12 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            //  isMinifyEnabled = false
+            // 1. Turn ON R8 code shrinking, optimization, and obfuscation
+            isMinifyEnabled = true
+
+            // 2. Turn ON unused resource shrinking (removes unused drawables/layouts)
+            isShrinkResources = true
 
             // ✅ Native debug symbols (Play Console readable crashes)
             ndk {

@@ -48,6 +48,16 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
+
+import android.graphics.drawable.BitmapDrawable
+
+import coil.imageLoader
+import coil.request.ImageRequest
+import coil.request.SuccessResult
+import coil.size.Precision
+import coil.transform.CircleCropTransformation
+
+
 object Utility {
 
 
@@ -423,31 +433,82 @@ object Utility {
     }
 
 
-    fun getBitmapFromUri(contentResolver: ContentResolver, uri: Uri): Bitmap? {
-        val inputStream: InputStream? = contentResolver.openInputStream(uri)
-        return inputStream?.use {
-            BitmapFactory.decodeStream(it)
+//    fun getBitmapFromUri(contentResolver: ContentResolver, uri: Uri): Bitmap? {
+//        val inputStream: InputStream? = contentResolver.openInputStream(uri)
+//        return inputStream?.use {
+//            BitmapFactory.decodeStream(it)
+//        }
+//    }
+
+
+    suspend fun getBitmapFromUri(
+        context: Context,
+        uri: Uri?,
+        isCircular: Boolean = false
+    ): Bitmap? = withContext(Dispatchers.IO) {
+        if (uri == null) return@withContext null
+
+        try {
+            val requestBuilder = ImageRequest.Builder(context.applicationContext)
+                .data(uri)
+                .allowHardware(false) // Required for file upload / Canvas / Base64 conversion
+                .size(1080, 1080)     // Safely downsamples huge 12MP+ gallery photos
+                .precision(Precision.INEXACT)
+
+            if (isCircular) {
+                requestBuilder.transformations(CircleCropTransformation())
+            }
+
+            val result = context.applicationContext.imageLoader.execute(requestBuilder.build())
+            if (result is SuccessResult) {
+                return@withContext (result.drawable as? BitmapDrawable)?.bitmap
+            }
+            return@withContext null
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return@withContext null
         }
     }
 
+//    suspend fun downloadBitmapFromUrl(url: URL?): Bitmap? {
+//        return withContext(Dispatchers.IO) {
+//            if (url == null) return@withContext null // Early return for null URL
+//
+//            try {
+//                val connection = url.openConnection()
+//                connection.doInput = true
+//                connection.connect()
+//
+//                connection.getInputStream().use { inputStream ->
+//                    return@withContext BitmapFactory.decodeStream(inputStream)
+//                }
+//            } catch (e: IOException) {
+//                e.printStackTrace()  // Log the exception if needed
+//                return@withContext null
+//            }
+//        }
+//    }
 
+    suspend fun downloadBitmapFromUrl(context: Context, url: URL?): Bitmap? = withContext(Dispatchers.IO) {
+        if (url == null) return@withContext null
 
-    suspend fun downloadBitmapFromUrl(url: URL?): Bitmap? {
-        return withContext(Dispatchers.IO) {
-            if (url == null) return@withContext null // Early return for null URL
+        try {
+            val appContext = context.applicationContext
+            val request = ImageRequest.Builder(appContext)
+                .data(url.toString())
+                .allowHardware(false) // Mandatory because createBitmapForSalesType draws onto this bitmap!
+                .size(1080, 1920)     // Downsamples oversized server images safely while keeping HD quality
+                .precision(Precision.INEXACT)
+                .build()
 
-            try {
-                val connection = url.openConnection()
-                connection.doInput = true
-                connection.connect()
-
-                connection.getInputStream().use { inputStream ->
-                    return@withContext BitmapFactory.decodeStream(inputStream)
-                }
-            } catch (e: IOException) {
-                e.printStackTrace()  // Log the exception if needed
-                return@withContext null
+            val result = appContext.imageLoader.execute(request)
+            if (result is SuccessResult) {
+                return@withContext (result.drawable as? BitmapDrawable)?.bitmap
             }
+            return@withContext null
+        } catch (e: Exception) {
+            e.printStackTrace()
+            return@withContext null
         }
     }
 

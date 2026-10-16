@@ -93,14 +93,30 @@ class SalesMaterialViewNodel @Inject constructor(
         return withContext(Dispatchers.Default) {
             val startHeight: Float = (height - 4 * textSize - 3 * textMargin) / 2f  // Ensure float division
 
-            val tempBitmap = Utility.downloadBitmapFromUrl(url)
+           // val tempBitmap = Utility.downloadBitmapFromUrl(url)
+            // Calls the new Coil-backed function (switches to Dispatchers.IO internally)
+            val tempBitmap = Utility.downloadBitmapFromUrl(context, url) ?: return@withContext null
 
-            tempBitmap?.let {
-                // Reusing common logic in a helper function
-                return@withContext createBitmapForSalesType(
-                    tempBitmap, salesType, pospName, pospDesg, pospMob, pospEmail, height, textSize, textMargin, startHeight
-                )
-            } ?: return@withContext null // If bitmap is null, return null
+//            tempBitmap?.let {
+//                // Reusing common logic in a helper function
+//                return@withContext createBitmapForSalesType(
+//                    tempBitmap, salesType, pospName, pospDesg, pospMob, pospEmail, height, textSize, textMargin, startHeight
+//                )
+//            } ?: return@withContext null // If bitmap is null, return null
+
+
+            return@withContext createBitmapForSalesType(
+                tempBitmap,
+                salesType,
+                pospName,
+                pospDesg,
+                pospMob,
+                pospEmail,
+                height,
+                textSize,
+                textMargin,
+                startHeight
+            )
         }
     }
 

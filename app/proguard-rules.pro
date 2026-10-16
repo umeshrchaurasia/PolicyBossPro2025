@@ -20,26 +20,22 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
-####################################
-# GENERAL ATTRIBUTES (REQUIRED)
-####################################
--keepattributes Signature
--keepattributes *Annotation*
--keepattributes EnclosingMethod
--keepattributes InnerClasses
 
 ####################################
-# GSON / RETROFIT (API MODELS)
+# GENERAL ATTRIBUTES
 ####################################
-# Keep fields for JSON parsing
--keep class com.policyboss.policybosspro.core.model.** { <fields>; }
--keep class com.policyboss.policybosspro.core.response.** { <fields>; }
+-keepattributes Signature,*Annotation*,EnclosingMethod,InnerClasses
 
-# Prevent Gson warnings
+####################################
+# GSON / RETROFIT
+####################################
+-keep class com.policyboss.policybosspro.core.model.** { *; }
+-keep class com.policyboss.policybosspro.core.response.** { *; }
+
 -dontwarn sun.misc.**
 
 ####################################
-# RAZORPAY SDK (MANDATORY)
+# RAZORPAY SDK
 ####################################
 -keep class com.razorpay.** { *; }
 -dontwarn com.razorpay.**
@@ -52,16 +48,20 @@
 }
 
 ####################################
-# KOTLIN SAFETY (RECOMMENDED)
+# KOTLIN
 ####################################
--dontwarn kotlin.**
 -keep class kotlin.Metadata { *; }
 
 ####################################
-# REMOVE LOGS (OPTIONAL BUT GOOD)
+# REMOVE LOGS
 ####################################
 -assumenosideeffects class android.util.Log {
     public static *** d(...);
     public static *** v(...);
     public static *** i(...);
 }
+
+####################################
+# TARGETED R8 WARNING BYPASS (EXACT MATCH)
+####################################
+-dontwarn com.google.protobuf.java_com_google_android_gmscore_sdk_target_granule__proguard_group_gtm_N1281923064GeneratedExtensionRegistryLite$Loader
